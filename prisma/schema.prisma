@@ -1,0 +1,123 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      Role     @default(ADMIN)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+}
+
+model Category {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  slug      String    @unique
+  order     Int       @default(0)
+  active    Boolean   @default(true)
+  products  Product[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  description String?
+  price       Decimal     @db.Decimal(10, 2)
+  image       String
+  categoryId  String
+  category    Category    @relation(fields: [categoryId], references: [id])
+  active      Boolean     @default(true)
+  featured    Boolean     @default(false)
+  stock       Int         @default(999)
+  orderItems  OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([categoryId])
+  @@index([active])
+}
+
+model Promotion {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  discount    Decimal  @db.Decimal(5, 2)
+  code        String?  @unique // Código opcional
+  startDate   DateTime
+  endDate     DateTime
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Order {
+  id              String         @id @default(cuid())
+  orderNumber     String         @unique // ORD-20250101-001
+  customerName    String
+  customerPhone   String
+  customerAddress String
+  items           OrderItem[]
+  subtotal        Decimal        @db.Decimal(10, 2)
+  discount        Decimal        @default(0) @db.Decimal(10, 2)
+  total           Decimal        @db.Decimal(10, 2)
+  status          OrderStatus    @default(PENDING)
+  paymentMethod   PaymentMethod? // "culqi", "yape", "plin", "efectivo"
+  paymentId       String? // ID de transacción
+  notes           String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+enum PaymentMethod {
+  culqi
+  yape
+  plin
+  efectivo
+}
+
+enum OrderStatus {
+  PENDING // Pendiente
+  CONFIRMED // Confirmado
+  PREPARING // En preparación
+  DELIVERED // Entregado
+  CANCELLED // Cancelado
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id])
+  quantity  Int
+  price     Decimal  @db.Decimal(10, 2)
+  subtotal  Decimal  @db.Decimal(10, 2)
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+}
