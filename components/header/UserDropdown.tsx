@@ -60,16 +60,14 @@ export default function UserDropdown() {
         </div>
       </button>
 
-      {/* DROPDOWN MENU */}
       <Dropdown
         isOpen={isOpen}
         onClose={closeDropdown}
         className="absolute right-0 mt-2 w-64 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg overflow-hidden"
       >
-        {/* User Info Header */}
         <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-pink-500 to-pink-600 rounded-full flex items-center justify-center text-white font-semibold">
+            <div className="w-10 h-10 bg-linear-to-br from-pink-500 to-pink-600 rounded-full flex items-center justify-center text-white font-semibold">
               {session?.user?.name?.charAt(0).toUpperCase() || "U"}
             </div>
             <div className="flex-1 min-w-0">
@@ -83,9 +81,7 @@ export default function UserDropdown() {
           </div>
         </div>
 
-        {/* Menu Items */}
         <div className="py-2">
-          {/* Profile */}
           <Link
             href="/admin/usuarios"
             onClick={closeDropdown}
@@ -95,7 +91,6 @@ export default function UserDropdown() {
             <span>Mi Perfil</span>
           </Link>
 
-          {/* Settings */}
           <Link
             href="/admin/configuracion"
             onClick={closeDropdown}
@@ -106,7 +101,6 @@ export default function UserDropdown() {
           </Link>
         </div>
 
-        {/* Logout Button */}
         <div className="border-t border-gray-200 dark:border-gray-700 py-2">
           <button
             onClick={handleLogout}

@@ -15,7 +15,10 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Dahs food",
-  description: "Desayunos echos con muhco amor.",
+  description: "Desayunos hechos con mucho amor.",
+  icons: {
+    icon: "/desayuno.webp",
+  },
 };
 
 export default function RootLayout({
