@@ -10,7 +10,6 @@ import {
   SheetClose,
   SheetContent,
   SheetDescription,
-  SheetFooter,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -25,7 +24,7 @@ import {
   Trash2,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const SidebarCart = () => {
   const {
@@ -50,6 +49,12 @@ const SidebarCart = () => {
   const subtotal = getSubtotal();
   const discount = getDiscount();
   const total = getTotal();
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("es-PE", {
@@ -116,7 +121,7 @@ const SidebarCart = () => {
       <SheetTrigger asChild>
         <button className="relative cursor-pointer bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-full shadow-md transition-all duration-300 hover:shadow-xl flex items-center">
           <ShoppingCart />
-          {itemsCount > 0 && (
+          {mounted && itemsCount > 0 && (
             <span className="absolute -top-2 -right-2 bg-pink-700 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-bounce">
               {itemsCount}
             </span>
