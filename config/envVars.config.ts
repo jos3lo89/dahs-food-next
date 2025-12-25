@@ -5,6 +5,8 @@ const envVars = object({
   PASSWORD_SALT_ROUNDS: string(),
   PASSWORD_ADMIN: string(),
   NEXTAUTH_SECRET: string(),
+  AUTH_SECRET: string(),
+  AUTH_URL: string(),
 });
 
 envVars.parse(process.env);
