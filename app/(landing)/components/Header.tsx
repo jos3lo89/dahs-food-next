@@ -1,3 +1,5 @@
+import SidebarCart from "./SidebarCart";
+
 const Header = () => {
   return (
     <header className="bg-linear-to-r from-pink-100 via-pink-50 to-pink-100 shadow-lg sticky top-0 z-50 backdrop-blur-sm bg-opacity-95">
@@ -34,19 +36,7 @@ const Header = () => {
             </a>
           </nav>
 
-          <button
-            id="cart-button"
-            className="relative cursor-pointer bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-full shadow-md transition-all duration-300 hover:shadow-xl flex items-center space-x-2"
-          >
-            <span className="text-xl">🛒</span>
-            <span className="font-semibold">Carrito</span>
-            <span
-              id="cart-count"
-              className="absolute -top-2 -right-2 bg-pink-700 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center"
-            >
-              0
-            </span>
-          </button>
+          <SidebarCart />
         </div>
       </div>
     </header>

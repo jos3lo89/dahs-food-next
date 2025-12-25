@@ -3,6 +3,9 @@
 import { productsApi } from "@/services/products.service";
 import { useQuery } from "@tanstack/react-query";
 import ProductCart from "./ProductCart";
+import { PropagateLoader } from "react-spinners";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircleIcon } from "lucide-react";
 
 const ExtrasSection = () => {
   const {
@@ -15,14 +18,24 @@ const ExtrasSection = () => {
   });
 
   if (isLoading) {
-    return <div>cargando...</div>;
+    return (
+      <div className="flex justify-center items-center p-6">
+        <PropagateLoader color="#3b7dec" />
+      </div>
+    );
   }
 
   if (error) {
     return (
-      <div>
-        <p>no se pudo cargar los extras</p>
-      </div>
+      <Alert variant="destructive" className="mx-auto max-w-lg my-4">
+        <AlertCircleIcon />
+        <AlertTitle>Ocurrio algo inesperado.</AlertTitle>
+        <AlertDescription>
+          <ul className="list-inside list-disc text-sm">
+            <li>No se pudo cargar los productos</li>
+          </ul>
+        </AlertDescription>
+      </Alert>
     );
   }
 
