@@ -39,7 +39,7 @@ const LoginPage = () => {
         setError(res.message);
       } else {
         reset();
-        router.push("/admin/dashboard");
+        router.push("/admin");
       }
     });
   };
