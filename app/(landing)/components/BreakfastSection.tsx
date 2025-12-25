@@ -3,6 +3,9 @@
 import { useQuery } from "@tanstack/react-query";
 import { productsApi } from "@/services/products.service";
 import ProductCart from "./ProductCart";
+import { PropagateLoader } from "react-spinners";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AlertCircleIcon } from "lucide-react";
 
 const BreakfastSection = () => {
   const {
@@ -10,20 +13,30 @@ const BreakfastSection = () => {
     isLoading,
     error,
   } = useQuery({
-    queryKey: ["products"],
+    queryKey: ["products", "desayunos"],
     queryFn: () => productsApi.getProducts("desayunos", true),
   });
 
   if (isLoading) {
-    <div>
-      <p>Cargando....</p>
-    </div>;
+    return (
+      <div className="flex justify-center items-center p-6">
+        <PropagateLoader color="#3b7dec" />
+      </div>
+    );
   }
 
   if (error) {
-    <div>
-      <p>No hay desayunos disponibles en este momento.</p>
-    </div>;
+    return (
+      <Alert variant="destructive" className="mx-auto max-w-lg my-4">
+        <AlertCircleIcon />
+        <AlertTitle>Ocurrio algo inesperado.</AlertTitle>
+        <AlertDescription>
+          <ul className="list-inside list-disc text-sm">
+            <li>No se pudo cargar los productos</li>
+          </ul>
+        </AlertDescription>
+      </Alert>
+    );
   }
 
   return (

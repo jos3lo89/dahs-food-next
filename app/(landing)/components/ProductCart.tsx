@@ -1,4 +1,6 @@
+import { Button } from "@/components/ui/button";
 import { ProductsI } from "@/types/products";
+import { Minus, Plus, ShoppingCart } from "lucide-react";
 
 type Props = {
   product: ProductsI;
@@ -24,34 +26,28 @@ const ProductCart = ({ product }: Props) => {
         </h3>
         <p className="text-gray-600 mb-6">{product.description}</p>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center justify-around gap-4">
           <div className="flex items-center bg-pink-50 rounded-full overflow-hidden">
-            <button
-              className="decrease-btn px-4 py-2 text-pink-600 hover:bg-pink-100 transition font-bold cursor-pointer"
-              data-id={product.id}
+            <Button
+              variant="ghost"
+              className="px-4 py-2 rounded-l-full text-pink-600 hover:bg-pink-200 transition font-bold cursor-pointer"
             >
-              −
-            </button>
-            <span
-              className="quantity px-4 py-2 font-semibold text-pink-900 cursor-default"
-              data-id={product.id}
-            >
+              <Minus />
+            </Button>
+            <span className="quantity px-4 py-2 font-semibold text-pink-900 cursor-default">
               1
             </span>
-            <button
-              className="increase-btn px-4 py-2 text-pink-600 hover:bg-pink-100 transition font-bold cursor-pointer"
-              data-id={product.id}
+            <Button
+              variant="ghost"
+              className="px-4 py-2 rounded-r-full text-pink-600 hover:bg-pink-200 transition font-bold cursor-pointer"
             >
-              +
-            </button>
+              <Plus />
+            </Button>
           </div>
 
-          <button
-            className="add-to-cart-btn cursor-pointer flex-1 bg-pink-500 hover:bg-pink-600 text-white font-semibold px-6 py-3 rounded-full transition-all duration-300 hover:shadow-lg"
-            data-product={JSON.stringify(product)}
-          >
-            Agregar 🛒
-          </button>
+          <Button className="cursor-pointer bg-pink-500 hover:bg-pink-600 text-white font-semibold px-6 py-3 rounded-full transition-all duration-300 hover:shadow-lg">
+            Agregar <ShoppingCart />
+          </Button>
         </div>
       </div>
     </div>
