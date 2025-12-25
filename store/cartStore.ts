@@ -1,14 +1,12 @@
-// stores/cartStore.ts
-
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import {
-  CartState,
-  CartItem,
-  CustomerInfo,
   AppliedPromotion,
+  CartItem,
+  CartState,
+  CustomerInfo,
 } from "@/types/cart.types";
-import { Product } from "@/app/generated/prisma/client";
+import { ProductsI } from "@/types/products";
 
 export const useCartStore = create<CartState>()(
   persist(
@@ -28,7 +26,7 @@ export const useCartStore = create<CartState>()(
       /**
        * Agregar producto al carrito
        */
-      addItem: (product: Product) => {
+      addItem: (product: ProductsI) => {
         const { items } = get();
         const existingItem = items.find(
           (item) => item.productId === product.id
@@ -53,7 +51,7 @@ export const useCartStore = create<CartState>()(
             price: Number(product.price),
             image: product.image,
             quantity: 1,
-            category: product.categoryId, // categoria name
+            category: product.category.name,
           };
 
           set({ items: [...items, newItem] });
@@ -265,14 +263,12 @@ export const useCartStore = create<CartState>()(
       },
     }),
     {
-      name: "desayunos-cart-storage", // Nombre en localStorage
+      name: "desayunos-cart-storage",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
-        // Solo persistir estos campos
         items: state.items,
         customerInfo: state.customerInfo,
         promotion: state.promotion,
-        // NO persistir isOpen
       }),
     }
   )

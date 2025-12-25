@@ -1,4 +1,6 @@
-import { Product } from "@/app/generated/prisma/client";
+// types/cart.types.ts
+
+import { ProductsI } from "./products";
 
 // Item del carrito
 export interface CartItem {
@@ -36,7 +38,7 @@ export interface CartState {
   isOpen: boolean;
 
   // Acciones del carrito
-  addItem: (product: Product) => void;
+  addItem: (product: ProductsI) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   increaseQuantity: (productId: string) => void;

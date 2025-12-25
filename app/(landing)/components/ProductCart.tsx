@@ -1,4 +1,6 @@
+"use client";
 import { Button } from "@/components/ui/button";
+import { useCartStore } from "@/store/cartStore";
 import { ProductsI } from "@/types/products";
 import { Minus, Plus, ShoppingCart } from "lucide-react";
 
@@ -7,6 +9,15 @@ type Props = {
 };
 
 const ProductCart = ({ product }: Props) => {
+  const { increaseQuantity, decreaseQuantity, getItemQuantity, addItem } =
+    useCartStore();
+
+  const quantity = getItemQuantity(product.id);
+
+  const handleAddToCart = () => {
+    addItem(product);
+  };
+
   return (
     <div className="bg-white rounded-3xl shadow-lg overflow-hidden card-hover">
       <div className="relative h-56 overflow-hidden">
@@ -26,29 +37,37 @@ const ProductCart = ({ product }: Props) => {
         </h3>
         <p className="text-gray-600 mb-6">{product.description}</p>
 
-        <div className="flex items-center justify-around gap-4">
-          <div className="flex items-center bg-pink-50 rounded-full overflow-hidden">
-            <Button
-              variant="ghost"
-              className="px-4 py-2 rounded-l-full text-pink-600 hover:bg-pink-200 transition font-bold cursor-pointer"
-            >
-              <Minus />
-            </Button>
-            <span className="quantity px-4 py-2 font-semibold text-pink-900 cursor-default">
-              1
-            </span>
-            <Button
-              variant="ghost"
-              className="px-4 py-2 rounded-r-full text-pink-600 hover:bg-pink-200 transition font-bold cursor-pointer"
-            >
-              <Plus />
-            </Button>
+        {quantity > 0 ? (
+          <div className="flex items-center justify-around gap-4">
+            <div className="flex items-center bg-pink-50 rounded-full overflow-hidden">
+              <Button
+                variant="ghost"
+                className="px-4 py-2 rounded-l-full text-pink-600 hover:bg-pink-200 transition font-bold cursor-pointer"
+                onClick={() => decreaseQuantity(product.id)}
+              >
+                <Minus />
+              </Button>
+              <span className="quantity px-4 py-2 font-semibold text-pink-900 cursor-default">
+                {quantity}
+              </span>
+              <Button
+                variant="ghost"
+                className="px-4 py-2 rounded-r-full text-pink-600 hover:bg-pink-200 transition font-bold cursor-pointer"
+                onClick={() => increaseQuantity(product.id)}
+              >
+                <Plus />
+              </Button>
+            </div>
           </div>
-
-          <Button className="cursor-pointer bg-pink-500 hover:bg-pink-600 text-white font-semibold px-6 py-3 rounded-full transition-all duration-300 hover:shadow-lg">
-            Agregar <ShoppingCart />
+        ) : (
+          <Button
+            className="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold px-6 py-3 rounded-full transition-all duration-300 hover:shadow-lg"
+            onClick={handleAddToCart}
+          >
+            <ShoppingCart className="w-4 h-4 mr-2" />
+            Agregar al carrito
           </Button>
-        </div>
+        )}
       </div>
     </div>
   );
