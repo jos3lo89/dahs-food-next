@@ -1,9 +1,40 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { auth } from "@/auth";
 
-export function proxy(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  console.log("proxy: ", pathname);
+  const session = await auth();
+
+  const publicPaths = ["/", "/login", "/api/auth"];
+
+  const isPublicPath = publicPaths.some(
+    (path) => pathname === path || pathname.startsWith(path)
+  );
+  if (pathname.startsWith("/login")) {
+    if (session) {
+      return NextResponse.redirect(new URL("/admin", request.url));
+    }
+    return NextResponse.next();
+  }
+
+  if (pathname.startsWith("/admin")) {
+    if (!session) {
+      const loginUrl = new URL("/login", request.url);
+      loginUrl.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    if (session.user.role !== "ADMIN") {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+
+    return NextResponse.next();
+  }
+
+  if (isPublicPath) {
+    return NextResponse.next();
+  }
 
   return NextResponse.next();
 }
