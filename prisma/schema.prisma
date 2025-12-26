@@ -37,39 +37,91 @@ model Category {
   products  Product[]
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
-}
 
-model Product {
-  id          String      @id @default(cuid())
-  name        String
-  slug        String      @unique
-  description String?
-  price       Decimal     @db.Decimal(10, 2)
-  image       String
-  categoryId  String
-  category    Category    @relation(fields: [categoryId], references: [id])
-  active      Boolean     @default(true)
-  featured    Boolean     @default(false)
-  stock       Int         @default(999)
-  orderItems  OrderItem[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
-
-  @@index([categoryId])
   @@index([active])
 }
 
+model Product {
+  id                String             @id @default(cuid())
+  name              String
+  slug              String             @unique
+  description       String?
+  price             Decimal            @db.Decimal(10, 2)
+  image             String
+  categoryId        String
+  category          Category           @relation(fields: [categoryId], references: [id])
+  active            Boolean            @default(true)
+  featured          Boolean            @default(false)
+  stock             Int                @default(999)
+  orderItems        OrderItem[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  promotionProducts PromotionProduct[] // Nuevo: relación con promociones
+
+  @@index([categoryId])
+  @@index([active])
+  @@index([featured])
+}
+
 model Promotion {
-  id          String   @id @default(cuid())
+  id          String             @id @default(cuid())
   name        String
   description String?
-  discount    Decimal  @db.Decimal(5, 2)
-  code        String?  @unique // Código opcional
+  discount    Decimal            @db.Decimal(5, 2)
+  code        String?            @unique
   startDate   DateTime
   endDate     DateTime
-  active      Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  active      Boolean            @default(true)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  type        PromotionType      @default(DISCOUNT)
+  image       String?
+  featured    Boolean            @default(false)
+  products    PromotionProduct[]
+  packs       PromotionPack[]
+
+  @@index([active])
+  @@index([featured])
+  @@index([startDate, endDate])
+}
+
+enum PromotionType {
+  DISCOUNT
+  PACK
+  DAY_SPECIAL
+  WEEK_DEAL
+}
+
+model PromotionProduct {
+  id            String    @id @default(cuid())
+  promotionId   String
+  promotion     Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  productId     String
+  product       Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  discountPrice Decimal?  @db.Decimal(10, 2)
+  createdAt     DateTime  @default(now())
+
+  @@unique([promotionId, productId])
+  @@index([promotionId])
+  @@index([productId])
+}
+
+model PromotionPack {
+  id            String    @id @default(cuid())
+  promotionId   String
+  promotion     Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  name          String
+  description   String?
+  items         Json // Array de {productId, quantity}
+  originalPrice Decimal   @db.Decimal(10, 2)
+  packPrice     Decimal   @db.Decimal(10, 2)
+  image         String?
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([promotionId])
+  @@index([active])
 }
 
 model Order {
@@ -88,7 +140,9 @@ model Order {
   notes           String?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
+  promotionCode   String? // Nuevo: código de promoción usado
 
+  @@index([orderNumber])
   @@index([status])
   @@index([createdAt])
 }
