@@ -15,9 +15,11 @@ const updateUserSchema = z.object({
 // GET /api/usuarios/[id]
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
+
     const session = await auth();
     if (!session) {
       return NextResponse.json(
@@ -27,7 +29,7 @@ export async function GET(
     }
 
     const usuario = await prisma.user.findUnique({
-      where: { id: params.id },
+      where: { id },
       select: {
         id: true,
         email: true,
@@ -61,9 +63,10 @@ export async function GET(
 // PATCH /api/usuarios/[id]
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
     if (!session || session.user.role !== "ADMIN") {
       return NextResponse.json(
@@ -80,7 +83,7 @@ export async function PATCH(
       const existingUser = await prisma.user.findFirst({
         where: {
           email: validatedData.email,
-          NOT: { id: params.id },
+          NOT: { id },
         },
       });
 
@@ -99,7 +102,7 @@ export async function PATCH(
     }
 
     const usuario = await prisma.user.update({
-      where: { id: params.id },
+      where: { id },
       data: dataToUpdate,
       select: {
         id: true,
@@ -136,9 +139,10 @@ export async function PATCH(
 // DELETE /api/usuarios/[id] - SOFT DELETE
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const session = await auth();
     if (!session || session.user.role !== "ADMIN") {
       return NextResponse.json(
@@ -148,7 +152,7 @@ export async function DELETE(
     }
 
     // Evitar que el admin se desactive a sí mismo
-    if (params.id === session.user.id) {
+    if (id === session.user.id) {
       return NextResponse.json(
         { success: false, error: "No puedes desactivar tu propia cuenta" },
         { status: 400 }
@@ -157,7 +161,7 @@ export async function DELETE(
 
     // Soft delete (desactivar)
     const usuario = await prisma.user.update({
-      where: { id: params.id },
+      where: { id },
       data: { isActive: false },
       select: {
         id: true,
