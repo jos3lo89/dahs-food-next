@@ -19,23 +19,21 @@ export const usuariosApi = {
     }
 
     const { data } = await axiosInstance.get<UsuariosResponse>(
-      `/usuarios?${queryParams.toString()}`
+      `usuarios?${queryParams.toString()}`
     );
     return data;
   },
 
   // GET: Obtener un usuario por ID
   getUsuario: async (id: string) => {
-    const { data } = await axiosInstance.get<UsuarioResponse>(
-      `/usuarios/${id}`
-    );
+    const { data } = await axiosInstance.get<UsuarioResponse>(`usuarios/${id}`);
     return data;
   },
 
   // POST: Crear usuario
   createUsuario: async (usuario: CreateUsuarioDto) => {
     const { data } = await axiosInstance.post<UsuarioResponse>(
-      "/usuarios",
+      "usuarios",
       usuario
     );
     return data;
@@ -44,7 +42,7 @@ export const usuariosApi = {
   // PATCH: Actualizar usuario
   updateUsuario: async (id: string, usuario: UpdateUsuarioDto) => {
     const { data } = await axiosInstance.patch<UsuarioResponse>(
-      `/usuarios/${id}`,
+      `usuarios/${id}`,
       usuario
     );
     return data;
@@ -53,7 +51,7 @@ export const usuariosApi = {
   // PATCH: Cambiar contraseña
   changePassword: async (id: string, password: ChangePasswordDto) => {
     const { data } = await axiosInstance.patch<UsuarioResponse>(
-      `/usuarios/${id}`,
+      `usuarios/${id}`,
       password
     );
     return data;
@@ -62,7 +60,7 @@ export const usuariosApi = {
   // DELETE: Desactivar usuario (soft delete)
   deleteUsuario: async (id: string) => {
     const { data } = await axiosInstance.delete<UsuarioResponse>(
-      `/usuarios/${id}`
+      `usuarios/${id}`
     );
     return data;
   },
@@ -70,7 +68,7 @@ export const usuariosApi = {
   // PATCH: Activar usuario
   activateUsuario: async (id: string) => {
     const { data } = await axiosInstance.patch<UsuarioResponse>(
-      `/usuarios/${id}`,
+      `usuarios/${id}`,
       { isActive: true }
     );
     return data;

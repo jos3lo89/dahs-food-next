@@ -82,6 +82,52 @@ async function main() {
     },
   });
 
+  const pContinental = await prisma.product.upsert({
+    where: { slug: "desayuno-continental" },
+    update: {},
+    create: {
+      name: "Desayuno Continental",
+      slug: "desayuno-continental",
+      description:
+        "Croissant mantecoso, pan francés, mermelada casera, mantequilla y queso crema",
+      price: 20.0,
+      image:
+        "https://images.unsplash.com/photo-1525351484163-7529414344d8?w=800",
+      categoryId: catDesayunos.id,
+      featured: true,
+    },
+  });
+
+  const pCriollo = await prisma.product.upsert({
+    where: { slug: "desayuno-criollo" },
+    update: {},
+    create: {
+      name: "Desayuno Criollo",
+      slug: "desayuno-criollo",
+      description:
+        "Tamales verdes, pan francés, salsa criolla, chicharrón y café pasado",
+      price: 18.0,
+      image:
+        "https://images.unsplash.com/photo-1504754524776-8f4f37790ca0?w=800",
+      categoryId: catDesayunos.id,
+    },
+  });
+
+  const pDulce = await prisma.product.upsert({
+    where: { slug: "desayuno-dulce" },
+    update: {},
+    create: {
+      name: "Desayuno Dulce",
+      slug: "desayuno-dulce",
+      description:
+        "Waffles belgas, fresas frescas, crema batida, chispas de chocolate y jarabe",
+      price: 23.0,
+      image: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=800",
+      categoryId: catDesayunos.id,
+      featured: true,
+    },
+  });
+
   // Bebidas
   const pJugoNaranja = await prisma.product.upsert({
     where: { slug: "jugo-naranja" },
@@ -112,6 +158,48 @@ async function main() {
     },
   });
 
+  const pCafeAmericano = await prisma.product.upsert({
+    where: { slug: "cafe-americano" },
+    update: {},
+    create: {
+      name: "Café Americano",
+      slug: "cafe-americano",
+      description: "Café de grano selecto, preparado al momento",
+      price: 6.0,
+      image:
+        "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=800",
+      categoryId: catBebidas.id,
+    },
+  });
+
+  const pTeVerde = await prisma.product.upsert({
+    where: { slug: "te-verde" },
+    update: {},
+    create: {
+      name: "Té Verde",
+      slug: "te-verde",
+      description: "Té verde premium con menta y limón",
+      price: 7.0,
+      image: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=800",
+      categoryId: catBebidas.id,
+    },
+  });
+
+  const pSmoothieFresa = await prisma.product.upsert({
+    where: { slug: "smoothie-fresa" },
+    update: {},
+    create: {
+      name: "Smoothie de Fresa",
+      slug: "smoothie-fresa",
+      description: "Batido cremoso de fresas, plátano y yogurt griego",
+      price: 12.0,
+      image:
+        "https://images.unsplash.com/photo-1505252585461-04db1eb84625?w=800",
+      categoryId: catBebidas.id,
+      featured: true,
+    },
+  });
+
   // Extras
   const pPanHuevo = await prisma.product.upsert({
     where: { slug: "pan-huevo" },
@@ -124,6 +212,79 @@ async function main() {
       image:
         "https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=800",
       categoryId: catExtras.id,
+    },
+  });
+
+  const pYogurtGranola = await prisma.product.upsert({
+    where: { slug: "yogurt-granola" },
+    update: {},
+    create: {
+      name: "Yogurt con Granola",
+      slug: "yogurt-granola",
+      description: "Yogurt griego natural con granola casera y miel",
+      price: 10.0,
+      image:
+        "https://images.unsplash.com/photo-1488477181946-6428a0291777?w=800",
+      categoryId: catExtras.id,
+    },
+  });
+
+  const pTostadasAguacate = await prisma.product.upsert({
+    where: { slug: "tostadas-aguacate" },
+    update: {},
+    create: {
+      name: "Tostadas con Aguacate",
+      slug: "tostadas-aguacate",
+      description: "Pan integral tostado con aguacate, huevo poché y semillas",
+      price: 15.0,
+      image:
+        "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?w=800",
+      categoryId: catExtras.id,
+      featured: true,
+    },
+  });
+
+  const pFrutasTemporada = await prisma.product.upsert({
+    where: { slug: "frutas-temporada" },
+    update: {},
+    create: {
+      name: "Frutas de Temporada",
+      slug: "frutas-temporada",
+      description: "Bowl de frutas frescas cortadas con miel y menta",
+      price: 12.0,
+      image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800",
+      categoryId: catExtras.id,
+    },
+  });
+
+  // Postres
+  const pCheesecakeFresa = await prisma.product.upsert({
+    where: { slug: "cheesecake-fresa" },
+    update: {},
+    create: {
+      name: "Cheesecake de Fresa",
+      slug: "cheesecake-fresa",
+      description: "Suave cheesecake con salsa de fresas naturales",
+      price: 14.0,
+      image:
+        "https://images.unsplash.com/photo-1524351199678-941a58a3df50?w=800",
+      categoryId: catPostres.id,
+      featured: true,
+    },
+  });
+
+  const pBrownieChocolate = await prisma.product.upsert({
+    where: { slug: "brownie-chocolate" },
+    update: {},
+    create: {
+      name: "Brownie de Chocolate",
+      slug: "brownie-chocolate",
+      description:
+        "Brownie caliente con helado de vainilla y salsa de chocolate",
+      price: 12.0,
+      image:
+        "https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=800",
+      categoryId: catPostres.id,
     },
   });
 
