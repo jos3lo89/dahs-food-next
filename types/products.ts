@@ -61,7 +61,7 @@ export interface UpdateProductoDto {
   price?: number;
   image?: string;
   images?: string[];
-  categoryId: string | null;
+  categoryId?: string;
   active?: boolean;
   featured?: boolean;
   stock?: number;
