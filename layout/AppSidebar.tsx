@@ -51,7 +51,6 @@ const navItems: NavItem[] = [
     subItems: [
       { name: "Productos en Promoción", path: "/admin/promociones" },
       { name: "Packs Promocionales", path: "/admin/promociones/packs" },
-      { name: "Crear Promoción", path: "/admin/promociones/crear" },
     ],
   },
   {
