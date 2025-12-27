@@ -51,7 +51,7 @@ export default function CategoriasPage() {
             Administra las categorías de productos
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-col lg:flex-row gap-3">
           {categorias.length > 0 && (
             <ReorderCategoriesDialog categorias={categorias} />
           )}
