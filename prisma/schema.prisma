@@ -48,6 +48,7 @@ model Product {
   description       String?
   price             Decimal            @db.Decimal(10, 2)
   image             String
+  images            Json?              @default("[]") // ["url1", "url2", "url3"]
   categoryId        String
   category          Category           @relation(fields: [categoryId], references: [id])
   active            Boolean            @default(true)

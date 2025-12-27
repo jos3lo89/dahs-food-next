@@ -7,6 +7,9 @@ const envVars = object({
   NEXTAUTH_SECRET: string(),
   AUTH_SECRET: string(),
   AUTH_URL: string(),
+  CLOUDINARY_CLOUD_NAME: string(),
+  CLOUDINARY_API_KEY: string(),
+  CLOUDINARY_API_SECRET: string(),
 });
 
 envVars.parse(process.env);

@@ -38,10 +38,7 @@ const navItems: NavItem[] = [
   {
     icon: <ShoppingBag className="w-5 h-5" />,
     name: "Productos",
-    subItems: [
-      { name: "Lista de Productos", path: "/admin/productos" },
-      { name: "Crear Producto", path: "/admin/productos/crear" },
-    ],
+    subItems: [{ name: "Lista de Productos", path: "/admin/productos" }],
   },
   {
     icon: <FolderOpen className="w-5 h-5" />,
