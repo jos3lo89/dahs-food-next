@@ -43,10 +43,7 @@ const navItems: NavItem[] = [
   {
     icon: <FolderOpen className="w-5 h-5" />,
     name: "Categorías",
-    subItems: [
-      { name: "Lista de Categorías", path: "/admin/categorias" },
-      { name: "Crear Categoría", path: "/admin/categorias/crear" },
-    ],
+    subItems: [{ name: "Lista de Categorías", path: "/admin/categorias" }],
   },
   {
     icon: <Tag className="w-5 h-5" />,
