@@ -52,6 +52,13 @@ const statusConfig: Record<
     className: "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-300",
     icon: XCircle,
   },
+  OUT_FOR_DELIVERY: {
+    label: "En Ruta",
+    variant: "default",
+    className:
+      "bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:text-orange-300",
+    icon: Package,
+  },
 };
 
 export function OrderStatusBadge({
