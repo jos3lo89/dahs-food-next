@@ -11,7 +11,6 @@ export default function TerminosPage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-pink-50 to-rose-50 py-12">
       <div className="container mx-auto px-4 max-w-4xl">
-        {/* Header */}
         <div className="mb-8">
           <Link
             href="/"
@@ -40,9 +39,7 @@ export default function TerminosPage() {
           </p>
         </div>
 
-        {/* Contenido */}
         <div className="bg-white rounded-2xl shadow-lg p-8 space-y-8">
-          {/* 1. Aceptación */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4">
               1. Aceptación de los Términos
@@ -60,7 +57,6 @@ export default function TerminosPage() {
             </p>
           </section>
 
-          {/* 2. Descripción del Servicio */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4">
               2. Descripción del Servicio
@@ -78,7 +74,6 @@ export default function TerminosPage() {
             </ul>
           </section>
 
-          {/* 3. Registro y Cuenta */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4">
               3. Información del Usuario
@@ -98,7 +93,6 @@ export default function TerminosPage() {
             </ul>
           </section>
 
-          {/* 4. Pedidos */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4">
               4. Realización de Pedidos
@@ -134,7 +128,6 @@ export default function TerminosPage() {
             </p>
           </section>
 
-          {/* 5. Precios y Pagos */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4">
               5. Precios y Métodos de Pago
@@ -178,7 +171,6 @@ export default function TerminosPage() {
             </p>
           </section>
 
-          {/* 6. Entrega */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4">
               6. Política de Entrega (Delivery)
@@ -226,7 +218,6 @@ export default function TerminosPage() {
             </p>
           </section>
 
-          {/* 7. Cancelaciones y Reembolsos */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4">
               7. Cancelaciones y Devoluciones
@@ -274,7 +265,6 @@ export default function TerminosPage() {
             </p>
           </section>
 
-          {/* 8. Calidad y Seguridad Alimentaria */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4">
               8. Calidad y Seguridad Alimentaria
@@ -298,7 +288,6 @@ export default function TerminosPage() {
             </p>
           </section>
 
-          {/* 9. Propiedad Intelectual */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4">
               9. Propiedad Intelectual
@@ -310,7 +299,6 @@ export default function TerminosPage() {
             </p>
           </section>
 
-          {/* 10. Limitación de Responsabilidad */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4">
               10. Limitación de Responsabilidad
@@ -326,7 +314,6 @@ export default function TerminosPage() {
             </ul>
           </section>
 
-          {/* 11. Modificaciones */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4">
               11. Modificaciones de los Términos
@@ -340,7 +327,6 @@ export default function TerminosPage() {
             </p>
           </section>
 
-          {/* 12. Ley Aplicable */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4">
               12. Ley Aplicable y Jurisdicción
@@ -353,7 +339,6 @@ export default function TerminosPage() {
             </p>
           </section>
 
-          {/* 13. Contacto */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4">
               13. Contacto
@@ -376,7 +361,6 @@ export default function TerminosPage() {
             </ul>
           </section>
 
-          {/* Footer del documento */}
           <div className="pt-6 mt-8 border-t border-gray-200">
             <p className="text-sm text-gray-600 text-center">
               Al utilizar nuestros servicios, usted reconoce que ha leído y
@@ -386,7 +370,6 @@ export default function TerminosPage() {
           </div>
         </div>
 
-        {/* Botón volver */}
         <div className="mt-8 text-center">
           <Link href="/">
             <button className="bg-pink-500 hover:bg-pink-600 text-white px-8 py-3 rounded-full font-semibold transition">

@@ -35,7 +35,6 @@ export async function GET(request: NextRequest) {
     const lastMonthStart = startOfMonth(subMonths(now, 1));
     const lastMonthEnd = endOfMonth(subMonths(now, 1));
 
-    // ========== VENTAS ==========
     const [todayOrders, weekOrders, monthOrders, lastMonthOrders] =
       await Promise.all([
         prisma.order.findMany({
@@ -109,7 +108,6 @@ export async function GET(request: NextRequest) {
           : Number(r._sum.total || 0)
       );
 
-    // ========== PEDIDOS ==========
     const [
       totalOrders,
       todayOrdersCount,
@@ -138,7 +136,6 @@ export async function GET(request: NextRequest) {
           100
         : 0;
 
-    // ========== PRODUCTOS ==========
     const [
       totalProducts,
       activeProducts,
@@ -153,13 +150,11 @@ export async function GET(request: NextRequest) {
       prisma.product.count({ where: { active: true, stock: 0 } }),
     ]);
 
-    // ========== USUARIOS ==========
     const [totalUsers, activeUsers] = await Promise.all([
       prisma.user.count(),
       prisma.user.count({ where: { isActive: true } }),
     ]);
 
-    // ========== PROMOCIONES ==========
     const [activePromotions, featuredPromotions] = await Promise.all([
       prisma.promotion.count({
         where: {
@@ -178,7 +173,6 @@ export async function GET(request: NextRequest) {
       }),
     ]);
 
-    // ========== TOP PRODUCTOS ==========
     const topProducts = await prisma.orderItem.groupBy({
       by: ["productId"],
       _sum: {
@@ -213,7 +207,6 @@ export async function GET(request: NextRequest) {
       })
     );
 
-    // ========== GRÁFICO DE VENTAS (ÚLTIMOS 7 DÍAS) ==========
     const salesChart = await Promise.all(
       Array.from({ length: 7 }, async (_, i) => {
         const date = subDays(now, 6 - i);
@@ -243,7 +236,6 @@ export async function GET(request: NextRequest) {
       })
     );
 
-    // ========== PEDIDOS POR ESTADO ==========
     const ordersByStatus = await prisma.order.groupBy({
       by: ["status"],
       _count: { status: true },
@@ -254,7 +246,6 @@ export async function GET(request: NextRequest) {
       count: item._count.status,
     }));
 
-    // ========== VENTAS POR CATEGORÍA ==========
     const salesByCategory = await prisma.orderItem.findMany({
       where: {
         order: { status: { not: "CANCELLED" } },
@@ -298,7 +289,6 @@ export async function GET(request: NextRequest) {
       })
     );
 
-    // ========== MÉTODOS DE PAGO ==========
     const paymentMethodsData = await prisma.order.groupBy({
       by: ["paymentMethod"],
       where: { status: { not: "CANCELLED" } },
@@ -317,7 +307,6 @@ export async function GET(request: NextRequest) {
             : Number(item._sum.total || 0),
       }));
 
-    // ========== PEDIDOS RECIENTES ==========
     const recentOrders = await prisma.order.findMany({
       take: 5,
       orderBy: { createdAt: "desc" },
@@ -346,14 +335,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: {
-        // Ventas
         totalRevenue,
         todayRevenue,
         weekRevenue,
         monthRevenue,
         revenueGrowth,
 
-        // Pedidos
         totalOrders,
         todayOrders: todayOrdersCount,
         pendingOrders,
@@ -361,21 +348,16 @@ export async function GET(request: NextRequest) {
         cancelledOrders,
         ordersGrowth,
 
-        // Productos
         totalProducts,
         activeProducts,
         lowStockProducts,
         outOfStockProducts,
 
-        // Usuarios
         totalUsers,
         activeUsers,
 
-        // Promociones
-        activePromotions,
         featuredPromotions,
 
-        // Gráficos y datos
         topProducts: topProductsWithDetails,
         salesChart,
         ordersByStatus: ordersByStatusFormatted,

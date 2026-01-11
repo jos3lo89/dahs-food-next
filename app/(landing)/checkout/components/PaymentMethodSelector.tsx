@@ -1,4 +1,3 @@
-// app/(landing)/checkout/components/PaymentMethodSelector.tsx
 "use client";
 
 import { PaymentMethod } from "@/types/checkout";
@@ -33,7 +32,7 @@ const paymentMethods = [
     color: "bg-green-100 border-green-300 text-green-700",
     activeColor: "bg-green-500 border-green-600 text-white",
     description: "Débito/Crédito",
-    disabled: true, // Por ahora deshabilitado
+    disabled: true,
   },
   {
     id: "efectivo" as PaymentMethod,

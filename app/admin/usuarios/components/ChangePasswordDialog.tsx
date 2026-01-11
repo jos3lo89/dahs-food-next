@@ -86,7 +86,6 @@ export function ChangePasswordDialog({
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Nueva Contraseña */}
           <div>
             <Label htmlFor="password">Nueva Contraseña *</Label>
             <div className="relative">
@@ -117,7 +116,6 @@ export function ChangePasswordDialog({
             )}
           </div>
 
-          {/* Confirmar Contraseña */}
           <div>
             <Label htmlFor="confirmPassword">Confirmar Contraseña *</Label>
             <div className="relative">
@@ -148,7 +146,6 @@ export function ChangePasswordDialog({
             )}
           </div>
 
-          {/* Buttons */}
           <div className="flex justify-end gap-3 pt-4">
             <Button
               type="button"

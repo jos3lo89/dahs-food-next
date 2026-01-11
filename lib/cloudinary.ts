@@ -8,7 +8,6 @@ cloudinary.config({
 
 export { cloudinary };
 
-// Opciones de upload
 export const uploadOptions = {
   folder: "dahs-fotos",
   allowed_formats: ["jpg", "jpeg", "png", "webp"],
@@ -19,7 +18,6 @@ export const uploadOptions = {
   ],
 };
 
-// Helper para extraer public_id de una URL de Cloudinary
 export function getPublicIdFromUrl(url: string): string | null {
   try {
     const match = url.match(/\/dahs-fotos\/([^/]+)\./);

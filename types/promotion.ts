@@ -1,10 +1,3 @@
-// export enum PromotionType {
-//   DISCOUNT = "DISCOUNT",
-//   PACK = "PACK",
-//   DAY_SPECIAL = "DAY_SPECIAL",
-//   WEEK_DEAL = "WEEK_DEAL",
-// }
-
 export type PromotionType = "DISCOUNT" | "PACK" | "DAY_SPECIAL" | "WEEK_DEAL";
 
 export interface Promocion {
@@ -74,9 +67,7 @@ export interface CreatePromocionDto {
   type: PromotionType;
   image?: string;
   featured?: boolean;
-  // Para tipo DISCOUNT
   productIds?: string[];
-  // Para tipo PACK
   packs?: CreatePackDto[];
 }
 

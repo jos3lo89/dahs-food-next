@@ -25,7 +25,7 @@ export interface CheckoutData {
   discount: number;
   total: number;
   promotionCode?: string;
-  receiptImage?: string; // Para Yape/Plin
+  receiptImage?: string;
 }
 
 export interface CreateOrderDto {

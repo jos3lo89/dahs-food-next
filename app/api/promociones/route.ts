@@ -71,7 +71,6 @@ function serializePromocion(promocion: any) {
   };
 }
 
-// GET /api/promociones
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -144,7 +143,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/promociones
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
@@ -158,7 +156,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = createPromocionSchema.parse(body);
 
-    // Verificar que startDate < endDate
     if (new Date(validatedData.startDate) >= new Date(validatedData.endDate)) {
       return NextResponse.json(
         {
@@ -169,7 +166,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Si tiene código, verificar que sea único
     if (validatedData.code) {
       const existingCode = await prisma.promotion.findUnique({
         where: { code: validatedData.code },
@@ -183,7 +179,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Crear promoción
     const promocion = await prisma.promotion.create({
       data: {
         name: validatedData.name,
@@ -195,17 +190,15 @@ export async function POST(request: NextRequest) {
         type: validatedData.type,
         image: validatedData.image,
         featured: validatedData.featured,
-        // Crear productos promocionales si es tipo DISCOUNT
         ...(validatedData.type === "DISCOUNT" &&
           validatedData.productIds && {
             products: {
               create: validatedData.productIds.map((productId) => ({
                 productId,
-                discountPrice: null, // Se calcula después si es necesario
+                discountPrice: null,
               })),
             },
           }),
-        // Crear packs si es tipo PACK
         ...(validatedData.type === "PACK" &&
           validatedData.packs && {
             packs: {

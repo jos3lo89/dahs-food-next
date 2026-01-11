@@ -11,7 +11,7 @@ import { CheckoutStepper } from "./components/CheckoutStepper";
 import { PaymentMethodSelector } from "./components/PaymentMethodSelector";
 import { YapePayment } from "./components/YapePayment";
 import { OrderSummary } from "./components/OrderSummary";
-import { AddressForm } from "./components/AddressForm"; // ✅ NUEVO
+import { AddressForm } from "./components/AddressForm";
 import { useCreateOrder } from "@/hooks/useOrders";
 import { PaymentMethod } from "@/types/checkout";
 import {
@@ -48,18 +48,15 @@ export default function CheckoutPage() {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
-    // Datos personales
     name: customerInfo?.name || "",
     phone: customerInfo?.phone || "",
     email: customerInfo?.email || "",
 
-    // Dirección
     address: customerInfo?.address || "",
     district: "",
     city: "Lima",
     reference: "",
 
-    // Notas
     notes: customerInfo?.notes || "",
   });
 
@@ -67,11 +64,9 @@ export default function CheckoutPage() {
   const discount = getDiscount();
   const total = getTotal();
 
-  // ✅ Calcular costo de envío
   const deliveryFee = total >= 50 ? 0 : 5;
   const finalTotal = total + deliveryFee;
 
-  // Redirigir si no hay items
   useEffect(() => {
     if (items.length === 0) {
       toast.error("Tu carrito está vacío");
@@ -100,7 +95,6 @@ export default function CheckoutPage() {
   const validateStep3 = () => {
     if (!paymentMethod) return false;
 
-    // Si es Yape o Plin, requiere comprobante
     if (paymentMethod === "yape" || paymentMethod === "plin") {
       return !!receiptImage;
     }
@@ -119,7 +113,6 @@ export default function CheckoutPage() {
         toast.error("Completa todos los campos requeridos");
         return;
       }
-      // Guardar info del cliente
       setCustomerInfo({
         name: formData.name,
         phone: formData.phone,
@@ -153,7 +146,6 @@ export default function CheckoutPage() {
       return;
     }
 
-    // ✅ Calcular tiempo estimado de entrega (40 minutos)
     const estimatedDeliveryTime = addMinutes(new Date(), 40).toISOString();
 
     const orderData = {
@@ -162,7 +154,6 @@ export default function CheckoutPage() {
       customerEmail: formData.email || undefined,
       customerAddress: `${formData.address}, ${formData.district}, ${formData.city}`,
 
-      // ✅ Detalles de dirección estructurados
       addressDetails: {
         street: formData.address,
         district: formData.district,
@@ -205,7 +196,6 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-pink-50 to-rose-50 py-12">
       <div className="container mx-auto px-4">
-        {/* Header */}
         <div className="mb-8">
           <Link
             href="/"
@@ -219,15 +209,11 @@ export default function CheckoutPage() {
           </h1>
         </div>
 
-        {/* Stepper */}
         <CheckoutStepper currentStep={currentStep} />
 
-        {/* Contenido */}
         <div className="grid lg:grid-cols-3 gap-8">
-          {/* Formulario */}
           <div className="lg:col-span-2">
             <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8">
-              {/* STEP 1: Revisar Carrito */}
               {currentStep === 1 && (
                 <div className="space-y-6">
                   <div>
@@ -275,7 +261,6 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              {/* STEP 2: Datos del Cliente */}
               {currentStep === 2 && (
                 <div className="space-y-6">
                   <div>
@@ -287,7 +272,6 @@ export default function CheckoutPage() {
                     </p>
                   </div>
 
-                  {/* Datos Personales */}
                   <div className="space-y-4">
                     <div className="flex items-center gap-2 mb-4">
                       <User className="w-5 h-5 text-pink-500" />
@@ -348,7 +332,6 @@ export default function CheckoutPage() {
                   </div>
 
                   <div className="border-t border-gray-200 dark:border-gray-700 pt-6">
-                    {/* ✅ Formulario de Dirección Mejorado */}
                     <AddressForm
                       formData={{
                         address: formData.address,
@@ -376,7 +359,6 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              {/* STEP 3: Método de Pago */}
               {currentStep === 3 && (
                 <div className="space-y-6">
                   <div>
@@ -393,7 +375,6 @@ export default function CheckoutPage() {
                     onSelect={setPaymentMethod}
                   />
 
-                  {/* Componentes de pago específicos */}
                   {paymentMethod === "yape" && (
                     <YapePayment
                       amount={finalTotal}
@@ -427,7 +408,6 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              {/* Botones de navegación */}
               <div className="flex justify-between mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <Button
                   variant="outline"
@@ -469,7 +449,6 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* Resumen */}
           <div className="lg:col-span-1">
             <OrderSummary />
           </div>

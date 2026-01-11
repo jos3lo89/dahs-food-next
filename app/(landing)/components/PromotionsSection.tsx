@@ -51,7 +51,6 @@ const PromotionsSection = () => {
       className="py-16 bg-linear-to-br from-pink-50 to-rose-50"
     >
       <div className="container mx-auto px-4">
-        {/* Header */}
         <div className="text-center mb-12 animate-fade-in">
           <div className="inline-flex items-center gap-2 bg-red-100 text-red-600 px-4 py-2 rounded-full mb-4">
             <Tag className="w-4 h-4" />
@@ -65,7 +64,6 @@ const PromotionsSection = () => {
           </p>
         </div>
 
-        {/* Grid de Promociones */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {promociones.map((promo) => {
             const daysLeft = differenceInDays(
@@ -79,7 +77,6 @@ const PromotionsSection = () => {
                 key={promo.id}
                 className="bg-white rounded-3xl shadow-lg overflow-hidden card-hover group"
               >
-                {/* Imagen */}
                 <div className="relative h-48 overflow-hidden bg-linear-to-br from-pink-200 to-purple-200">
                   {promo.image ? (
                     <Image
@@ -94,12 +91,10 @@ const PromotionsSection = () => {
                     </div>
                   )}
 
-                  {/* Badge de descuento */}
                   <div className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-full font-bold shadow-lg">
                     -{promo.discount}%
                   </div>
 
-                  {/* Badge "Termina pronto" */}
                   {isEndingSoon && (
                     <div className="absolute top-4 left-4 bg-yellow-500 text-white px-3 py-1 rounded-full text-xs font-bold animate-pulse">
                       ¡Últimos {daysLeft} día(s)!
@@ -107,7 +102,6 @@ const PromotionsSection = () => {
                   )}
                 </div>
 
-                {/* Contenido */}
                 <div className="p-6">
                   <h3 className="text-xl font-bold text-pink-900 mb-2">
                     {promo.name}
@@ -119,7 +113,6 @@ const PromotionsSection = () => {
                     </p>
                   )}
 
-                  {/* Código */}
                   {promo.code && (
                     <div className="flex items-center gap-2 mb-4 bg-pink-50 p-3 rounded-lg">
                       <Tag className="w-4 h-4 text-pink-600" />
@@ -130,7 +123,6 @@ const PromotionsSection = () => {
                     </div>
                   )}
 
-                  {/* Vigencia */}
                   <div className="flex items-center gap-2 text-sm text-gray-500 mb-4">
                     <Calendar className="w-4 h-4" />
                     <span>
@@ -141,7 +133,6 @@ const PromotionsSection = () => {
                     </span>
                   </div>
 
-                  {/* Info adicional */}
                   <div className="flex items-center justify-between text-xs text-gray-500 mb-4">
                     {promo._count && (
                       <>
@@ -155,7 +146,6 @@ const PromotionsSection = () => {
                     )}
                   </div>
 
-                  {/* Botón */}
                   <a href="#desayunos">
                     <Button className="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold rounded-full">
                       Ver Productos

@@ -22,13 +22,13 @@ import {
   ShoppingBag,
   Trash2,
   X,
-  ArrowRight, // ✅ NUEVO
+  ArrowRight,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation"; // ✅ NUEVO
+import { useRouter } from "next/navigation";
 
 const SidebarCart = () => {
-  const router = useRouter(); // ✅ NUEVO
+  const router = useRouter();
   const {
     items,
     getItemsCount,
@@ -66,7 +66,6 @@ const SidebarCart = () => {
     }).format(price);
   };
 
-  // ✅ NUEVO: Función para ir al checkout
   const handleGoToCheckout = () => {
     closeCart();
     router.push("/checkout");
@@ -113,10 +112,8 @@ const SidebarCart = () => {
           </div>
         </SheetHeader>
 
-        {/* CONTENIDO DEL CARRITO */}
         <div className="flex-1 flex flex-col overflow-hidden">
           {items.length === 0 ? (
-            // Carrito vacío
             <div className="flex-1 flex flex-col items-center justify-center text-center p-6">
               <div className="w-24 h-24 bg-pink-100 rounded-full flex items-center justify-center mb-4">
                 <ShoppingBag className="w-12 h-12 text-pink-400" />
@@ -135,7 +132,6 @@ const SidebarCart = () => {
             </div>
           ) : (
             <>
-              {/* LISTA DE PRODUCTOS */}
               <ScrollArea className="flex-1 px-6">
                 <div className="space-y-4 py-4">
                   {items.map((item) => (
@@ -143,7 +139,6 @@ const SidebarCart = () => {
                       key={item.id}
                       className="flex gap-4 bg-pink-50 rounded-lg p-3"
                     >
-                      {/* Imagen */}
                       <div className="relative w-20 h-20 shrink-0 rounded-lg overflow-hidden">
                         <img
                           src={item.image}
@@ -152,7 +147,6 @@ const SidebarCart = () => {
                         />
                       </div>
 
-                      {/* Info del producto */}
                       <div className="flex-1 min-w-0">
                         <h4 className="font-semibold text-gray-800 truncate">
                           {item.name}
@@ -161,7 +155,6 @@ const SidebarCart = () => {
                           {formatPrice(item.price)}
                         </p>
 
-                        {/* Controles de cantidad */}
                         <div className="flex items-center gap-2 mt-2">
                           <Button
                             variant="outline"
@@ -187,7 +180,6 @@ const SidebarCart = () => {
                         </div>
                       </div>
 
-                      {/* Precio total y eliminar */}
                       <div className="flex flex-col items-end justify-between">
                         <Button
                           variant="ghost"
@@ -207,9 +199,7 @@ const SidebarCart = () => {
                 </div>
               </ScrollArea>
 
-              {/* TOTALES Y BOTÓN CHECKOUT */}
               <div className="border-t border-pink-100 px-6 py-4 space-y-4">
-                {/* Totales */}
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Subtotal:</span>
@@ -233,7 +223,6 @@ const SidebarCart = () => {
                   </div>
                 </div>
 
-                {/* ✅ NUEVO: Botón para ir al checkout */}
                 <Button
                   onClick={handleGoToCheckout}
                   className="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-6 rounded-lg"

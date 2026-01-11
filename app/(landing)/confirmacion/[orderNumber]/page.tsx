@@ -1,4 +1,3 @@
-// app/(landing)/confirmacion/[orderNumber]/page.tsx - ACTUALIZAR
 "use client";
 
 import { useEffect } from "react";
@@ -35,7 +34,6 @@ export default function ConfirmacionPage() {
 
   const order = data?.data;
 
-  // Confetti al cargar
   useEffect(() => {
     if (order) {
       confetti({
@@ -109,7 +107,6 @@ export default function ConfirmacionPage() {
     return labels[method] || method;
   };
 
-  // ✅ Parsear addressDetails
   const addressDetails = order?.addressDetails
     ? typeof order.addressDetails === "string"
       ? JSON.parse(order.addressDetails)
@@ -154,7 +151,6 @@ export default function ConfirmacionPage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-pink-50 to-rose-50 py-12">
       <div className="container mx-auto px-4 max-w-4xl">
-        {/* Success Header */}
         <div className="text-center mb-8 animate-fade-in">
           <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
             <CheckCircle className="w-16 h-16 text-green-500" />
@@ -167,7 +163,6 @@ export default function ConfirmacionPage() {
           </p>
         </div>
 
-        {/* Order Number Card */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
@@ -188,7 +183,6 @@ export default function ConfirmacionPage() {
           </div>
         </div>
 
-        {/* ✅ Tiempo Estimado de Entrega */}
         {order.estimatedDeliveryTime && order.status !== "DELIVERED" && (
           <div className="bg-linear-to-r from-pink-500 to-purple-500 rounded-2xl p-6 text-white text-center mb-6">
             <Clock className="w-12 h-12 mx-auto mb-3" />
@@ -204,9 +198,7 @@ export default function ConfirmacionPage() {
           </div>
         )}
 
-        {/* Info Cards Grid */}
         <div className="grid md:grid-cols-2 gap-6 mb-6">
-          {/* Información de Contacto */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
               <Phone className="w-5 h-5 text-pink-500" />
@@ -230,7 +222,6 @@ export default function ConfirmacionPage() {
                   </a>
                 </p>
               </div>
-              {/* ✅ Email */}
               {order.customerEmail && (
                 <div>
                   <p className="text-gray-600">Email:</p>
@@ -247,7 +238,6 @@ export default function ConfirmacionPage() {
             </div>
           </div>
 
-          {/* Dirección de Entrega */}
           <div className="bg-white rounded-2xl shadow-lg p-6">
             <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
               <MapPin className="w-5 h-5 text-pink-500" />
@@ -255,7 +245,6 @@ export default function ConfirmacionPage() {
             </h3>
             <p className="text-gray-900 mb-2">{order.customerAddress}</p>
 
-            {/* ✅ Detalles de dirección */}
             {addressDetails && (
               <div className="mt-3 pt-3 border-t border-gray-200 space-y-1 text-sm">
                 {addressDetails.district && (
@@ -288,7 +277,6 @@ export default function ConfirmacionPage() {
           </div>
         </div>
 
-        {/* Productos */}
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
           <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
             <Package className="w-5 h-5 text-pink-500" />
@@ -325,7 +313,6 @@ export default function ConfirmacionPage() {
             ))}
           </div>
 
-          {/* Totales */}
           <div className="mt-4 pt-4 border-t border-gray-200 space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">Subtotal:</span>
@@ -339,7 +326,6 @@ export default function ConfirmacionPage() {
                 </span>
               </div>
             )}
-            {/* ✅ Costo de envío */}
             {order.deliveryFee !== undefined && (
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600 flex items-center gap-1">
@@ -362,7 +348,6 @@ export default function ConfirmacionPage() {
           </div>
         </div>
 
-        {/* Información de Pago */}
         {order.paymentMethod && (
           <div className="bg-blue-50 rounded-2xl p-6 mb-6 border border-blue-200">
             <div className="flex items-start gap-3">
@@ -372,7 +357,6 @@ export default function ConfirmacionPage() {
                   Método de pago: {getPaymentMethodLabel(order.paymentMethod)}
                 </h3>
 
-                {/* ✅ Comprobante de pago */}
                 {order.receiptImage && (
                   <div className="mt-3">
                     <p className="text-sm text-blue-800 mb-2">
@@ -398,7 +382,6 @@ export default function ConfirmacionPage() {
           </div>
         )}
 
-        {/* Botones de Acción */}
         <div className="grid md:grid-cols-2 gap-4">
           <Link href={`/tracking/${order.orderNumber}`}>
             <Button className="w-full bg-pink-500 hover:bg-pink-600 py-6 text-lg">
@@ -415,7 +398,6 @@ export default function ConfirmacionPage() {
           </Link>
         </div>
 
-        {/* Info adicional */}
         <div className="mt-8 text-center text-sm text-gray-600">
           <p>
             ¿Necesitas ayuda? Contacta por WhatsApp:{" "}

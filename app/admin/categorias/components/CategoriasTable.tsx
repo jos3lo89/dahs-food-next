@@ -69,14 +69,12 @@ export function CategoriasTable({ categorias }: CategoriasTableProps) {
           <TableBody>
             {categorias.map((categoria) => (
               <TableRow key={categoria.id}>
-                {/* Orden */}
                 <TableCell>
                   <div className="flex items-center justify-center w-8 h-8 bg-gray-100 dark:bg-gray-800 rounded-full font-semibold text-sm">
                     {categoria.order}
                   </div>
                 </TableCell>
 
-                {/* Categoría */}
                 <TableCell>
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white">
@@ -88,7 +86,6 @@ export function CategoriasTable({ categorias }: CategoriasTableProps) {
                   </div>
                 </TableCell>
 
-                {/* Productos */}
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <Package className="w-4 h-4 text-gray-400" />
@@ -98,7 +95,6 @@ export function CategoriasTable({ categorias }: CategoriasTableProps) {
                   </div>
                 </TableCell>
 
-                {/* Estado */}
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <Switch
@@ -117,7 +113,6 @@ export function CategoriasTable({ categorias }: CategoriasTableProps) {
                   </div>
                 </TableCell>
 
-                {/* Fecha */}
                 <TableCell>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     {format(new Date(categoria.createdAt), "dd MMM yyyy", {
@@ -126,7 +121,6 @@ export function CategoriasTable({ categorias }: CategoriasTableProps) {
                   </p>
                 </TableCell>
 
-                {/* Acciones */}
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -169,7 +163,6 @@ export function CategoriasTable({ categorias }: CategoriasTableProps) {
         </Table>
       </div>
 
-      {/* Edit Dialog */}
       <EditCategoryDialog
         categoria={editingCategoria}
         open={!!editingCategoria}

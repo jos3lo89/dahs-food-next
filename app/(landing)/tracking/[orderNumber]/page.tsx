@@ -25,7 +25,7 @@ export default function TrackingPage() {
     queryKey: ["order-tracking", orderNumber],
     queryFn: () => ordersApi.trackOrder(orderNumber),
     enabled: !!orderNumber,
-    refetchInterval: 30000, // Refrescar cada 30 segundos
+    refetchInterval: 30000,
   });
 
   const order = data?.data;
@@ -92,7 +92,6 @@ export default function TrackingPage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-pink-50 to-rose-50 py-12">
       <div className="container mx-auto px-4 max-w-5xl">
-        {/* Header */}
         <div className="mb-8">
           <Link
             href="/"
@@ -129,7 +128,6 @@ export default function TrackingPage() {
           </div>
         </div>
 
-        {/* Timeline */}
         <div className="mb-6">
           <TrackingTimeline
             status={order.status}
@@ -138,9 +136,7 @@ export default function TrackingPage() {
           />
         </div>
 
-        {/* Grid de Información */}
         <div className="grid md:grid-cols-2 gap-6 mb-6">
-          {/* Información del Cliente */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
             <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <Phone className="w-5 h-5 text-pink-500" />
@@ -166,7 +162,6 @@ export default function TrackingPage() {
             </div>
           </div>
 
-          {/* Dirección de Entrega */}
           <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
             <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
               <MapPin className="w-5 h-5 text-pink-500" />
@@ -188,14 +183,12 @@ export default function TrackingPage() {
           </div>
         </div>
 
-        {/* Productos y Resumen */}
         <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6 mb-6">
           <h3 className="font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
             <Package className="w-5 h-5 text-pink-500" />
             Productos ({order.items?.length || 0})
           </h3>
 
-          {/* Lista de productos */}
           <div className="space-y-3 mb-6">
             {order.items?.map((item: any) => (
               <div
@@ -231,7 +224,6 @@ export default function TrackingPage() {
             ))}
           </div>
 
-          {/* Resumen de Pago */}
           <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
             <div className="space-y-2 mb-4">
               <div className="flex justify-between text-sm">
@@ -258,7 +250,6 @@ export default function TrackingPage() {
               </div>
             </div>
 
-            {/* Método de pago */}
             {order.paymentMethod && (
               <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-900 rounded-lg p-3">
                 <CreditCard className="w-5 h-5 text-gray-600 dark:text-gray-400" />
@@ -273,7 +264,6 @@ export default function TrackingPage() {
           </div>
         </div>
 
-        {/* Ayuda */}
         <div className="bg-linear-to-r from-pink-500 to-purple-500 rounded-2xl p-6 text-white text-center">
           <h3 className="text-xl font-bold mb-2">¿Necesitas ayuda?</h3>
           <p className="mb-4 opacity-90">

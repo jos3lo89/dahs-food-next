@@ -158,10 +158,8 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Separador */}
         <div className="border-t border-pink-400 my-8"></div>
 
-        {/* Bottom footer */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-pink-700 text-sm text-center md:text-left">
             © {currentYear} Desayunos Dulces. Todos los derechos reservados.

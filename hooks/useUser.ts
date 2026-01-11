@@ -8,7 +8,6 @@ import {
 } from "@/types/users";
 import { toast } from "sonner";
 
-// Hook para obtener usuarios
 export const useUsuarios = (params?: {
   isActive?: boolean;
   search?: string;
@@ -19,7 +18,6 @@ export const useUsuarios = (params?: {
   });
 };
 
-// Hook para obtener un usuario
 export const useUsuario = (id: string) => {
   return useQuery({
     queryKey: ["usuario", id],
@@ -28,7 +26,6 @@ export const useUsuario = (id: string) => {
   });
 };
 
-// Hook para crear usuario
 export const useCreateUsuario = () => {
   const queryClient = useQueryClient();
 
@@ -45,7 +42,6 @@ export const useCreateUsuario = () => {
   });
 };
 
-// Hook para actualizar usuario (con optimistic update)
 export const useUpdateUsuario = () => {
   const queryClient = useQueryClient();
 
@@ -53,15 +49,10 @@ export const useUpdateUsuario = () => {
     mutationFn: ({ id, data }: { id: string; data: UpdateUsuarioDto }) =>
       usuariosApi.updateUsuario(id, data),
 
-    // Optimistic update
     onMutate: async ({ id, data }) => {
-      // Cancelar queries en curso
       await queryClient.cancelQueries({ queryKey: ["usuarios"] });
-
-      // Snapshot del estado anterior
       const previousUsuarios = queryClient.getQueryData(["usuarios"]);
 
-      // Actualizar optimistamente
       queryClient.setQueryData(["usuarios"], (old: any) => {
         if (!old?.data) return old;
         return {
@@ -81,7 +72,6 @@ export const useUpdateUsuario = () => {
     },
 
     onError: (error: any, variables, context) => {
-      // Revertir al estado anterior
       if (context?.previousUsuarios) {
         queryClient.setQueryData(["usuarios"], context.previousUsuarios);
       }
@@ -90,7 +80,6 @@ export const useUpdateUsuario = () => {
   });
 };
 
-// Hook para cambiar contraseña
 export const useChangePassword = () => {
   return useMutation({
     mutationFn: ({ id, password }: { id: string; password: string }) =>
@@ -104,7 +93,6 @@ export const useChangePassword = () => {
   });
 };
 
-// Hook para toggle active (con optimistic update)
 export const useToggleUsuarioActive = () => {
   const queryClient = useQueryClient();
 
@@ -147,7 +135,6 @@ export const useToggleUsuarioActive = () => {
   });
 };
 
-// Hook para eliminar usuario
 export const useDeleteUsuario = () => {
   const queryClient = useQueryClient();
 

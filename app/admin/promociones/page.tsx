@@ -36,7 +36,6 @@ export default function PromocionesPage() {
 
   const promociones = data?.data || [];
 
-  // Stats
   const totalPromociones = promociones.length;
   const promocionesActivas = promociones.filter((p) => {
     const now = new Date();
@@ -51,7 +50,6 @@ export default function PromocionesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -64,9 +62,7 @@ export default function PromocionesPage() {
         <CreatePromocionDialog />
       </div>
 
-      {/* Filters */}
       <div className="flex flex-col md:flex-row gap-4">
-        {/* Search */}
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <Input
@@ -77,7 +73,6 @@ export default function PromocionesPage() {
           />
         </div>
 
-        {/* Type Filter */}
         <Select value={typeFilter} onValueChange={(v: any) => setTypeFilter(v)}>
           <SelectTrigger className="w-full md:w-48">
             <SelectValue />
@@ -91,7 +86,6 @@ export default function PromocionesPage() {
           </SelectContent>
         </Select>
 
-        {/* Status Filter */}
         <Select
           value={statusFilter}
           onValueChange={(v: any) => setStatusFilter(v)}
@@ -107,7 +101,6 @@ export default function PromocionesPage() {
         </Select>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3">
@@ -174,7 +167,6 @@ export default function PromocionesPage() {
         </div>
       </div>
 
-      {/* Table */}
       {isLoading ? (
         <div className="flex justify-center items-center py-12">
           <Loader2 className="w-8 h-8 animate-spin text-pink-500" />

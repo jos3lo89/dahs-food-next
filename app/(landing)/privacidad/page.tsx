@@ -20,7 +20,6 @@ export default function PrivacidadPage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-pink-50 to-rose-50 py-12">
       <div className="container mx-auto px-4 max-w-4xl">
-        {/* Header */}
         <div className="mb-8">
           <Link
             href="/"
@@ -49,9 +48,7 @@ export default function PrivacidadPage() {
           </p>
         </div>
 
-        {/* Contenido */}
         <div className="bg-white rounded-2xl shadow-lg p-8 space-y-8">
-          {/* Introducción */}
           <section>
             <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6">
               <p className="text-blue-900">
@@ -63,7 +60,6 @@ export default function PrivacidadPage() {
             </div>
           </section>
 
-          {/* 1. Información que Recopilamos */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4 flex items-center gap-2">
               <Database className="w-6 h-6 text-pink-500" />
@@ -136,7 +132,6 @@ export default function PrivacidadPage() {
             </ul>
           </section>
 
-          {/* 2. Cómo Usamos su Información */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4 flex items-center gap-2">
               <UserCheck className="w-6 h-6 text-pink-500" />
@@ -195,7 +190,6 @@ export default function PrivacidadPage() {
             </ul>
           </section>
 
-          {/* 3. Compartir Información */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4 flex items-center gap-2">
               <Eye className="w-6 h-6 text-pink-500" />
@@ -252,7 +246,6 @@ export default function PrivacidadPage() {
             </div>
           </section>
 
-          {/* 4. Seguridad de Datos */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4 flex items-center gap-2">
               <Lock className="w-6 h-6 text-pink-500" />
@@ -310,7 +303,6 @@ export default function PrivacidadPage() {
             </div>
           </section>
 
-          {/* 5. Cookies */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4">
               5. Cookies y Tecnologías Similares
@@ -365,7 +357,6 @@ export default function PrivacidadPage() {
             </p>
           </section>
 
-          {/* 6. Sus Derechos */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4">
               6. Sus Derechos sobre sus Datos
@@ -472,7 +463,6 @@ export default function PrivacidadPage() {
             </p>
           </section>
 
-          {/* 7. Retención de Datos */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4">
               7. Retención de Datos
@@ -515,7 +505,6 @@ export default function PrivacidadPage() {
             </div>
           </section>
 
-          {/* 8. Menores de Edad */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4">
               8. Protección de Menores
@@ -529,7 +518,6 @@ export default function PrivacidadPage() {
             </p>
           </section>
 
-          {/* 9. Enlaces Externos */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4">
               9. Enlaces a Sitios Externos
@@ -543,7 +531,6 @@ export default function PrivacidadPage() {
             </p>
           </section>
 
-          {/* 10. Transferencias Internacionales */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4">
               10. Transferencias Internacionales de Datos
@@ -564,7 +551,6 @@ export default function PrivacidadPage() {
             </ul>
           </section>
 
-          {/* 11. Modificaciones */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4">
               11. Cambios a esta Política
@@ -584,7 +570,6 @@ export default function PrivacidadPage() {
             </p>
           </section>
 
-          {/* 12. Contacto */}
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4 flex items-center gap-2">
               <Mail className="w-6 h-6 text-pink-500" />
@@ -653,7 +638,6 @@ export default function PrivacidadPage() {
             </div>
           </section>
 
-          {/* Footer del documento */}
           <div className="pt-6 mt-8 border-t border-gray-200">
             <p className="text-sm text-gray-600 text-center">
               Al utilizar nuestros servicios, usted reconoce que ha leído y
@@ -663,7 +647,6 @@ export default function PrivacidadPage() {
           </div>
         </div>
 
-        {/* Botón volver */}
         <div className="mt-8 text-center">
           <Link href="/">
             <button className="bg-pink-500 hover:bg-pink-600 text-white px-8 py-3 rounded-full font-semibold transition">

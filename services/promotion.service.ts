@@ -8,7 +8,6 @@ import {
 } from "@/types/promotion";
 
 export const promocionesApi = {
-  // GET: Obtener todas las promociones
   getPromociones: async (params?: {
     active?: boolean;
     featured?: boolean;
@@ -36,7 +35,6 @@ export const promocionesApi = {
     return data;
   },
 
-  // GET: Obtener una promoción por ID
   getPromocion: async (id: string) => {
     const { data } = await axiosInstance.get<PromocionResponse>(
       `/promociones/${id}`
@@ -44,7 +42,6 @@ export const promocionesApi = {
     return data;
   },
 
-  // POST: Crear promoción
   createPromocion: async (promocion: CreatePromocionDto) => {
     const { data } = await axiosInstance.post<PromocionResponse>(
       "/promociones",
@@ -53,7 +50,6 @@ export const promocionesApi = {
     return data;
   },
 
-  // PATCH: Actualizar promoción
   updatePromocion: async (id: string, promocion: UpdatePromocionDto) => {
     const { data } = await axiosInstance.patch<PromocionResponse>(
       `/promociones/${id}`,
@@ -62,7 +58,6 @@ export const promocionesApi = {
     return data;
   },
 
-  // DELETE: Desactivar promoción (soft delete)
   deletePromocion: async (id: string) => {
     const { data } = await axiosInstance.delete<PromocionResponse>(
       `/promociones/${id}`
@@ -70,7 +65,6 @@ export const promocionesApi = {
     return data;
   },
 
-  // PATCH: Activar promoción
   activatePromocion: async (id: string) => {
     const { data } = await axiosInstance.patch<PromocionResponse>(
       `/promociones/${id}`,

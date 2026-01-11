@@ -9,7 +9,6 @@ import {
 } from "@/types/orders";
 
 export const ordersApi = {
-  // GET: Obtener todos los pedidos
   getOrders: async (params?: {
     status?: OrderStatus;
     paymentMethod?: PaymentMethod;
@@ -45,13 +44,11 @@ export const ordersApi = {
     return data;
   },
 
-  // GET: Obtener un pedido por ID
   getOrder: async (id: string) => {
     const { data } = await axiosInstance.get<OrderResponse>(`/orders/${id}`);
     return data;
   },
 
-  // PATCH: Actualizar pedido
   updateOrder: async (id: string, order: UpdateOrderDto) => {
     const { data } = await axiosInstance.patch<OrderResponse>(
       `/orders/${id}`,
@@ -60,7 +57,6 @@ export const ordersApi = {
     return data;
   },
 
-  // PATCH: Cambiar estado del pedido
   updateOrderStatus: async (id: string, status: OrderStatus) => {
     const { data } = await axiosInstance.patch<OrderResponse>(`/orders/${id}`, {
       status,
@@ -68,7 +64,6 @@ export const ordersApi = {
     return data;
   },
 
-  // POST: Crear pedido desde landing
   createOrder: async (order: CreateOrderDto) => {
     const { data } = await axiosInstance.post<CreateOrderResponse>(
       "/orders/create",
@@ -77,7 +72,6 @@ export const ordersApi = {
     return data;
   },
 
-  // GET: Rastrear pedido por número
   trackOrder: async (orderNumber: string) => {
     const { data } = await axiosInstance.get(`/orders/track/${orderNumber}`);
     return data;

@@ -11,7 +11,6 @@ const createUserSchema = z.object({
   role: z.enum(["ADMIN"]).optional().default("ADMIN"),
 });
 
-// GET /api/usuarios
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();
@@ -66,7 +65,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/usuarios
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();

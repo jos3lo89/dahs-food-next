@@ -1,4 +1,3 @@
-// app/(landing)/tracking/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -23,7 +22,7 @@ export default function TrackingSearchPage() {
   return (
     <div className="min-h-screen bg-linear-to-br from-pink-50 to-rose-50 flex items-center justify-center px-4">
       <div className="max-w-md w-full">
-        {/* Logo/Icon */}
+        Logo/Icon
         <div className="text-center mb-8">
           <div className="w-20 h-20 bg-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
             <Package className="w-10 h-10 text-white" />
@@ -35,8 +34,7 @@ export default function TrackingSearchPage() {
             Ingresa tu número de pedido para ver el estado
           </p>
         </div>
-
-        {/* Card de búsqueda */}
+        Card de búsqueda
         <div className="bg-white rounded-2xl shadow-xl p-8 mb-6">
           <form onSubmit={handleSearch} className="space-y-4">
             <div>
@@ -70,8 +68,7 @@ export default function TrackingSearchPage() {
             </Button>
           </form>
         </div>
-
-        {/* Info cards */}
+        Info cards
         <div className="space-y-4 mb-6">
           <div className="bg-white rounded-xl p-4 shadow-md">
             <div className="flex items-start gap-3">
@@ -105,8 +102,7 @@ export default function TrackingSearchPage() {
             </div>
           </div>
         </div>
-
-        {/* Links adicionales */}
+        Links adicionales
         <div className="text-center space-y-3">
           <Link
             href="/"

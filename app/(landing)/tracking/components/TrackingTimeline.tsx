@@ -1,4 +1,3 @@
-// app/(landing)/tracking/components/TrackingTimeline.tsx
 "use client";
 
 import { Check, Clock, ChefHat, Truck, Package, XCircle } from "lucide-react";
@@ -85,7 +84,6 @@ export function TrackingTimeline({
 
           return (
             <div key={step.key} className="relative pb-8 last:pb-0">
-              {/* Línea vertical */}
               {!isLast && (
                 <div
                   className={`absolute left-8 top-16 w-0.5 h-full -ml-px ${
@@ -96,9 +94,7 @@ export function TrackingTimeline({
                 />
               )}
 
-              {/* Step */}
               <div className="relative flex items-start gap-4">
-                {/* Círculo con ícono */}
                 <div
                   className={`relative z-10 shrink-0 w-16 h-16 rounded-full flex items-center justify-center transition-all ${
                     isCurrent
@@ -120,7 +116,6 @@ export function TrackingTimeline({
                   )}
                 </div>
 
-                {/* Contenido */}
                 <div className="flex-1 min-w-0 pt-1">
                   <h4
                     className={`text-lg font-bold mb-1 ${
@@ -159,7 +154,6 @@ export function TrackingTimeline({
         })}
       </div>
 
-      {/* Tiempos */}
       <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 grid grid-cols-2 gap-4 text-sm">
         <div>
           <p className="text-gray-600 dark:text-gray-400">Pedido realizado:</p>

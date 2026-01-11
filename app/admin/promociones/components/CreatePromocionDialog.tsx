@@ -72,7 +72,6 @@ export function CreatePromocionDialog() {
   const promotionType = watch("type");
   const featured = watch("featured");
 
-  // Cleanup: Eliminar imágenes si se cancela o falla
   const cleanupImages = async () => {
     const allImages = [
       promoImage,
@@ -90,7 +89,6 @@ export function CreatePromocionDialog() {
   };
 
   const onSubmit = (data: CreatePromocionForm) => {
-    // Validar según tipo
     if (data.type === "DISCOUNT" && selectedProductIds.length === 0) {
       alert("Debes seleccionar al menos un producto");
       return;
@@ -147,7 +145,6 @@ export function CreatePromocionDialog() {
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Tipo de Promoción */}
           <div>
             <Label htmlFor="type">Tipo de Promoción *</Label>
             <Select
@@ -169,7 +166,6 @@ export function CreatePromocionDialog() {
             </Select>
           </div>
 
-          {/* Nombre */}
           <div>
             <Label htmlFor="name">Nombre de la Promoción *</Label>
             <Input
@@ -183,7 +179,6 @@ export function CreatePromocionDialog() {
             )}
           </div>
 
-          {/* Descripción */}
           <div>
             <Label htmlFor="description">Descripción</Label>
             <Textarea
@@ -195,7 +190,6 @@ export function CreatePromocionDialog() {
             />
           </div>
 
-          {/* Descuento */}
           <div>
             <Label htmlFor="discount">Descuento (%) *</Label>
             <Input
@@ -218,7 +212,6 @@ export function CreatePromocionDialog() {
             </p>
           </div>
 
-          {/* Código de Promoción */}
           <div>
             <Label htmlFor="code">Código Promocional (opcional)</Label>
             <Input
@@ -232,7 +225,6 @@ export function CreatePromocionDialog() {
             </p>
           </div>
 
-          {/* Fechas */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="startDate">Fecha de Inicio *</Label>
@@ -273,7 +265,6 @@ export function CreatePromocionDialog() {
             </div>
           </div>
 
-          {/* Imagen del Banner */}
           <ImageUpload
             value={promoImage}
             onChange={setPromoImage}
@@ -281,7 +272,6 @@ export function CreatePromocionDialog() {
             disabled={isPending}
           />
 
-          {/* Selector de Productos (solo para DISCOUNT) */}
           {promotionType === "DISCOUNT" && (
             <ProductSelector
               selectedProductIds={selectedProductIds}
@@ -290,7 +280,6 @@ export function CreatePromocionDialog() {
             />
           )}
 
-          {/* Pack Builder (solo para PACK) */}
           {promotionType === "PACK" && (
             <PackBuilder
               packs={packs}
@@ -299,7 +288,6 @@ export function CreatePromocionDialog() {
             />
           )}
 
-          {/* Destacado */}
           <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
             <div>
               <Label htmlFor="featured" className="cursor-pointer">
@@ -317,7 +305,6 @@ export function CreatePromocionDialog() {
             />
           </div>
 
-          {/* Buttons */}
           <div className="flex justify-end gap-3 pt-4">
             <Button
               type="button"

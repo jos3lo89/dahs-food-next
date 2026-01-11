@@ -8,14 +8,12 @@ export type OrderStatus =
 
 export type PaymentMethod = "culqi" | "yape" | "plin" | "efectivo";
 
-// ✅ NUEVO - Detalles de dirección estructurados
 export interface AddressDetails {
-  street: string; // Calle y número
-  district?: string; // Distrito
-  city?: string; // Ciudad
-  reference?: string; // Referencia
+  street: string;
+  district?: string;
+  city?: string;
+  reference?: string;
   coordinates?: {
-    // Coordenadas GPS (opcional)
     lat: number;
     lng: number;
   };
@@ -39,11 +37,11 @@ export interface Order {
   receiptImage: string | null;
   notes: string | null;
   promotionCode: string | null;
-  estimatedDeliveryTime: string | null; // ✅ NUEVO
-  confirmedAt: string | null; // ✅ NUEVO
-  preparingAt: string | null; // ✅ NUEVO
-  deliveredAt: string | null; // ✅ NUEVO
-  cancelledAt: string | null; // ✅ NUEVO
+  estimatedDeliveryTime: string | null;
+  confirmedAt: string | null;
+  preparingAt: string | null;
+  deliveredAt: string | null;
+  cancelledAt: string | null;
   createdAt: string;
   updatedAt: string;
   items?: OrderItem[];
@@ -71,11 +69,11 @@ export interface UpdateOrderDto {
   paymentMethod?: PaymentMethod;
   paymentId?: string;
   notes?: string;
-  estimatedDeliveryTime?: string; // ✅ NUEVO
-  confirmedAt?: string; // ✅ NUEVO
-  preparingAt?: string; // ✅ NUEVO
-  deliveredAt?: string; // ✅ NUEVO
-  cancelledAt?: string; // ✅ NUEVO
+  estimatedDeliveryTime?: string;
+  confirmedAt?: string;
+  preparingAt?: string;
+  deliveredAt?: string;
+  cancelledAt?: string;
 }
 
 export interface OrderStats {

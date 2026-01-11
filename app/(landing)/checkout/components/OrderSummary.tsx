@@ -1,4 +1,3 @@
-// app/(landing)/checkout/components/OrderSummary.tsx - ACTUALIZAR
 "use client";
 
 import { useCartStore } from "@/store/cartStore";
@@ -13,7 +12,6 @@ export function OrderSummary() {
   const discount = getDiscount();
   const total = getTotal();
 
-  // ✅ Calcular costo de envío
   const deliveryFee = total >= 50 ? 0 : 5;
   const finalTotal = total + deliveryFee;
 
@@ -31,7 +29,6 @@ export function OrderSummary() {
         Resumen del Pedido
       </h3>
 
-      {/* Lista de productos */}
       <div className="space-y-3 mb-4 max-h-64 overflow-y-auto">
         {items.map((item) => (
           <div
@@ -64,7 +61,6 @@ export function OrderSummary() {
         ))}
       </div>
 
-      {/* Totales */}
       <div className="space-y-2 mb-4 pt-4 border-t border-gray-200 dark:border-gray-700">
         <div className="flex justify-between text-sm">
           <span className="text-gray-600 dark:text-gray-400">Subtotal:</span>
@@ -85,7 +81,6 @@ export function OrderSummary() {
           </div>
         )}
 
-        {/* ✅ Costo de envío */}
         <div className="flex justify-between text-sm">
           <span className="text-gray-600 dark:text-gray-400 flex items-center gap-1">
             <Truck className="w-3 h-3" />
@@ -102,7 +97,6 @@ export function OrderSummary() {
           </span>
         </div>
 
-        {/* ✅ Mensaje de envío gratis */}
         {total < 50 && total > 0 && (
           <div className="bg-orange-50 dark:bg-orange-900/20 rounded-lg p-3 mt-2">
             <p className="text-xs text-orange-700 dark:text-orange-300 flex items-center gap-1">
@@ -123,7 +117,6 @@ export function OrderSummary() {
         )}
       </div>
 
-      {/* Total final */}
       <div className="pt-4 border-t-2 border-gray-300 dark:border-gray-600">
         <div className="flex justify-between items-center">
           <span className="text-lg font-bold text-gray-900 dark:text-white">
@@ -135,7 +128,6 @@ export function OrderSummary() {
         </div>
       </div>
 
-      {/* Info adicional */}
       <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
         <div className="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400">
           <Clock className="w-4 h-4 shrink-0 mt-0.5 text-pink-500" />

@@ -1,5 +1,3 @@
-// store/cartStore.ts - ACTUALIZAR
-
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import {
@@ -11,7 +9,6 @@ import {
 import { Producto } from "@/types/products";
 import { PaymentMethod } from "@/types/checkout";
 
-// ✅ AGREGAR PaymentMethod al estado
 interface ExtendedCartState extends CartState {
   paymentMethod: PaymentMethod | null;
   receiptImage: string | null;
@@ -23,19 +20,13 @@ interface ExtendedCartState extends CartState {
 export const useCartStore = create<ExtendedCartState>()(
   persist(
     (set, get) => ({
-      // ============================================
-      // ESTADO INICIAL
-      // ============================================
       items: [],
       customerInfo: null,
       promotion: null,
       isOpen: false,
-      paymentMethod: null, // ✅ NUEVO
-      receiptImage: null, // ✅ NUEVO
+      paymentMethod: null,
+      receiptImage: null,
 
-      // ============================================
-      // ACCIONES DEL CARRITO
-      // ============================================
       addItem: (product: Producto) => {
         const { items } = get();
         const existingItem = items.find(
@@ -114,9 +105,6 @@ export const useCartStore = create<ExtendedCartState>()(
         });
       },
 
-      // ============================================
-      // INFORMACIÓN DEL CLIENTE
-      // ============================================
       setCustomerInfo: (info: CustomerInfo) => {
         set({ customerInfo: info });
       },
@@ -125,9 +113,6 @@ export const useCartStore = create<ExtendedCartState>()(
         set({ customerInfo: null });
       },
 
-      // ============================================
-      // PROMOCIONES
-      // ============================================
       applyPromotion: (promotion: AppliedPromotion) => {
         set({ promotion });
       },
@@ -136,9 +121,6 @@ export const useCartStore = create<ExtendedCartState>()(
         set({ promotion: null });
       },
 
-      // ============================================
-      // MÉTODOS DE PAGO - ✅ NUEVO
-      // ============================================
       setPaymentMethod: (method: PaymentMethod | null) => {
         set({ paymentMethod: method });
       },
@@ -154,9 +136,6 @@ export const useCartStore = create<ExtendedCartState>()(
         });
       },
 
-      // ============================================
-      // UI DEL CARRITO
-      // ============================================
       openCart: () => {
         set({ isOpen: true });
       },
@@ -169,9 +148,6 @@ export const useCartStore = create<ExtendedCartState>()(
         set((state) => ({ isOpen: !state.isOpen }));
       },
 
-      // ============================================
-      // CÁLCULOS
-      // ============================================
       getSubtotal: () => {
         const { items } = get();
         return items.reduce((total, item) => {
@@ -202,9 +178,6 @@ export const useCartStore = create<ExtendedCartState>()(
         return item ? item.quantity : 0;
       },
 
-      // ============================================
-      // VALIDACIONES
-      // ============================================
       hasItems: () => {
         return get().items.length > 0;
       },
@@ -227,8 +200,8 @@ export const useCartStore = create<ExtendedCartState>()(
         items: state.items,
         customerInfo: state.customerInfo,
         promotion: state.promotion,
-        paymentMethod: state.paymentMethod, // ✅ PERSISTIR
-        receiptImage: state.receiptImage, // ✅ PERSISTIR
+        paymentMethod: state.paymentMethod,
+        receiptImage: state.receiptImage,
       }),
     }
   )

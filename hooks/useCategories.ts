@@ -8,7 +8,6 @@ import {
 } from "@/types/categories";
 import { toast } from "sonner";
 
-// Hook para obtener categorías
 export const useCategorias = (params?: {
   active?: boolean;
   search?: string;
@@ -19,7 +18,6 @@ export const useCategorias = (params?: {
   });
 };
 
-// Hook para obtener una categoría
 export const useCategoria = (id: string) => {
   return useQuery({
     queryKey: ["categoria", id],
@@ -28,7 +26,6 @@ export const useCategoria = (id: string) => {
   });
 };
 
-// Hook para crear categoría
 export const useCreateCategoria = () => {
   const queryClient = useQueryClient();
 
@@ -45,7 +42,6 @@ export const useCreateCategoria = () => {
   });
 };
 
-// Hook para actualizar categoría (con optimistic update)
 export const useUpdateCategoria = () => {
   const queryClient = useQueryClient();
 
@@ -86,7 +82,6 @@ export const useUpdateCategoria = () => {
   });
 };
 
-// Hook para toggle active (con optimistic update)
 export const useToggleCategoriaActive = () => {
   const queryClient = useQueryClient();
 
@@ -129,7 +124,6 @@ export const useToggleCategoriaActive = () => {
   });
 };
 
-// Hook para reordenar categorías
 export const useReorderCategorias = () => {
   const queryClient = useQueryClient();
 
@@ -176,7 +170,6 @@ export const useReorderCategorias = () => {
   });
 };
 
-// Hook para eliminar categoría
 export const useDeleteCategoria = () => {
   const queryClient = useQueryClient();
 

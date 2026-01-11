@@ -1,4 +1,3 @@
-// app/(landing)/tracking/components/TrackingTimeline.tsx - ACTUALIZAR
 "use client";
 
 import { Check, Clock, ChefHat, Truck, Package, XCircle } from "lucide-react";
@@ -34,7 +33,7 @@ const statusSteps = [
     icon: ChefHat,
   },
   {
-    key: "OUT_FOR_DELIVERY", // ✅ NUEVO
+    key: "OUT_FOR_DELIVERY",
     label: "En Camino",
     description: "Delivery en camino",
     icon: Truck,
@@ -102,7 +101,6 @@ export function TrackingTimeline({
           Estado del Pedido
         </h3>
 
-        {/* ✅ Tiempo estimado de entrega */}
         {estimatedDeliveryTime && status !== "DELIVERED" && (
           <div className="bg-pink-50 dark:bg-pink-900/20 rounded-lg px-4 py-2">
             <p className="text-xs text-gray-600 dark:text-gray-400">
@@ -125,7 +123,6 @@ export function TrackingTimeline({
           const isCurrent = index === currentStepIndex;
           const isLast = index === statusSteps.length - 1;
 
-          // ✅ Obtener timestamp específico
           let timestamp: string | null = null;
           if (isCompleted) {
             switch (step.key) {
@@ -146,7 +143,6 @@ export function TrackingTimeline({
 
           return (
             <div key={step.key} className="relative pb-8 last:pb-0">
-              {/* Línea vertical */}
               {!isLast && (
                 <div
                   className={`absolute left-8 top-16 w-0.5 h-full -ml-px ${
@@ -157,9 +153,7 @@ export function TrackingTimeline({
                 />
               )}
 
-              {/* Step */}
               <div className="relative flex items-start gap-4">
-                {/* Círculo con ícono */}
                 <div
                   className={`relative z-10 shrink-0 w-16 h-16 rounded-full flex items-center justify-center transition-all ${
                     isCurrent
@@ -181,7 +175,6 @@ export function TrackingTimeline({
                   )}
                 </div>
 
-                {/* Contenido */}
                 <div className="flex-1 min-w-0 pt-1">
                   <h4
                     className={`text-lg font-bold mb-1 ${
@@ -204,7 +197,6 @@ export function TrackingTimeline({
                     {step.description}
                   </p>
 
-                  {/* ✅ Timestamp */}
                   {timestamp && (
                     <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                       {formatDateTime(timestamp)}
@@ -227,7 +219,6 @@ export function TrackingTimeline({
         })}
       </div>
 
-      {/* Tiempos */}
       <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700 grid grid-cols-2 gap-4 text-sm">
         <div>
           <p className="text-gray-600 dark:text-gray-400">Pedido realizado:</p>

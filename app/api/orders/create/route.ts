@@ -40,10 +40,9 @@ const createOrderSchema = z.object({
   promotionCode: z.string().optional(),
   notes: z.string().optional(),
   receiptImage: z.string().optional(),
-  estimatedDeliveryTime: z.string().optional(), // ✅ NUEVO
+  estimatedDeliveryTime: z.string().optional(),
 });
 
-// Generar número de orden único
 function generateOrderNumber(): string {
   const date = new Date();
   const year = date.getFullYear();
@@ -55,13 +54,11 @@ function generateOrderNumber(): string {
   return `ORD-${year}${month}${day}-${random}`;
 }
 
-// POST /api/orders/create
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
     const validatedData = createOrderSchema.parse(body);
 
-    // Verificar que los productos existen y están activos
     const productIds = validatedData.items.map((item) => item.productId);
     const products = await prisma.product.findMany({
       where: {
@@ -77,7 +74,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verificar stock
     for (const item of validatedData.items) {
       const product = products.find((p) => p.id === item.productId);
       if (!product) {
@@ -97,7 +93,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Generar número de orden único
     let orderNumber = generateOrderNumber();
     let exists = await prisma.order.findUnique({
       where: { orderNumber },
@@ -110,47 +105,42 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // ✅ Calcular tiempo estimado de entrega (30-45 minutos)
     const estimatedDeliveryTime = validatedData.estimatedDeliveryTime
       ? new Date(validatedData.estimatedDeliveryTime)
-      : addMinutes(new Date(), 40); // Por defecto 40 minutos
+      : addMinutes(new Date(), 40);
 
-    // ✅ Determinar estado inicial según método de pago
     let initialStatus: "PENDING" | "CONFIRMED" = "PENDING";
     let confirmedAt: Date | undefined = undefined;
 
     if (validatedData.paymentMethod === "efectivo") {
-      initialStatus = "PENDING"; // Confirmará cuando entregue
+      initialStatus = "PENDING";
     } else if (validatedData.receiptImage) {
-      initialStatus = "PENDING"; // Admin debe confirmar comprobante
+      initialStatus = "PENDING";
     }
 
-    // Crear pedido con items en una transacción
     const order = await prisma.$transaction(async (tx) => {
-      // Crear orden
       const newOrder = await tx.order.create({
         data: {
           orderNumber,
           customerName: validatedData.customerName,
           customerPhone: validatedData.customerPhone,
-          customerEmail: validatedData.customerEmail, // ✅ NUEVO
+          customerEmail: validatedData.customerEmail,
           customerAddress: validatedData.customerAddress,
-          addressDetails: validatedData.addressDetails || undefined, // ✅ NUEVO
+          addressDetails: validatedData.addressDetails || undefined,
           subtotal: new Decimal(validatedData.subtotal),
           discount: new Decimal(validatedData.discount),
-          deliveryFee: new Decimal(validatedData.deliveryFee), // ✅ NUEVO
+          deliveryFee: new Decimal(validatedData.deliveryFee),
           total: new Decimal(validatedData.total),
           status: initialStatus,
           paymentMethod: validatedData.paymentMethod,
           promotionCode: validatedData.promotionCode,
           notes: validatedData.notes,
-          receiptImage: validatedData.receiptImage, // ✅ NUEVO
-          estimatedDeliveryTime, // ✅ NUEVO
-          confirmedAt, // ✅ NUEVO
+          receiptImage: validatedData.receiptImage,
+          estimatedDeliveryTime,
+          confirmedAt,
         },
       });
 
-      // Crear items del pedido
       await tx.orderItem.createMany({
         data: validatedData.items.map((item) => ({
           orderId: newOrder.id,
@@ -161,7 +151,6 @@ export async function POST(request: NextRequest) {
         })),
       });
 
-      // Actualizar stock de productos
       for (const item of validatedData.items) {
         await tx.product.update({
           where: { id: item.productId },
@@ -176,7 +165,6 @@ export async function POST(request: NextRequest) {
       return newOrder;
     });
 
-    // Obtener pedido completo con items
     const orderWithItems = await prisma.order.findUnique({
       where: { id: order.id },
       include: {
@@ -207,7 +195,7 @@ export async function POST(request: NextRequest) {
             : Number(order.total),
         status: order.status,
         paymentMethod: order.paymentMethod,
-        estimatedDeliveryTime: order.estimatedDeliveryTime?.toISOString(), // ✅ NUEVO
+        estimatedDeliveryTime: order.estimatedDeliveryTime?.toISOString(),
         createdAt: order.createdAt.toISOString(),
       },
       message: "Pedido creado exitosamente",

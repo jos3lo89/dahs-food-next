@@ -1,4 +1,3 @@
-// app/api/orders/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
@@ -12,8 +11,8 @@ const updateOrderSchema = z.object({
   paymentMethod: z.enum(["culqi", "yape", "plin", "efectivo"]).optional(),
   paymentId: z.string().optional(),
   notes: z.string().optional(),
-  receiptImage: z.string().optional(), // ✅ NUEVO
-  estimatedDeliveryTime: z.string().optional(), // ✅ NUEVO
+  receiptImage: z.string().optional(),
+  estimatedDeliveryTime: z.string().optional(),
 });
 
 function serializeOrder(order: any) {
@@ -49,7 +48,6 @@ function serializeOrder(order: any) {
   };
 }
 
-// GET /api/orders/[id]
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -105,7 +103,6 @@ export async function GET(
   }
 }
 
-// PATCH /api/orders/[id]
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -123,7 +120,6 @@ export async function PATCH(
     const body = await request.json();
     const validatedData = updateOrderSchema.parse(body);
 
-    // ✅ NUEVO: Actualizar timestamps automáticamente según el estado
     const updateData: any = { ...validatedData };
 
     if (validatedData.status) {
@@ -153,7 +149,6 @@ export async function PATCH(
       }
     }
 
-    // ✅ Convertir estimatedDeliveryTime a Date si existe
     if (updateData.estimatedDeliveryTime) {
       updateData.estimatedDeliveryTime = new Date(
         updateData.estimatedDeliveryTime

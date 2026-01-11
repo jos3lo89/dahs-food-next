@@ -86,7 +86,6 @@ export function OrdersTable({ orders }: OrdersTableProps) {
           <TableBody>
             {orders.map((order) => (
               <TableRow key={order.id}>
-                {/* Pedido */}
                 <TableCell>
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white">
@@ -100,7 +99,6 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                   </div>
                 </TableCell>
 
-                {/* Cliente */}
                 <TableCell>
                   <div>
                     <p className="font-medium text-gray-900 dark:text-white">
@@ -112,7 +110,6 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                   </div>
                 </TableCell>
 
-                {/* Productos */}
                 <TableCell>
                   <div className="flex items-center gap-1">
                     <Package className="w-4 h-4 text-gray-400" />
@@ -122,7 +119,6 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                   </div>
                 </TableCell>
 
-                {/* Total */}
                 <TableCell>
                   <div>
                     <p className="font-semibold text-gray-900 dark:text-white">
@@ -136,7 +132,6 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                   </div>
                 </TableCell>
 
-                {/* Estado */}
                 <TableCell>
                   <div className="flex flex-col gap-2">
                     <OrderStatusBadge status={order.status} showIcon />
@@ -175,7 +170,6 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                   </div>
                 </TableCell>
 
-                {/* Fecha */}
                 <TableCell>
                   <div className="text-sm">
                     <p className="text-gray-900 dark:text-white">
@@ -191,7 +185,6 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                   </div>
                 </TableCell>
 
-                {/* Acciones */}
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -264,11 +257,10 @@ export function OrdersTable({ orders }: OrdersTableProps) {
         </Table>
       </div>
 
-      {/* Dialog de Detalles */}
       <OrderDetailDialog
         order={selectedOrder}
-        open={!!selectedOrder}
-        onOpenChange={(open) => !open && setSelectedOrder(null)}
+        isOpen={!!selectedOrder}
+        onClose={() => setSelectedOrder(null)}
       />
     </>
   );

@@ -89,7 +89,6 @@ export function UsuariosTable({ usuarios }: UsuariosTableProps) {
           <TableBody>
             {usuarios.map((usuario) => (
               <TableRow key={usuario.id}>
-                {/* Usuario */}
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-linear-to-br from-pink-500 to-pink-600 rounded-full flex items-center justify-center text-white font-semibold">
@@ -103,17 +102,14 @@ export function UsuariosTable({ usuarios }: UsuariosTableProps) {
                   </div>
                 </TableCell>
 
-                {/* Email */}
                 <TableCell>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     {usuario.email}
                   </p>
                 </TableCell>
 
-                {/* Rol */}
                 <TableCell>{getRoleBadge(usuario.role)}</TableCell>
 
-                {/* Estado */}
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <Switch
@@ -132,7 +128,6 @@ export function UsuariosTable({ usuarios }: UsuariosTableProps) {
                   </div>
                 </TableCell>
 
-                {/* Fecha */}
                 <TableCell>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     {format(new Date(usuario.createdAt), "dd MMM yyyy", {
@@ -141,7 +136,6 @@ export function UsuariosTable({ usuarios }: UsuariosTableProps) {
                   </p>
                 </TableCell>
 
-                {/* Acciones */}
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -190,7 +184,6 @@ export function UsuariosTable({ usuarios }: UsuariosTableProps) {
         </Table>
       </div>
 
-      {/* Dialogs */}
       <EditUserDialog
         usuario={editingUsuario}
         open={!!editingUsuario}

@@ -16,7 +16,6 @@ export const productsApi = {
     return data;
   },
 
-  // GET: Obtener todos los productos
   getProductos: async (params?: {
     category?: string;
     active?: boolean;
@@ -44,7 +43,6 @@ export const productsApi = {
     return data;
   },
 
-  // GET: Obtener un producto por ID
   getProducto: async (id: string) => {
     const { data } = await axiosInstance.get<ProductoResponse>(
       `productos/${id}`
@@ -52,7 +50,6 @@ export const productsApi = {
     return data;
   },
 
-  // POST: Crear producto
   createProducto: async (producto: CreateProductoDto) => {
     const { data } = await axiosInstance.post<ProductoResponse>(
       "productos",
@@ -61,7 +58,6 @@ export const productsApi = {
     return data;
   },
 
-  // PATCH: Actualizar producto
   updateProducto: async (id: string, producto: UpdateProductoDto) => {
     const { data } = await axiosInstance.patch<ProductoResponse>(
       `productos/${id}`,
@@ -70,7 +66,6 @@ export const productsApi = {
     return data;
   },
 
-  // DELETE: Desactivar producto (soft delete)
   deleteProducto: async (id: string) => {
     const { data } = await axiosInstance.delete<ProductoResponse>(
       `productos/${id}`
@@ -78,7 +73,6 @@ export const productsApi = {
     return data;
   },
 
-  // PATCH: Activar producto
   activateProducto: async (id: string) => {
     const { data } = await axiosInstance.patch<ProductoResponse>(
       `productos/${id}`,
@@ -87,7 +81,6 @@ export const productsApi = {
     return data;
   },
 
-  // GET: Obtener categorías
   getCategorias: async (active?: boolean) => {
     const queryParams = new URLSearchParams();
     if (active !== undefined) {

@@ -1,4 +1,3 @@
-// app/api/orders/track/[orderNumber]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { Decimal } from "@/app/generated/prisma/internal/prismaNamespace";
@@ -32,7 +31,6 @@ function serializeOrder(order: any) {
   };
 }
 
-// GET /api/orders/track/[orderNumber]
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ orderNumber: string }> }

@@ -33,7 +33,6 @@ function serializeOrder(order: any) {
   };
 }
 
-// GET /api/orders
 export async function GET(request: NextRequest) {
   try {
     const session = await auth();

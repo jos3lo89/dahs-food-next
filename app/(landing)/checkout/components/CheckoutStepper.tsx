@@ -1,4 +1,3 @@
-// app/(landing)/checkout/components/CheckoutStepper.tsx
 "use client";
 
 import { Check } from "lucide-react";
@@ -20,7 +19,6 @@ export function CheckoutStepper({ currentStep }: CheckoutStepperProps) {
       <div className="flex items-center justify-between max-w-3xl mx-auto">
         {steps.map((step, index) => (
           <div key={step.number} className="flex items-center flex-1">
-            {/* Step Circle */}
             <div className="flex flex-col items-center">
               <div
                 className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center font-bold transition-all ${
@@ -46,7 +44,6 @@ export function CheckoutStepper({ currentStep }: CheckoutStepperProps) {
               </span>
             </div>
 
-            {/* Line */}
             {index < steps.length - 1 && (
               <div
                 className={`flex-1 h-1 mx-2 md:mx-4 transition-all ${

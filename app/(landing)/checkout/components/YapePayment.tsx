@@ -1,4 +1,3 @@
-// app/(landing)/checkout/components/YapePayment.tsx
 "use client";
 
 import { useState } from "react";
@@ -15,11 +14,10 @@ interface YapePaymentProps {
   onReceiptUpload: (imageUrl: string) => void;
 }
 
-// 🔥 IMPORTANTE: Actualiza estos datos con tu información real de Yape
 const YAPE_CONFIG = {
-  qrImage: "/images/payment/yape-qr.png", // Coloca tu QR aquí
-  phoneNumber: "999 999 999", // Tu número de Yape
-  recipientName: "Desayunos Dulces SAC", // Tu nombre o razón social
+  qrImage: "/images/payment/yape-qr.png",
+  phoneNumber: "999 999 999",
+  recipientName: "Desayunos Dulces SAC",
 };
 
 export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
@@ -37,13 +35,11 @@ export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validar tipo de archivo
     if (!file.type.startsWith("image/")) {
       toast.error("Solo se permiten imágenes");
       return;
     }
 
-    // Validar tamaño (máximo 5MB)
     if (file.size > 5 * 1024 * 1024) {
       toast.error("La imagen no debe superar los 5MB");
       return;
@@ -54,7 +50,6 @@ export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
     try {
       const response = await uploadApi.uploadImage(file);
 
-      // ✅ Validar que la respuesta tenga la estructura correcta
       if (!response.success || !response.data?.url) {
         throw new Error(response.error || "Error al subir imagen");
       }
@@ -86,7 +81,6 @@ export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-4 border border-purple-200 dark:border-purple-800">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center">
@@ -102,7 +96,6 @@ export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
           </div>
         </div>
 
-        {/* Monto destacado */}
         <div className="bg-white dark:bg-gray-800 rounded-lg p-4 text-center">
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
             Monto a pagar:
@@ -113,7 +106,6 @@ export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
         </div>
       </div>
 
-      {/* Instrucciones */}
       <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
         <div className="flex gap-2 mb-3">
           <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 shrink-0 mt-0.5" />
@@ -134,9 +126,7 @@ export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
         </div>
       </div>
 
-      {/* QR y Datos de Yape */}
       <div className="grid md:grid-cols-2 gap-6">
-        {/* QR Code */}
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border-2 border-purple-200 dark:border-purple-800 text-center">
           <h4 className="font-semibold text-gray-900 dark:text-white mb-4">
             Escanea el QR
@@ -151,7 +141,6 @@ export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
           </div>
         </div>
 
-        {/* Datos de Yape */}
         <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border-2 border-purple-200 dark:border-purple-800">
           <h4 className="font-semibold text-gray-900 dark:text-white mb-4">
             O yapea directamente
@@ -205,7 +194,6 @@ export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
         </div>
       </div>
 
-      {/* Upload de comprobante */}
       <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border-2 border-dashed border-gray-300 dark:border-gray-700">
         <h4 className="font-semibold text-gray-900 dark:text-white mb-4">
           Subir comprobante de pago *
@@ -274,7 +262,6 @@ export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
         )}
       </div>
 
-      {/* Advertencia */}
       <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-4 border border-yellow-200 dark:border-yellow-800">
         <div className="flex gap-2">
           <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 shrink-0 mt-0.5" />

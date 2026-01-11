@@ -20,12 +20,10 @@ export default function PacksPage() {
 
   const promociones = data?.data || [];
 
-  // Filtrar por búsqueda
   const filteredPromociones = promociones.filter((p) =>
     p.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  // Obtener todos los packs
   const allPacks = filteredPromociones.flatMap((p) =>
     (p.packs || []).map((pack) => ({
       ...pack,
@@ -47,7 +45,6 @@ export default function PacksPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -65,7 +62,6 @@ export default function PacksPage() {
         </Link>
       </div>
 
-      {/* Search */}
       <div className="relative max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
         <Input
@@ -76,7 +72,6 @@ export default function PacksPage() {
         />
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3">
@@ -127,7 +122,6 @@ export default function PacksPage() {
         </div>
       </div>
 
-      {/* Packs Grid */}
       {isLoading ? (
         <div className="flex justify-center items-center py-12">
           <Loader2 className="w-8 h-8 animate-spin text-pink-500" />

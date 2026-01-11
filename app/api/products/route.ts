@@ -14,10 +14,6 @@ function serializeProduct(product: any) {
   };
 }
 
-// ============================================
-// GET /api/productos
-// Query params: ?category=desayunos&active=true
-// ============================================
 export const GET = async (req: NextRequest) => {
   const searchParams = req.nextUrl.searchParams;
   const categorySlug = searchParams.get("category");

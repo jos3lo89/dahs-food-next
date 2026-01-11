@@ -70,14 +70,12 @@ export function PackBuilder({
     let newItems: PackItem[];
 
     if (existingItem) {
-      // Incrementar cantidad
       newItems = pack.items.map((item) =>
         item.productId === productId
           ? { ...item, quantity: item.quantity + 1 }
           : item
       );
     } else {
-      // Agregar nuevo item
       newItems = [...pack.items, { productId, quantity: 1 }];
     }
 
@@ -190,7 +188,6 @@ export function PackBuilder({
           key={packIndex}
           className="border border-gray-200 dark:border-gray-700 rounded-lg p-6 space-y-4"
         >
-          {/* Header del Pack */}
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
               Pack #{packIndex + 1}
@@ -206,7 +203,6 @@ export function PackBuilder({
             </Button>
           </div>
 
-          {/* Nombre del Pack */}
           <div>
             <Label>Nombre del Pack *</Label>
             <Input
@@ -217,7 +213,6 @@ export function PackBuilder({
             />
           </div>
 
-          {/* Descripción */}
           <div>
             <Label>Descripción</Label>
             <Textarea
@@ -231,7 +226,6 @@ export function PackBuilder({
             />
           </div>
 
-          {/* Imagen del Pack */}
           <ImageUpload
             value={pack.image}
             onChange={(url) => updatePack(packIndex, { image: url })}
@@ -239,11 +233,9 @@ export function PackBuilder({
             disabled={disabled}
           />
 
-          {/* Productos del Pack */}
           <div className="space-y-3">
             <Label>Productos del Pack *</Label>
 
-            {/* Items seleccionados */}
             {pack.items.length > 0 ? (
               <div className="space-y-2">
                 {pack.items.map((item) => {
@@ -349,7 +341,6 @@ export function PackBuilder({
               </div>
             )}
 
-            {/* Selector de productos */}
             <div className="space-y-2">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -367,7 +358,6 @@ export function PackBuilder({
                 />
               </div>
 
-              {/* Lista de resultados */}
               {searchStates[packIndex] &&
                 getFilteredProducts(packIndex).length > 0 && (
                   <div className="border border-gray-200 dark:border-gray-700 rounded-lg max-h-48 overflow-y-auto bg-white dark:bg-gray-900">
@@ -409,7 +399,6 @@ export function PackBuilder({
                   </div>
                 )}
 
-              {/* Mensaje si no hay resultados */}
               {searchStates[packIndex] &&
                 getFilteredProducts(packIndex).length === 0 && (
                   <div className="text-center py-4 text-sm text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 rounded-lg">
@@ -419,7 +408,6 @@ export function PackBuilder({
             </div>
           </div>
 
-          {/* Precios */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>Precio Original (calculado)</Label>
@@ -451,7 +439,6 @@ export function PackBuilder({
             </div>
           </div>
 
-          {/* Ahorro */}
           {pack.originalPrice > 0 && pack.packPrice > 0 && (
             <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
               <p className="text-sm text-green-700 dark:text-green-300 font-medium">
@@ -466,7 +453,6 @@ export function PackBuilder({
             </div>
           )}
 
-          {/* Advertencia si el precio del pack es mayor */}
           {pack.packPrice > pack.originalPrice && (
             <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
               <p className="text-sm text-red-700 dark:text-red-300 font-medium">

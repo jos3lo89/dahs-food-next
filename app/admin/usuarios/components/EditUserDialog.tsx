@@ -56,7 +56,6 @@ export function EditUserDialog({
     resolver: zodResolver(editUserSchema),
   });
 
-  // Cargar datos del usuario cuando cambie
   useEffect(() => {
     if (usuario) {
       reset({
@@ -89,7 +88,6 @@ export function EditUserDialog({
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Nombre */}
           <div>
             <Label htmlFor="edit-name">Nombre Completo *</Label>
             <Input id="edit-name" {...register("name")} disabled={isPending} />
@@ -98,7 +96,6 @@ export function EditUserDialog({
             )}
           </div>
 
-          {/* Email */}
           <div>
             <Label htmlFor="edit-email">Email *</Label>
             <Input
@@ -114,7 +111,6 @@ export function EditUserDialog({
             )}
           </div>
 
-          {/* Role */}
           <div>
             <Label htmlFor="edit-role">Rol *</Label>
             <Select
@@ -131,7 +127,6 @@ export function EditUserDialog({
             </Select>
           </div>
 
-          {/* Buttons */}
           <div className="flex justify-end gap-3 pt-4">
             <Button
               type="button"

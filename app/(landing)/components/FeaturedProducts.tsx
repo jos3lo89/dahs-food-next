@@ -19,7 +19,7 @@ const FeaturedProducts = () => {
         category: undefined,
         featured: true,
         search: undefined,
-      }), // featured=true
+      }),
   });
 
   const scroll = (direction: "left" | "right") => {
@@ -49,7 +49,6 @@ const FeaturedProducts = () => {
   return (
     <section className="py-16 bg-white">
       <div className="container mx-auto px-4">
-        {/* Header */}
         <div className="flex items-center justify-between mb-10">
           <div>
             <div className="inline-flex items-center gap-2 bg-yellow-100 text-yellow-700 px-4 py-2 rounded-full mb-3">
@@ -64,7 +63,6 @@ const FeaturedProducts = () => {
             </p>
           </div>
 
-          {/* Botones de navegación */}
           <div className="hidden md:flex gap-2">
             <Button
               variant="outline"
@@ -85,7 +83,6 @@ const FeaturedProducts = () => {
           </div>
         </div>
 
-        {/* Carousel de productos */}
         <div className="relative">
           <div
             ref={scrollContainerRef}

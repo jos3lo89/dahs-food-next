@@ -8,7 +8,6 @@ const createCategorySchema = z.object({
   slug: z.string().min(2, "El slug debe tener al menos 2 caracteres"),
 });
 
-// GET /api/categorias
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -51,7 +50,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/categorias
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
@@ -134,7 +132,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// PATCH /api/categorias - Reordenar categorías
 export async function PATCH(request: NextRequest) {
   try {
     const session = await auth();
@@ -154,7 +151,6 @@ export async function PATCH(request: NextRequest) {
       );
     }
 
-    // Actualizar orden de todas las categorías
     await Promise.all(
       categories.map((cat: { id: string; order: number }) =>
         prisma.category.update({

@@ -1,4 +1,3 @@
-// app/admin/pedidos/components/OrderDetailDialog.tsx - ACTUALIZAR COMPLETO
 "use client";
 
 import { useState } from "react";
@@ -128,7 +127,6 @@ export function OrderDetailDialog({
     );
   };
 
-  // ✅ Parsear addressDetails si existe
   const addressDetails = order.addressDetails
     ? typeof order.addressDetails === "string"
       ? JSON.parse(order.addressDetails)
@@ -162,9 +160,7 @@ export function OrderDetailDialog({
         </DialogHeader>
 
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Columna Izquierda */}
           <div className="space-y-6">
-            {/* Información del Cliente */}
             <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
               <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                 <User className="w-5 h-5 text-pink-500" />
@@ -198,7 +194,6 @@ export function OrderDetailDialog({
                   </div>
                 </div>
 
-                {/* ✅ Email */}
                 {order.customerEmail && (
                   <div className="flex items-start gap-2">
                     <Mail className="w-4 h-4 text-gray-500 mt-0.5" />
@@ -218,7 +213,6 @@ export function OrderDetailDialog({
               </div>
             </div>
 
-            {/* Dirección de Entrega */}
             <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
               <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-pink-500" />
@@ -229,7 +223,6 @@ export function OrderDetailDialog({
                   {order.customerAddress}
                 </p>
 
-                {/* ✅ Detalles de dirección */}
                 {addressDetails && (
                   <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 space-y-1">
                     {addressDetails.district && (
@@ -250,7 +243,6 @@ export function OrderDetailDialog({
                   </div>
                 )}
 
-                {/* ✅ Notas del pedido */}
                 {order.notes && (
                   <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
                     <p className="text-gray-600 dark:text-gray-400 text-xs mb-1">
@@ -264,7 +256,6 @@ export function OrderDetailDialog({
               </div>
             </div>
 
-            {/* Información de Pago */}
             <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
               <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-pink-500" />
@@ -294,7 +285,6 @@ export function OrderDetailDialog({
                   </div>
                 )}
 
-                {/* ✅ Comprobante de pago */}
                 {order.receiptImage && (
                   <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
                     <p className="text-gray-600 dark:text-gray-400 mb-2 flex items-center gap-2">
@@ -332,7 +322,6 @@ export function OrderDetailDialog({
               </div>
             </div>
 
-            {/* ✅ Timestamps */}
             <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
               <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                 <Clock className="w-5 h-5 text-pink-500" />
@@ -422,9 +411,7 @@ export function OrderDetailDialog({
             </div>
           </div>
 
-          {/* Columna Derecha */}
           <div className="space-y-6">
-            {/* Productos */}
             <div>
               <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                 <Package className="w-5 h-5 text-pink-500" />
@@ -467,7 +454,6 @@ export function OrderDetailDialog({
 
             <Separator />
 
-            {/* Totales */}
             <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
               <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
                 Resumen
@@ -491,7 +477,6 @@ export function OrderDetailDialog({
                   </div>
                 )}
 
-                {/* ✅ Costo de envío */}
                 {order.deliveryFee !== undefined && (
                   <div className="flex justify-between">
                     <span className="text-gray-600 dark:text-gray-400">
@@ -514,7 +499,6 @@ export function OrderDetailDialog({
               </div>
             </div>
 
-            {/* Actualizar Estado */}
             <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
               <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
                 Actualizar Estado
@@ -554,7 +538,6 @@ export function OrderDetailDialog({
               </div>
             </div>
 
-            {/* Notas Administrativas */}
             <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4">
               <h3 className="font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                 <FileText className="w-5 h-5 text-pink-500" />

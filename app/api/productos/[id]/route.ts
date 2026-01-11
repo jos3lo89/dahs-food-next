@@ -17,15 +17,6 @@ const updateProductSchema = z.object({
   stock: z.number().int().min(0).optional(),
 });
 
-// function serializeProduct(product: any) {
-//   return {
-//     ...product,
-//     price:
-//       product.price instanceof Decimal
-//         ? product.price.toNumber()
-//         : Number(product.price),
-//   };
-// }
 function serializeProduct(product: any) {
   return {
     ...product,
@@ -39,7 +30,6 @@ function serializeProduct(product: any) {
   };
 }
 
-// GET /api/productos/[id]
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -79,7 +69,6 @@ export async function GET(
   }
 }
 
-// PATCH /api/productos/[id]
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -98,7 +87,6 @@ export async function PATCH(
     const body = await request.json();
     const validatedData = updateProductSchema.parse(body);
 
-    // Si se actualiza el slug, verificar que no esté en uso
     if (validatedData.slug) {
       const existingProduct = await prisma.product.findFirst({
         where: {
@@ -115,7 +103,6 @@ export async function PATCH(
       }
     }
 
-    // Si se actualiza la categoría, verificar que existe
     if (validatedData.categoryId) {
       const category = await prisma.category.findUnique({
         where: { id: validatedData.categoryId },
@@ -169,7 +156,6 @@ export async function PATCH(
   }
 }
 
-// DELETE /api/productos/[id] - SOFT DELETE
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

@@ -74,7 +74,6 @@ export default function PedidosPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -86,9 +85,7 @@ export default function PedidosPage() {
         </div>
       </div>
 
-      {/* Filters */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        {/* Search */}
         <div className="relative md:col-span-2">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <Input
@@ -99,7 +96,6 @@ export default function PedidosPage() {
           />
         </div>
 
-        {/* Status Filter */}
         <Select
           value={statusFilter}
           onValueChange={(v: any) => setStatusFilter(v)}
@@ -117,7 +113,6 @@ export default function PedidosPage() {
           </SelectContent>
         </Select>
 
-        {/* Payment Filter */}
         <Select
           value={paymentFilter}
           onValueChange={(v: any) => setPaymentFilter(v)}
@@ -135,7 +130,6 @@ export default function PedidosPage() {
         </Select>
       </div>
 
-      {/* Date Range Filter */}
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2 flex-1">
           <Input
@@ -167,7 +161,6 @@ export default function PedidosPage() {
         )}
       </div>
 
-      {/* Stats */}
       {stats && (
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
@@ -266,7 +259,6 @@ export default function PedidosPage() {
         </div>
       )}
 
-      {/* Table */}
       {isLoading ? (
         <div className="flex justify-center items-center py-12">
           <Loader2 className="w-8 h-8 animate-spin text-pink-500" />

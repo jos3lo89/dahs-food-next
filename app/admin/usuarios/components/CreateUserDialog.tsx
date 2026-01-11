@@ -77,7 +77,6 @@ export function CreateUserDialog() {
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Nombre */}
           <div>
             <Label htmlFor="name">Nombre Completo *</Label>
             <Input
@@ -91,7 +90,6 @@ export function CreateUserDialog() {
             )}
           </div>
 
-          {/* Email */}
           <div>
             <Label htmlFor="email">Email *</Label>
             <Input
@@ -108,7 +106,6 @@ export function CreateUserDialog() {
             )}
           </div>
 
-          {/* Password */}
           <div>
             <Label htmlFor="password">Contraseña *</Label>
             <Input
@@ -125,7 +122,6 @@ export function CreateUserDialog() {
             )}
           </div>
 
-          {/* Role */}
           <div>
             <Label htmlFor="role">Rol *</Label>
             <Select
@@ -142,7 +138,6 @@ export function CreateUserDialog() {
             </Select>
           </div>
 
-          {/* Buttons */}
           <div className="flex justify-end gap-3 pt-4">
             <Button
               type="button"

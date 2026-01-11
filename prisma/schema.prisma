@@ -57,7 +57,7 @@ model Product {
   orderItems        OrderItem[]
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
-  promotionProducts PromotionProduct[] // Nuevo: relación con promociones
+  promotionProducts PromotionProduct[]
 
   @@index([categoryId])
   @@index([active])
@@ -143,19 +143,19 @@ model Order {
   paymentMethod         PaymentMethod? // "culqi", "yape", "plin", "efectivo"
   paymentId             String? // ID de transacción
   notes                 String?        @db.Text
-  estimatedDeliveryTime DateTime? // ✅ NUEVO - Hora estimada de entrega
-  confirmedAt           DateTime? // ✅ NUEVO - Cuándo se confirmó
-  preparingAt           DateTime? // ✅ NUEVO - Cuándo empezó preparación
-  deliveredAt           DateTime? // ✅ NUEVO - Cuándo se entregó
-  cancelledAt           DateTime? // ✅ NUEVO - Cuándo se canceló
+  estimatedDeliveryTime DateTime?
+  confirmedAt           DateTime?
+  preparingAt           DateTime?
+  deliveredAt           DateTime?
+  cancelledAt           DateTime?
   createdAt             DateTime       @default(now())
   updatedAt             DateTime       @updatedAt
-  promotionCode         String? // Nuevo: código de promoción usado
+  promotionCode         String?
 
   @@index([orderNumber])
   @@index([status])
-  @@index([customerEmail]) // ✅ NUEVO - Índice para buscar por email
-  @@index([customerPhone]) // ✅ NUEVO - Índice para buscar por teléfono
+  @@index([customerEmail])
+  @@index([customerPhone])
   @@index([createdAt])
 }
 
@@ -167,12 +167,12 @@ enum PaymentMethod {
 }
 
 enum OrderStatus {
-  PENDING // Pendiente
-  CONFIRMED // Confirmado
-  PREPARING // En preparación
+  PENDING
+  CONFIRMED
+  PREPARING
   OUT_FOR_DELIVERY
-  DELIVERED // Entregado
-  CANCELLED // Cancelado
+  DELIVERED
+  CANCELLED
 }
 
 model OrderItem {

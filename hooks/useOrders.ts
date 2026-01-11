@@ -9,7 +9,6 @@ import {
 import { toast } from "sonner";
 import { CreateOrderDto } from "@/types/checkout";
 
-// Hook para obtener pedidos
 export const useOrders = (params?: {
   status?: OrderStatus;
   paymentMethod?: PaymentMethod;
@@ -24,7 +23,6 @@ export const useOrders = (params?: {
   });
 };
 
-// Hook para obtener un pedido
 export const useOrder = (id: string) => {
   return useQuery({
     queryKey: ["order", id],
@@ -33,7 +31,6 @@ export const useOrder = (id: string) => {
   });
 };
 
-// Hook para actualizar pedido (con optimistic update)
 export const useUpdateOrder = () => {
   const queryClient = useQueryClient();
 
@@ -72,7 +69,6 @@ export const useUpdateOrder = () => {
   });
 };
 
-// Hook para cambiar estado del pedido
 export const useUpdateOrderStatus = () => {
   const queryClient = useQueryClient();
 
