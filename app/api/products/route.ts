@@ -1,5 +1,18 @@
+import { Decimal } from "@/app/generated/prisma/internal/prismaNamespace";
 import prisma from "@/lib/prisma";
 import { NextRequest, NextResponse } from "next/server";
+function serializeProduct(product: any) {
+  return {
+    ...product,
+    price:
+      product.price instanceof Decimal
+        ? product.price.toNumber()
+        : Number(product.price),
+    images: Array.isArray(product.images)
+      ? product.images
+      : JSON.parse(product.images || "[]"),
+  };
+}
 
 // ============================================
 // GET /api/productos
@@ -32,7 +45,9 @@ export const GET = async (req: NextRequest) => {
       },
     });
 
-    return NextResponse.json(products, { status: 200 });
+    const serializedProductos = products.map(serializeProduct);
+
+    return NextResponse.json(serializedProductos, { status: 200 });
   } catch (error) {
     console.error("Error fetching products:", error);
     return NextResponse.json(

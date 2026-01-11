@@ -39,6 +39,10 @@ const ExtrasSection = () => {
     );
   }
 
+  if (extras?.length === 0) {
+    return null;
+  }
+
   return (
     <section
       id="extras"

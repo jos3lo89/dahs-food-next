@@ -7,6 +7,7 @@ import {
   PaymentMethod,
 } from "@/types/orders";
 import { toast } from "sonner";
+import { CreateOrderDto } from "@/types/checkout";
 
 // Hook para obtener pedidos
 export const useOrders = (params?: {
@@ -106,6 +107,18 @@ export const useUpdateOrderStatus = () => {
         queryClient.setQueryData(["orders"], context.previousOrders);
       }
       toast.error(error.response?.data?.error || "Error al cambiar estado");
+    },
+  });
+};
+
+export const useCreateOrder = () => {
+  return useMutation({
+    mutationFn: (order: CreateOrderDto) => ordersApi.createOrder(order),
+    onSuccess: () => {
+      toast.success("Pedido creado exitosamente");
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.error || "Error al crear pedido");
     },
   });
 };

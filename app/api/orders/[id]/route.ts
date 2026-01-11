@@ -12,6 +12,8 @@ const updateOrderSchema = z.object({
   paymentMethod: z.enum(["culqi", "yape", "plin", "efectivo"]).optional(),
   paymentId: z.string().optional(),
   notes: z.string().optional(),
+  receiptImage: z.string().optional(), // ✅ NUEVO
+  estimatedDeliveryTime: z.string().optional(), // ✅ NUEVO
 });
 
 function serializeOrder(order: any) {
@@ -25,6 +27,10 @@ function serializeOrder(order: any) {
       order.discount instanceof Decimal
         ? order.discount.toNumber()
         : Number(order.discount),
+    deliveryFee:
+      order.deliveryFee instanceof Decimal
+        ? order.deliveryFee.toNumber()
+        : Number(order.deliveryFee),
     total:
       order.total instanceof Decimal
         ? order.total.toNumber()
@@ -117,9 +123,46 @@ export async function PATCH(
     const body = await request.json();
     const validatedData = updateOrderSchema.parse(body);
 
+    // ✅ NUEVO: Actualizar timestamps automáticamente según el estado
+    const updateData: any = { ...validatedData };
+
+    if (validatedData.status) {
+      const now = new Date();
+
+      switch (validatedData.status) {
+        case "CONFIRMED":
+          if (!updateData.confirmedAt) {
+            updateData.confirmedAt = now;
+          }
+          break;
+        case "PREPARING":
+          if (!updateData.preparingAt) {
+            updateData.preparingAt = now;
+          }
+          break;
+        case "DELIVERED":
+          if (!updateData.deliveredAt) {
+            updateData.deliveredAt = now;
+          }
+          break;
+        case "CANCELLED":
+          if (!updateData.cancelledAt) {
+            updateData.cancelledAt = now;
+          }
+          break;
+      }
+    }
+
+    // ✅ Convertir estimatedDeliveryTime a Date si existe
+    if (updateData.estimatedDeliveryTime) {
+      updateData.estimatedDeliveryTime = new Date(
+        updateData.estimatedDeliveryTime
+      );
+    }
+
     const order = await prisma.order.update({
       where: { id },
-      data: validatedData,
+      data: updateData,
       include: {
         items: {
           include: {

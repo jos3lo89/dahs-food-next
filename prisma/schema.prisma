@@ -126,25 +126,36 @@ model PromotionPack {
 }
 
 model Order {
-  id              String         @id @default(cuid())
-  orderNumber     String         @unique // ORD-20250101-001
-  customerName    String
-  customerPhone   String
-  customerAddress String
-  items           OrderItem[]
-  subtotal        Decimal        @db.Decimal(10, 2)
-  discount        Decimal        @default(0) @db.Decimal(10, 2)
-  total           Decimal        @db.Decimal(10, 2)
-  status          OrderStatus    @default(PENDING)
-  paymentMethod   PaymentMethod? // "culqi", "yape", "plin", "efectivo"
-  paymentId       String? // ID de transacción
-  notes           String?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  promotionCode   String? // Nuevo: código de promoción usado
+  id                    String         @id @default(cuid())
+  orderNumber           String         @unique // ORD-20250101-001
+  customerName          String
+  customerPhone         String
+  customerEmail         String?
+  customerAddress       String
+  addressDetails        Json?
+  items                 OrderItem[]
+  subtotal              Decimal        @db.Decimal(10, 2)
+  discount              Decimal        @default(0) @db.Decimal(10, 2)
+  deliveryFee           Decimal        @default(0) @db.Decimal(10, 2)
+  total                 Decimal        @db.Decimal(10, 2)
+  status                OrderStatus    @default(PENDING)
+  receiptImage          String?
+  paymentMethod         PaymentMethod? // "culqi", "yape", "plin", "efectivo"
+  paymentId             String? // ID de transacción
+  notes                 String?        @db.Text
+  estimatedDeliveryTime DateTime? // ✅ NUEVO - Hora estimada de entrega
+  confirmedAt           DateTime? // ✅ NUEVO - Cuándo se confirmó
+  preparingAt           DateTime? // ✅ NUEVO - Cuándo empezó preparación
+  deliveredAt           DateTime? // ✅ NUEVO - Cuándo se entregó
+  cancelledAt           DateTime? // ✅ NUEVO - Cuándo se canceló
+  createdAt             DateTime       @default(now())
+  updatedAt             DateTime       @updatedAt
+  promotionCode         String? // Nuevo: código de promoción usado
 
   @@index([orderNumber])
   @@index([status])
+  @@index([customerEmail]) // ✅ NUEVO - Índice para buscar por email
+  @@index([customerPhone]) // ✅ NUEVO - Índice para buscar por teléfono
   @@index([createdAt])
 }
 
@@ -159,6 +170,7 @@ enum OrderStatus {
   PENDING // Pendiente
   CONFIRMED // Confirmado
   PREPARING // En preparación
+  OUT_FOR_DELIVERY
   DELIVERED // Entregado
   CANCELLED // Cancelado
 }

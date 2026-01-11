@@ -1,0 +1,229 @@
+import { NextRequest, NextResponse } from "next/server";
+import prisma from "@/lib/prisma";
+import { z } from "zod";
+import { Decimal } from "@/app/generated/prisma/internal/prismaNamespace";
+import { addMinutes } from "date-fns";
+
+const addressDetailsSchema = z.object({
+  street: z.string().min(5, "Calle muy corta"),
+  district: z.string().optional(),
+  city: z.string().optional(),
+  reference: z.string().optional(),
+  coordinates: z
+    .object({
+      lat: z.number(),
+      lng: z.number(),
+    })
+    .optional(),
+});
+
+const createOrderSchema = z.object({
+  customerName: z.string().min(3, "Nombre muy corto"),
+  customerPhone: z.string().min(9, "Teléfono inválido"),
+  customerAddress: z.string().min(10, "Dirección muy corta"),
+  customerEmail: z.email("Email inválido").optional(),
+  addressDetails: addressDetailsSchema.optional(),
+  items: z
+    .array(
+      z.object({
+        productId: z.string(),
+        quantity: z.number().int().positive(),
+        price: z.number().positive(),
+      })
+    )
+    .min(1, "Debes agregar al menos un producto"),
+  subtotal: z.number().positive(),
+  discount: z.number().min(0).default(0),
+  deliveryFee: z.number().min(0).default(0),
+  total: z.number().positive(),
+  paymentMethod: z.enum(["yape", "plin", "culqi", "efectivo"]),
+  promotionCode: z.string().optional(),
+  notes: z.string().optional(),
+  receiptImage: z.string().optional(),
+  estimatedDeliveryTime: z.string().optional(), // ✅ NUEVO
+});
+
+// Generar número de orden único
+function generateOrderNumber(): string {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  const random = Math.floor(Math.random() * 1000)
+    .toString()
+    .padStart(3, "0");
+  return `ORD-${year}${month}${day}-${random}`;
+}
+
+// POST /api/orders/create
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const validatedData = createOrderSchema.parse(body);
+
+    // Verificar que los productos existen y están activos
+    const productIds = validatedData.items.map((item) => item.productId);
+    const products = await prisma.product.findMany({
+      where: {
+        id: { in: productIds },
+        active: true,
+      },
+    });
+
+    if (products.length !== productIds.length) {
+      return NextResponse.json(
+        { success: false, error: "Algunos productos no están disponibles" },
+        { status: 400 }
+      );
+    }
+
+    // Verificar stock
+    for (const item of validatedData.items) {
+      const product = products.find((p) => p.id === item.productId);
+      if (!product) {
+        return NextResponse.json(
+          { success: false, error: `Producto ${item.productId} no encontrado` },
+          { status: 400 }
+        );
+      }
+      if (product.stock < item.quantity) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: `Stock insuficiente para ${product.name}. Solo quedan ${product.stock} unidades`,
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Generar número de orden único
+    let orderNumber = generateOrderNumber();
+    let exists = await prisma.order.findUnique({
+      where: { orderNumber },
+    });
+
+    while (exists) {
+      orderNumber = generateOrderNumber();
+      exists = await prisma.order.findUnique({
+        where: { orderNumber },
+      });
+    }
+
+    // ✅ Calcular tiempo estimado de entrega (30-45 minutos)
+    const estimatedDeliveryTime = validatedData.estimatedDeliveryTime
+      ? new Date(validatedData.estimatedDeliveryTime)
+      : addMinutes(new Date(), 40); // Por defecto 40 minutos
+
+    // ✅ Determinar estado inicial según método de pago
+    let initialStatus: "PENDING" | "CONFIRMED" = "PENDING";
+    let confirmedAt: Date | undefined = undefined;
+
+    if (validatedData.paymentMethod === "efectivo") {
+      initialStatus = "PENDING"; // Confirmará cuando entregue
+    } else if (validatedData.receiptImage) {
+      initialStatus = "PENDING"; // Admin debe confirmar comprobante
+    }
+
+    // Crear pedido con items en una transacción
+    const order = await prisma.$transaction(async (tx) => {
+      // Crear orden
+      const newOrder = await tx.order.create({
+        data: {
+          orderNumber,
+          customerName: validatedData.customerName,
+          customerPhone: validatedData.customerPhone,
+          customerEmail: validatedData.customerEmail, // ✅ NUEVO
+          customerAddress: validatedData.customerAddress,
+          addressDetails: validatedData.addressDetails || undefined, // ✅ NUEVO
+          subtotal: new Decimal(validatedData.subtotal),
+          discount: new Decimal(validatedData.discount),
+          deliveryFee: new Decimal(validatedData.deliveryFee), // ✅ NUEVO
+          total: new Decimal(validatedData.total),
+          status: initialStatus,
+          paymentMethod: validatedData.paymentMethod,
+          promotionCode: validatedData.promotionCode,
+          notes: validatedData.notes,
+          receiptImage: validatedData.receiptImage, // ✅ NUEVO
+          estimatedDeliveryTime, // ✅ NUEVO
+          confirmedAt, // ✅ NUEVO
+        },
+      });
+
+      // Crear items del pedido
+      await tx.orderItem.createMany({
+        data: validatedData.items.map((item) => ({
+          orderId: newOrder.id,
+          productId: item.productId,
+          quantity: item.quantity,
+          price: new Decimal(item.price),
+          subtotal: new Decimal(item.price * item.quantity),
+        })),
+      });
+
+      // Actualizar stock de productos
+      for (const item of validatedData.items) {
+        await tx.product.update({
+          where: { id: item.productId },
+          data: {
+            stock: {
+              decrement: item.quantity,
+            },
+          },
+        });
+      }
+
+      return newOrder;
+    });
+
+    // Obtener pedido completo con items
+    const orderWithItems = await prisma.order.findUnique({
+      where: { id: order.id },
+      include: {
+        items: {
+          include: {
+            product: {
+              select: {
+                id: true,
+                name: true,
+                image: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        id: order.id,
+        orderNumber: order.orderNumber,
+        customerName: order.customerName,
+        customerEmail: order.customerEmail,
+        total:
+          order.total instanceof Decimal
+            ? order.total.toNumber()
+            : Number(order.total),
+        status: order.status,
+        paymentMethod: order.paymentMethod,
+        estimatedDeliveryTime: order.estimatedDeliveryTime?.toISOString(), // ✅ NUEVO
+        createdAt: order.createdAt.toISOString(),
+      },
+      message: "Pedido creado exitosamente",
+    });
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { success: false, error: "Datos inválidos", details: error.message },
+        { status: 400 }
+      );
+    }
+
+    console.error("Error al crear pedido:", error);
+    return NextResponse.json(
+      { success: false, error: "Error al crear pedido" },
+      { status: 500 }
+    );
+  }
+}

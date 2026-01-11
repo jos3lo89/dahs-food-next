@@ -1,3 +1,5 @@
+// store/cartStore.ts - ACTUALIZAR
+
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import {
@@ -6,9 +8,19 @@ import {
   CartState,
   CustomerInfo,
 } from "@/types/cart.types";
-import { ProductsI } from "@/types/products";
+import { Producto } from "@/types/products";
+import { PaymentMethod } from "@/types/checkout";
 
-export const useCartStore = create<CartState>()(
+// ✅ AGREGAR PaymentMethod al estado
+interface ExtendedCartState extends CartState {
+  paymentMethod: PaymentMethod | null;
+  receiptImage: string | null;
+  setPaymentMethod: (method: PaymentMethod | null) => void;
+  setReceiptImage: (url: string) => void;
+  clearCheckoutData: () => void;
+}
+
+export const useCartStore = create<ExtendedCartState>()(
   persist(
     (set, get) => ({
       // ============================================
@@ -18,22 +30,18 @@ export const useCartStore = create<CartState>()(
       customerInfo: null,
       promotion: null,
       isOpen: false,
+      paymentMethod: null, // ✅ NUEVO
+      receiptImage: null, // ✅ NUEVO
 
       // ============================================
       // ACCIONES DEL CARRITO
       // ============================================
-
-      /**
-       * Agregar producto al carrito
-       */
-      addItem: (product: ProductsI) => {
+      addItem: (product: Producto) => {
         const { items } = get();
         const existingItem = items.find(
           (item) => item.productId === product.id
         );
-
         if (existingItem) {
-          // Si ya existe, aumentar cantidad
           set({
             items: items.map((item) =>
               item.productId === product.id
@@ -42,7 +50,6 @@ export const useCartStore = create<CartState>()(
             ),
           });
         } else {
-          // Si no existe, agregar nuevo item
           const newItem: CartItem = {
             id: `${product.id}-${Date.now()}`,
             productId: product.id,
@@ -53,29 +60,21 @@ export const useCartStore = create<CartState>()(
             quantity: 1,
             category: product.category.name,
           };
-
           set({ items: [...items, newItem] });
         }
       },
 
-      /**
-       * Eliminar producto del carrito
-       */
       removeItem: (productId: string) => {
         set((state) => ({
           items: state.items.filter((item) => item.productId !== productId),
         }));
       },
 
-      /**
-       * Actualizar cantidad de un producto
-       */
       updateQuantity: (productId: string, quantity: number) => {
         if (quantity <= 0) {
           get().removeItem(productId);
           return;
         }
-
         set((state) => ({
           items: state.items.map((item) =>
             item.productId === productId ? { ...item, quantity } : item
@@ -83,9 +82,6 @@ export const useCartStore = create<CartState>()(
         }));
       },
 
-      /**
-       * Aumentar cantidad en 1
-       */
       increaseQuantity: (productId: string) => {
         set((state) => ({
           items: state.items.map((item) =>
@@ -96,17 +92,12 @@ export const useCartStore = create<CartState>()(
         }));
       },
 
-      /**
-       * Disminuir cantidad en 1
-       */
       decreaseQuantity: (productId: string) => {
         const item = get().items.find((i) => i.productId === productId);
-
         if (item && item.quantity <= 1) {
           get().removeItem(productId);
           return;
         }
-
         set((state) => ({
           items: state.items.map((item) =>
             item.productId === productId
@@ -116,9 +107,6 @@ export const useCartStore = create<CartState>()(
         }));
       },
 
-      /**
-       * Vaciar carrito completamente
-       */
       clearCart: () => {
         set({
           items: [],
@@ -129,17 +117,10 @@ export const useCartStore = create<CartState>()(
       // ============================================
       // INFORMACIÓN DEL CLIENTE
       // ============================================
-
-      /**
-       * Guardar información del cliente
-       */
       setCustomerInfo: (info: CustomerInfo) => {
         set({ customerInfo: info });
       },
 
-      /**
-       * Limpiar información del cliente
-       */
       clearCustomerInfo: () => {
         set({ customerInfo: null });
       },
@@ -147,42 +128,43 @@ export const useCartStore = create<CartState>()(
       // ============================================
       // PROMOCIONES
       // ============================================
-
-      /**
-       * Aplicar promoción
-       */
       applyPromotion: (promotion: AppliedPromotion) => {
         set({ promotion });
       },
 
-      /**
-       * Remover promoción
-       */
       removePromotion: () => {
         set({ promotion: null });
       },
 
       // ============================================
+      // MÉTODOS DE PAGO - ✅ NUEVO
+      // ============================================
+      setPaymentMethod: (method: PaymentMethod | null) => {
+        set({ paymentMethod: method });
+      },
+
+      setReceiptImage: (url: string) => {
+        set({ receiptImage: url });
+      },
+
+      clearCheckoutData: () => {
+        set({
+          paymentMethod: null,
+          receiptImage: null,
+        });
+      },
+
+      // ============================================
       // UI DEL CARRITO
       // ============================================
-
-      /**
-       * Abrir drawer del carrito
-       */
       openCart: () => {
         set({ isOpen: true });
       },
 
-      /**
-       * Cerrar drawer del carrito
-       */
       closeCart: () => {
         set({ isOpen: false });
       },
 
-      /**
-       * Toggle drawer del carrito
-       */
       toggleCart: () => {
         set((state) => ({ isOpen: !state.isOpen }));
       },
@@ -190,10 +172,6 @@ export const useCartStore = create<CartState>()(
       // ============================================
       // CÁLCULOS
       // ============================================
-
-      /**
-       * Calcular subtotal (sin descuentos)
-       */
       getSubtotal: () => {
         const { items } = get();
         return items.reduce((total, item) => {
@@ -201,37 +179,24 @@ export const useCartStore = create<CartState>()(
         }, 0);
       },
 
-      /**
-       * Calcular descuento aplicado
-       */
       getDiscount: () => {
         const { promotion } = get();
         if (!promotion) return 0;
-
         const subtotal = get().getSubtotal();
         return (subtotal * promotion.discount) / 100;
       },
 
-      /**
-       * Calcular total final
-       */
       getTotal: () => {
         const subtotal = get().getSubtotal();
         const discount = get().getDiscount();
         return Math.max(0, subtotal - discount);
       },
 
-      /**
-       * Contar total de items (suma de cantidades)
-       */
       getItemsCount: () => {
         const { items } = get();
         return items.reduce((count, item) => count + item.quantity, 0);
       },
 
-      /**
-       * Obtener cantidad de un producto específico
-       */
       getItemQuantity: (productId: string) => {
         const item = get().items.find((i) => i.productId === productId);
         return item ? item.quantity : 0;
@@ -240,17 +205,10 @@ export const useCartStore = create<CartState>()(
       // ============================================
       // VALIDACIONES
       // ============================================
-
-      /**
-       * Verificar si hay items en el carrito
-       */
       hasItems: () => {
         return get().items.length > 0;
       },
 
-      /**
-       * Verificar si se puede proceder al checkout
-       */
       canCheckout: () => {
         const { items, customerInfo } = get();
         return (
@@ -269,6 +227,8 @@ export const useCartStore = create<CartState>()(
         items: state.items,
         customerInfo: state.customerInfo,
         promotion: state.promotion,
+        paymentMethod: state.paymentMethod, // ✅ PERSISTIR
+        receiptImage: state.receiptImage, // ✅ PERSISTIR
       }),
     }
   )

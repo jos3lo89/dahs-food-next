@@ -1,4 +1,5 @@
 import { axiosInstance } from "@/lib/axios";
+import { CreateOrderDto, CreateOrderResponse } from "@/types/checkout";
 import {
   UpdateOrderDto,
   OrdersResponse,
@@ -64,6 +65,21 @@ export const ordersApi = {
     const { data } = await axiosInstance.patch<OrderResponse>(`/orders/${id}`, {
       status,
     });
+    return data;
+  },
+
+  // POST: Crear pedido desde landing
+  createOrder: async (order: CreateOrderDto) => {
+    const { data } = await axiosInstance.post<CreateOrderResponse>(
+      "/orders/create",
+      order
+    );
+    return data;
+  },
+
+  // GET: Rastrear pedido por número
+  trackOrder: async (orderNumber: string) => {
+    const { data } = await axiosInstance.get(`/orders/track/${orderNumber}`);
     return data;
   },
 };

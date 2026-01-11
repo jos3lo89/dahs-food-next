@@ -2,8 +2,8 @@ export interface ProductsI {
   id: string;
   name: string;
   slug: string;
-  description: string;
-  price: string;
+  description: string | null;
+  price: number;
   image: string;
   images: string[];
   categoryId: string;
@@ -30,11 +30,7 @@ export interface Producto {
   image: string;
   images: string[];
   categoryId: string;
-  category: {
-    id: string;
-    name: string;
-    slug: string;
-  };
+  category: Category;
   active: boolean;
   featured: boolean;
   stock: number;

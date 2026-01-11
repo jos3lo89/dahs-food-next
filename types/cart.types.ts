@@ -1,6 +1,6 @@
 // types/cart.types.ts
 
-import { ProductsI } from "./products";
+import { Producto, ProductsI } from "./products";
 
 // Item del carrito
 export interface CartItem {
@@ -19,6 +19,7 @@ export interface CustomerInfo {
   name: string;
   phone: string;
   address: string;
+  email?: string;
   notes?: string;
 }
 
@@ -38,7 +39,7 @@ export interface CartState {
   isOpen: boolean;
 
   // Acciones del carrito
-  addItem: (product: ProductsI) => void;
+  addItem: (product: Producto) => void;
   removeItem: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   increaseQuantity: (productId: string) => void;
