@@ -9,39 +9,39 @@ interface PaymentMethodSelectorProps {
 }
 
 const paymentMethods = [
-  {
-    id: "yape" as PaymentMethod,
-    name: "Yape",
-    icon: Smartphone,
-    color: "bg-purple-100 border-purple-300 text-purple-700",
-    activeColor: "bg-purple-500 border-purple-600 text-white",
-    description: "Pago con QR",
-  },
-  {
-    id: "plin" as PaymentMethod,
-    name: "Plin",
-    icon: Wallet,
-    color: "bg-blue-100 border-blue-300 text-blue-700",
-    activeColor: "bg-blue-500 border-blue-600 text-white",
-    description: "Transferencia rápida",
-  },
+  // {
+  //   id: "yape" as PaymentMethod,
+  //   name: "Yape",
+  //   icon: Smartphone,
+  //   color: "bg-purple-100 border-purple-300 text-purple-700",
+  //   activeColor: "bg-purple-500 border-purple-600 text-white",
+  //   description: "Pago con QR",
+  // },
+  // {
+  //   id: "plin" as PaymentMethod,
+  //   name: "Plin",
+  //   icon: Wallet,
+  //   color: "bg-blue-100 border-blue-300 text-blue-700",
+  //   activeColor: "bg-blue-500 border-blue-600 text-white",
+  //   description: "Transferencia rápida",
+  // },
   {
     id: "culqi" as PaymentMethod,
-    name: "Tarjeta",
+    name: "Culqui",
     icon: CreditCard,
-    color: "bg-green-100 border-green-300 text-green-700",
-    activeColor: "bg-green-500 border-green-600 text-white",
-    description: "Débito/Crédito",
-    disabled: true,
-  },
-  {
-    id: "efectivo" as PaymentMethod,
-    name: "Efectivo",
-    icon: Banknote,
     color: "bg-orange-100 border-orange-300 text-orange-700",
     activeColor: "bg-orange-500 border-orange-600 text-white",
-    description: "Pago al recibir",
+    description: "Débito/Crédito/Yape",
+    disabled: false,
   },
+  // {
+  //   id: "efectivo" as PaymentMethod,
+  //   name: "Efectivo",
+  //   icon: Banknote,
+  //   color: "bg-orange-100 border-orange-300 text-orange-700",
+  //   activeColor: "bg-orange-500 border-orange-600 text-white",
+  //   description: "Pago al recibir",
+  // },
 ];
 
 export function PaymentMethodSelector({

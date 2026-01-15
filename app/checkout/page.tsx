@@ -54,7 +54,7 @@ export default function CheckoutPage() {
 
     address: customerInfo?.address || "",
     district: "",
-    city: "Lima",
+    city: "Andahuaylas",
     reference: "",
 
     notes: customerInfo?.notes || "",
@@ -399,8 +399,7 @@ export default function CheckoutPage() {
                         de tener el monto exacto o cambio disponible.
                       </p>
                       <p className="text-sm text-orange-800 dark:text-orange-200 mt-2">
-                        <strong>Total a pagar:</strong> S/{" "}
-                        {total.toFixed(2)}
+                        <strong>Total a pagar:</strong> S/ {total.toFixed(2)}
                       </p>
                     </div>
                   )}

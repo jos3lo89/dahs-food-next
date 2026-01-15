@@ -46,7 +46,7 @@ export function AddressForm({ formData, onChange }: AddressFormProps) {
             id="district"
             value={formData.district}
             onChange={(e) => onChange("district", e.target.value)}
-            placeholder="Ej: Miraflores"
+            placeholder="Andahuaylas, San jeronimo, Talavera"
             className="mt-1"
           />
         </div>
@@ -57,7 +57,7 @@ export function AddressForm({ formData, onChange }: AddressFormProps) {
             id="city"
             value={formData.city}
             onChange={(e) => onChange("city", e.target.value)}
-            placeholder="Lima"
+            placeholder="Adahuaylas"
             className="mt-1"
           />
         </div>
