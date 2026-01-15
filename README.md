@@ -56,6 +56,9 @@ AUTH_URL="http://localhost:3000"
 CLOUDINARY_CLOUD_NAME="tu_cloud_name"
 CLOUDINARY_API_KEY="tu_api_key"
 CLOUDINARY_API_SECRET="tu_api_secret"
+
+# WhatsApp (Links de contacto en UI)
+NEXT_PUBLIC_WHATSAPP_PHONE="+51999999999"
 ```
 
 ### 5. Configurar la Base de Datos con Prisma
