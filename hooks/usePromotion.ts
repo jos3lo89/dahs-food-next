@@ -8,7 +8,6 @@ import {
 } from "@/types/promotion";
 import { toast } from "sonner";
 
-// Hook para obtener promociones
 export const usePromociones = (params?: {
   active?: boolean;
   featured?: boolean;
@@ -21,7 +20,6 @@ export const usePromociones = (params?: {
   });
 };
 
-// Hook para obtener una promoción
 export const usePromocion = (id: string) => {
   return useQuery({
     queryKey: ["promocion", id],
@@ -30,7 +28,6 @@ export const usePromocion = (id: string) => {
   });
 };
 
-// Hook para crear promoción
 export const useCreatePromocion = () => {
   const queryClient = useQueryClient();
 
@@ -47,7 +44,6 @@ export const useCreatePromocion = () => {
   });
 };
 
-// Hook para actualizar promoción (con optimistic update)
 export const useUpdatePromocion = () => {
   const queryClient = useQueryClient();
 
@@ -88,7 +84,6 @@ export const useUpdatePromocion = () => {
   });
 };
 
-// Hook para toggle active (con optimistic update)
 export const useTogglePromocionActive = () => {
   const queryClient = useQueryClient();
 
@@ -131,7 +126,6 @@ export const useTogglePromocionActive = () => {
   });
 };
 
-// Hook para toggle featured (con optimistic update)
 export const useTogglePromocionFeatured = () => {
   const queryClient = useQueryClient();
 
@@ -174,7 +168,6 @@ export const useTogglePromocionFeatured = () => {
   });
 };
 
-// Hook para eliminar promoción
 export const useDeletePromocion = () => {
   const queryClient = useQueryClient();
 

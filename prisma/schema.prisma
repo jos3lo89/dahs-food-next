@@ -57,7 +57,7 @@ model Product {
   orderItems        OrderItem[]
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
-  promotionProducts PromotionProduct[] // Nuevo: relación con promociones
+  promotionProducts PromotionProduct[]
 
   @@index([categoryId])
   @@index([active])
@@ -126,25 +126,41 @@ model PromotionPack {
 }
 
 model Order {
-  id              String         @id @default(cuid())
-  orderNumber     String         @unique // ORD-20250101-001
-  customerName    String
-  customerPhone   String
-  customerAddress String
-  items           OrderItem[]
-  subtotal        Decimal        @db.Decimal(10, 2)
-  discount        Decimal        @default(0) @db.Decimal(10, 2)
-  total           Decimal        @db.Decimal(10, 2)
-  status          OrderStatus    @default(PENDING)
-  paymentMethod   PaymentMethod? // "culqi", "yape", "plin", "efectivo"
-  paymentId       String? // ID de transacción
-  notes           String?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  promotionCode   String? // Nuevo: código de promoción usado
+  id                        String                   @id @default(cuid())
+  orderNumber               String                   @unique // ORD-20250101-001
+  customerName              String
+  customerPhone             String
+  customerEmail             String?
+  customerAddress           String
+  addressDetails            Json?
+  items                     OrderItem[]
+  subtotal                  Decimal                  @db.Decimal(10, 2)
+  discount                  Decimal                  @default(0) @db.Decimal(10, 2)
+  deliveryFee               Decimal                  @default(0) @db.Decimal(10, 2)
+  total                     Decimal                  @db.Decimal(10, 2)
+  status                    OrderStatus              @default(PENDING)
+  receiptImage              String?
+  paymentMethod             PaymentMethod? // "culqi", "yape", "plin", "efectivo"
+  paymentId                 String? // ID de transacción
+  paymentStatus             PaymentVerificationStatus? @default(PENDING)
+  paymentVerificationNotes  String?
+  verifiedBy                String?
+  verifiedAt                DateTime?
+  notes                     String?                  @db.Text
+  estimatedDeliveryTime     DateTime?
+  confirmedAt               DateTime?
+  preparingAt               DateTime?
+  outForDeliveryAt          DateTime?
+  deliveredAt               DateTime?
+  cancelledAt               DateTime?
+  createdAt                 DateTime                 @default(now())
+  updatedAt                 DateTime                 @updatedAt
+  promotionCode             String?
 
   @@index([orderNumber])
   @@index([status])
+  @@index([customerEmail])
+  @@index([customerPhone])
   @@index([createdAt])
 }
 
@@ -155,12 +171,19 @@ enum PaymentMethod {
   efectivo
 }
 
+enum PaymentVerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
 enum OrderStatus {
-  PENDING // Pendiente
-  CONFIRMED // Confirmado
-  PREPARING // En preparación
-  DELIVERED // Entregado
-  CANCELLED // Cancelado
+  PENDING
+  CONFIRMED
+  PREPARING
+  OUT_FOR_DELIVERY
+  DELIVERED
+  CANCELLED
 }
 
 model OrderItem {

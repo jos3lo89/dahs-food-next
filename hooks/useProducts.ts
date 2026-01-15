@@ -7,7 +7,6 @@ import {
 } from "@/types/products";
 import { toast } from "sonner";
 
-// Hook para obtener productos
 export const useProductos = (params?: {
   category?: string;
   active?: boolean;
@@ -20,7 +19,6 @@ export const useProductos = (params?: {
   });
 };
 
-// Hook para obtener un producto
 export const useProducto = (id: string) => {
   return useQuery({
     queryKey: ["producto", id],
@@ -29,7 +27,6 @@ export const useProducto = (id: string) => {
   });
 };
 
-// Hook para obtener categorías
 export const useCategorias = (active?: boolean) => {
   return useQuery({
     queryKey: ["categorias", active],
@@ -37,7 +34,6 @@ export const useCategorias = (active?: boolean) => {
   });
 };
 
-// Hook para crear producto
 export const useCreateProducto = () => {
   const queryClient = useQueryClient();
 
@@ -54,7 +50,6 @@ export const useCreateProducto = () => {
   });
 };
 
-// Hook para actualizar producto (con optimistic update)
 export const useUpdateProducto = () => {
   const queryClient = useQueryClient();
 
@@ -62,7 +57,6 @@ export const useUpdateProducto = () => {
     mutationFn: ({ id, data }: { id: string; data: UpdateProductoDto }) =>
       productsApi.updateProducto(id, data),
 
-    // Optimistic update
     onMutate: async ({ id, data }) => {
       await queryClient.cancelQueries({ queryKey: ["productos"] });
       const previousProductos = queryClient.getQueryData(["productos"]);
@@ -96,7 +90,6 @@ export const useUpdateProducto = () => {
   });
 };
 
-// Hook para toggle active (con optimistic update)
 export const useToggleProductoActive = () => {
   const queryClient = useQueryClient();
 
@@ -139,7 +132,6 @@ export const useToggleProductoActive = () => {
   });
 };
 
-// Hook para toggle featured (con optimistic update)
 export const useToggleProductoFeatured = () => {
   const queryClient = useQueryClient();
 
@@ -182,7 +174,6 @@ export const useToggleProductoFeatured = () => {
   });
 };
 
-// Hook para eliminar producto
 export const useDeleteProducto = () => {
   const queryClient = useQueryClient();
 

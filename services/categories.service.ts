@@ -8,7 +8,6 @@ import {
 } from "@/types/categories";
 
 export const categoriasApi = {
-  // GET: Obtener todas las categorías
   getCategorias: async (params?: { active?: boolean; search?: string }) => {
     const queryParams = new URLSearchParams();
 
@@ -25,7 +24,6 @@ export const categoriasApi = {
     return data;
   },
 
-  // GET: Obtener una categoría por ID
   getCategoria: async (id: string) => {
     const { data } = await axiosInstance.get<CategoriaResponse>(
       `categories/${id}`
@@ -33,7 +31,6 @@ export const categoriasApi = {
     return data;
   },
 
-  // POST: Crear categoría
   createCategoria: async (categoria: CreateCategoriaDto) => {
     const { data } = await axiosInstance.post<CategoriaResponse>(
       "categories",
@@ -42,7 +39,6 @@ export const categoriasApi = {
     return data;
   },
 
-  // PATCH: Actualizar categoría
   updateCategoria: async (id: string, categoria: UpdateCategoriaDto) => {
     const { data } = await axiosInstance.patch<CategoriaResponse>(
       `categories/${id}`,
@@ -51,7 +47,6 @@ export const categoriasApi = {
     return data;
   },
 
-  // DELETE: Desactivar categoría (soft delete)
   deleteCategoria: async (id: string) => {
     const { data } = await axiosInstance.delete<CategoriaResponse>(
       `categories/${id}`
@@ -59,7 +54,6 @@ export const categoriasApi = {
     return data;
   },
 
-  // PATCH: Activar categoría
   activateCategoria: async (id: string) => {
     const { data } = await axiosInstance.patch<CategoriaResponse>(
       `categories/${id}`,
@@ -68,7 +62,6 @@ export const categoriasApi = {
     return data;
   },
 
-  // PATCH: Reordenar categorías
   reorderCategorias: async (categories: ReorderCategoriesDto) => {
     const { data } = await axiosInstance.patch("categories", categories);
     return data;

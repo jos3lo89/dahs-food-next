@@ -1,18 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
-export async function GET(request: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams;
+    const searchParams = req.nextUrl.searchParams;
     const active = searchParams.get("active");
 
-    const where: any = {};
-    if (active !== null) {
-      where.active = active === "true";
+    const isActive =
+      active === "true" ? true : active === "false" ? false : undefined;
+
+    if (isActive === undefined) {
+      console.log("active is undifined");
+
+      return NextResponse.json(
+        { success: false, error: "Parámetro 'active' inválido" },
+        { status: 400 },
+      );
     }
 
     const categorias = await prisma.category.findMany({
-      where,
+      where: {
+        active: isActive,
+      },
       orderBy: { order: "asc" },
       select: {
         id: true,
@@ -31,7 +40,7 @@ export async function GET(request: NextRequest) {
     console.error("Error al obtener categorías:", error);
     return NextResponse.json(
       { success: false, error: "Error al obtener categorías" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

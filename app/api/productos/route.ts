@@ -16,7 +16,6 @@ const createProductSchema = z.object({
   stock: z.number().int().min(0).optional().default(999),
 });
 
-// Serializar Producto (convertir Decimal a number)
 function serializeProduct(product: any) {
   return {
     ...product,
@@ -30,7 +29,6 @@ function serializeProduct(product: any) {
   };
 }
 
-// GET /api/productos
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -91,7 +89,6 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/productos
 export async function POST(request: NextRequest) {
   try {
     const session = await auth();
@@ -105,7 +102,6 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = createProductSchema.parse(body);
 
-    // Verificar si el slug ya existe
     const existingProduct = await prisma.product.findUnique({
       where: { slug: validatedData.slug },
     });
@@ -117,7 +113,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verificar que la categoría existe
     const category = await prisma.category.findUnique({
       where: { id: validatedData.categoryId },
     });

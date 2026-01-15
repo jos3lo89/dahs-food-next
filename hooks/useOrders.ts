@@ -5,10 +5,11 @@ import {
   Order,
   OrderStatus,
   PaymentMethod,
+  PaymentVerificationStatus,
 } from "@/types/orders";
 import { toast } from "sonner";
+import { CreateOrderDto } from "@/types/checkout";
 
-// Hook para obtener pedidos
 export const useOrders = (params?: {
   status?: OrderStatus;
   paymentMethod?: PaymentMethod;
@@ -23,7 +24,6 @@ export const useOrders = (params?: {
   });
 };
 
-// Hook para obtener un pedido
 export const useOrder = (id: string) => {
   return useQuery({
     queryKey: ["order", id],
@@ -32,7 +32,6 @@ export const useOrder = (id: string) => {
   });
 };
 
-// Hook para actualizar pedido (con optimistic update)
 export const useUpdateOrder = () => {
   const queryClient = useQueryClient();
 
@@ -49,7 +48,7 @@ export const useUpdateOrder = () => {
         return {
           ...old,
           data: old.data.map((order: Order) =>
-            order.id === id ? { ...order, ...data } : order
+            order.id === id ? { ...order, ...data } : order,
           ),
         };
       });
@@ -59,10 +58,9 @@ export const useUpdateOrder = () => {
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
-      toast.success("Pedido actualizado exitosamente");
     },
 
-    onError: (error: any, variables, context) => {
+    onError: (error: any, _, context) => {
       if (context?.previousOrders) {
         queryClient.setQueryData(["orders"], context.previousOrders);
       }
@@ -71,7 +69,6 @@ export const useUpdateOrder = () => {
   });
 };
 
-// Hook para cambiar estado del pedido
 export const useUpdateOrderStatus = () => {
   const queryClient = useQueryClient();
 
@@ -88,7 +85,7 @@ export const useUpdateOrderStatus = () => {
         return {
           ...old,
           data: old.data.map((order: Order) =>
-            order.id === id ? { ...order, status } : order
+            order.id === id ? { ...order, status } : order,
           ),
         };
       });
@@ -106,6 +103,107 @@ export const useUpdateOrderStatus = () => {
         queryClient.setQueryData(["orders"], context.previousOrders);
       }
       toast.error(error.response?.data?.error || "Error al cambiar estado");
+    },
+  });
+};
+
+export const useApprovePayment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id }: { id: string }) => ordersApi.approvePayment(id),
+
+    onMutate: async ({ id }) => {
+      await queryClient.cancelQueries({ queryKey: ["orders"] });
+      await queryClient.cancelQueries({ queryKey: ["order", id] });
+      const previousOrders = queryClient.getQueryData(["orders"]);
+
+      queryClient.setQueryData(["orders"], (old: any) => {
+        if (!old?.data) return old;
+        return {
+          ...old,
+          data: old.data.map((order: Order) =>
+            order.id === id
+              ? {
+                  ...order,
+                  paymentStatus: "VERIFIED" as PaymentVerificationStatus,
+                  verifiedAt: new Date().toISOString(),
+                }
+              : order,
+          ),
+        };
+      });
+
+      return { previousOrders };
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["order"] });
+    },
+
+    onError: (error: any, _, context) => {
+      if (context?.previousOrders) {
+        queryClient.setQueryData(["orders"], context.previousOrders);
+      }
+      toast.error(error.response?.data?.error || "Error al aprobar pago");
+    },
+  });
+};
+
+export const useRejectPayment = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, notes }: { id: string; notes: string }) =>
+      ordersApi.rejectPayment(id, notes),
+
+    onMutate: async ({ id }) => {
+      await queryClient.cancelQueries({ queryKey: ["orders"] });
+      await queryClient.cancelQueries({ queryKey: ["order", id] });
+      const previousOrders = queryClient.getQueryData(["orders"]);
+
+      queryClient.setQueryData(["orders"], (old: any) => {
+        if (!old?.data) return old;
+        return {
+          ...old,
+          data: old.data.map((order: Order) =>
+            order.id === id
+              ? {
+                  ...order,
+                  paymentStatus: "REJECTED" as PaymentVerificationStatus,
+                  paymentVerificationNotes: "",
+                }
+              : order,
+          ),
+        };
+      });
+
+      return { previousOrders };
+    },
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["order"] });
+    },
+
+    onError: (error: any, _, context) => {
+      if (context?.previousOrders) {
+        queryClient.setQueryData(["orders"], context.previousOrders);
+      }
+      toast.error(error.response?.data?.error || "Error al rechazar pago");
+    },
+  });
+};
+
+export const useCreateOrder = () => {
+  return useMutation({
+    mutationFn: (order: CreateOrderDto) => ordersApi.createOrder(order),
+    onSuccess: () => {
+      toast.success("Pedido creado exitosamente");
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.error || "Error al crear pedido");
     },
   });
 };

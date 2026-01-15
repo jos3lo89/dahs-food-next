@@ -11,12 +11,11 @@ import {
 export const productsApi = {
   getProducts: async (categorySlug: string, isActive: boolean) => {
     const { data } = await axiosInstance.get<ProductsI[]>(
-      `products?category=${categorySlug}&active=${isActive}`
+      `products?category=${categorySlug}&active=${isActive}`,
     );
     return data;
   },
 
-  // GET: Obtener todos los productos
   getProductos: async (params?: {
     category?: string;
     active?: boolean;
@@ -39,60 +38,56 @@ export const productsApi = {
     }
 
     const { data } = await axiosInstance.get<ProductosResponse>(
-      `productos?${queryParams.toString()}`
+      `productos?${queryParams.toString()}`,
     );
     return data;
   },
 
-  // GET: Obtener un producto por ID
   getProducto: async (id: string) => {
     const { data } = await axiosInstance.get<ProductoResponse>(
-      `productos/${id}`
+      `productos/${id}`,
     );
     return data;
   },
 
-  // POST: Crear producto
   createProducto: async (producto: CreateProductoDto) => {
     const { data } = await axiosInstance.post<ProductoResponse>(
       "productos",
-      producto
+      producto,
     );
     return data;
   },
 
-  // PATCH: Actualizar producto
   updateProducto: async (id: string, producto: UpdateProductoDto) => {
     const { data } = await axiosInstance.patch<ProductoResponse>(
       `productos/${id}`,
-      producto
+      producto,
     );
     return data;
   },
 
-  // DELETE: Desactivar producto (soft delete)
   deleteProducto: async (id: string) => {
     const { data } = await axiosInstance.delete<ProductoResponse>(
-      `productos/${id}`
+      `productos/${id}`,
     );
     return data;
   },
 
-  // PATCH: Activar producto
   activateProducto: async (id: string) => {
     const { data } = await axiosInstance.patch<ProductoResponse>(
       `productos/${id}`,
-      { active: true }
+      { active: true },
     );
     return data;
   },
 
-  // GET: Obtener categorías
   getCategorias: async (active?: boolean) => {
     const queryParams = new URLSearchParams();
     if (active !== undefined) {
       queryParams.append("active", String(active));
     }
+
+    console.log(queryParams);
 
     const { data } = await axiosInstance.get<{
       success: boolean;

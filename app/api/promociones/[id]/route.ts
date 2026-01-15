@@ -73,7 +73,6 @@ function serializePromocion(promocion: any) {
   };
 }
 
-// GET /api/promociones/[id]
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -122,7 +121,6 @@ export async function GET(
   }
 }
 
-// PATCH /api/promociones/[id]
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -140,7 +138,6 @@ export async function PATCH(
     const body = await request.json();
     const validatedData = updatePromocionSchema.parse(body);
 
-    // Verificar que la promoción existe
     const existingPromocion = await prisma.promotion.findUnique({
       where: { id },
       include: {
@@ -156,7 +153,6 @@ export async function PATCH(
       );
     }
 
-    // Si se actualiza el código, verificar que sea único
     if (validatedData.code && validatedData.code !== existingPromocion.code) {
       const existingCode = await prisma.promotion.findFirst({
         where: {
@@ -173,7 +169,6 @@ export async function PATCH(
       }
     }
 
-    // Verificar fechas
     const startDate = validatedData.startDate
       ? new Date(validatedData.startDate)
       : existingPromocion.startDate;
@@ -210,14 +205,11 @@ export async function PATCH(
       featured: validatedData.featured,
     };
 
-    // Si se actualizan productos (tipo DISCOUNT)
     if (validatedData.productIds) {
-      // Eliminar productos antiguos
       await prisma.promotionProduct.deleteMany({
         where: { promotionId: id },
       });
 
-      // Crear nuevos
       dataToUpdate.products = {
         create: validatedData.productIds.map((productId) => ({
           productId,
@@ -226,9 +218,7 @@ export async function PATCH(
       };
     }
 
-    // Si se actualizan packs (tipo PACK)
     if (validatedData.packs) {
-      // Eliminar packs antiguos (y sus imágenes de Cloudinary)
       const oldPacks = existingPromocion.packs;
       for (const pack of oldPacks) {
         if (pack.image && pack.image.includes("cloudinary")) {
@@ -244,7 +234,6 @@ export async function PATCH(
         where: { promotionId: id },
       });
 
-      // Crear nuevos packs
       dataToUpdate.packs = {
         create: validatedData.packs.map((pack) => ({
           name: pack.name,
@@ -302,7 +291,6 @@ export async function PATCH(
   }
 }
 
-// DELETE /api/promociones/[id] - SOFT DELETE
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

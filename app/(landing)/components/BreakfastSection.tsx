@@ -39,6 +39,12 @@ const BreakfastSection = () => {
     );
   }
 
+  if (breakFasts?.length === 0) {
+    return null;
+  }
+
+  console.log(breakFasts);
+
   return (
     <section id="desayunos" className="py-20 bg-pink-50">
       <div className="container mx-auto px-4">

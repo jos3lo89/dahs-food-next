@@ -16,17 +16,19 @@ import {
 } from "@/components/ui/sheet";
 import { useCartStore } from "@/store/cartStore";
 import {
-  MessageCircle,
+  ShoppingCart,
   Minus,
   Plus,
   ShoppingBag,
-  ShoppingCart,
   Trash2,
   X,
+  ArrowRight,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const SidebarCart = () => {
+  const router = useRouter();
   const {
     items,
     getItemsCount,
@@ -64,54 +66,10 @@ const SidebarCart = () => {
     }).format(price);
   };
 
-  const [formData, setFormData] = useState({
-    name: customerInfo?.name || "",
-    phone: customerInfo?.phone || "",
-    address: customerInfo?.address || "",
-    notes: customerInfo?.notes || "",
-  });
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleGoToCheckout = () => {
+    closeCart();
+    router.push("/checkout");
   };
-
-  const handleCheckout = () => {
-    // Guardar info del cliente
-    setCustomerInfo({
-      name: formData.name,
-      phone: formData.phone,
-      address: formData.address,
-      notes: formData.notes,
-    });
-
-    // Enviar pedido por WhatsApp
-    // sendWhatsAppOrder({
-    //   items,
-    //   subtotal,
-    //   discount,
-    //   total,
-    //   customerInfo: {
-    //     name: formData.name,
-    //     phone: formData.phone,
-    //     address: formData.address,
-    //     notes: formData.notes,
-    //   },
-    //   promotionCode: promotion?.code,
-    //   businessPhone: BUSINESS_PHONE,
-    // });
-
-    // Opcional: Limpiar carrito después de enviar
-    // clearCart();
-  };
-
-  const canCheckout =
-    items.length > 0 &&
-    formData.name.trim() !== "" &&
-    formData.phone.trim() !== "" &&
-    formData.address.trim() !== "";
 
   return (
     <Sheet
@@ -153,10 +111,9 @@ const SidebarCart = () => {
             )}
           </div>
         </SheetHeader>
-        {/* CONTENIDO DEL CARRITO */}
+
         <div className="flex-1 flex flex-col overflow-hidden">
           {items.length === 0 ? (
-            // Carrito vacío
             <div className="flex-1 flex flex-col items-center justify-center text-center p-6">
               <div className="w-24 h-24 bg-pink-100 rounded-full flex items-center justify-center mb-4">
                 <ShoppingBag className="w-12 h-12 text-pink-400" />
@@ -175,7 +132,6 @@ const SidebarCart = () => {
             </div>
           ) : (
             <>
-              {/* LISTA DE PRODUCTOS */}
               <ScrollArea className="flex-1 px-6">
                 <div className="space-y-4 py-4">
                   {items.map((item) => (
@@ -183,7 +139,6 @@ const SidebarCart = () => {
                       key={item.id}
                       className="flex gap-4 bg-pink-50 rounded-lg p-3"
                     >
-                      {/* Imagen */}
                       <div className="relative w-20 h-20 shrink-0 rounded-lg overflow-hidden">
                         <img
                           src={item.image}
@@ -192,7 +147,6 @@ const SidebarCart = () => {
                         />
                       </div>
 
-                      {/* Info del producto */}
                       <div className="flex-1 min-w-0">
                         <h4 className="font-semibold text-gray-800 truncate">
                           {item.name}
@@ -201,7 +155,6 @@ const SidebarCart = () => {
                           {formatPrice(item.price)}
                         </p>
 
-                        {/* Controles de cantidad */}
                         <div className="flex items-center gap-2 mt-2">
                           <Button
                             variant="outline"
@@ -227,7 +180,6 @@ const SidebarCart = () => {
                         </div>
                       </div>
 
-                      {/* Precio total y eliminar */}
                       <div className="flex flex-col items-end justify-between">
                         <Button
                           variant="ghost"
@@ -247,9 +199,7 @@ const SidebarCart = () => {
                 </div>
               </ScrollArea>
 
-              {/* FORMULARIO Y TOTALES */}
               <div className="border-t border-pink-100 px-6 py-4 space-y-4">
-                {/* Totales */}
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Subtotal:</span>
@@ -273,80 +223,17 @@ const SidebarCart = () => {
                   </div>
                 </div>
 
-                {/* Formulario de cliente */}
-                <div className="space-y-3">
-                  <div>
-                    <Label htmlFor="name" className="text-sm">
-                      Nombre completo *
-                    </Label>
-                    <Input
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      placeholder="Juan Pérez"
-                      className="mt-1"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="phone" className="text-sm">
-                      Teléfono / WhatsApp *
-                    </Label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      placeholder="999 999 999"
-                      className="mt-1"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="address" className="text-sm">
-                      Dirección de entrega *
-                    </Label>
-                    <Input
-                      id="address"
-                      name="address"
-                      value={formData.address}
-                      onChange={handleInputChange}
-                      placeholder="Av. Principal 123, Lima"
-                      className="mt-1"
-                    />
-                  </div>
-
-                  <div>
-                    <Label htmlFor="notes" className="text-sm">
-                      Notas adicionales (opcional)
-                    </Label>
-                    <Input
-                      id="notes"
-                      name="notes"
-                      value={formData.notes}
-                      onChange={handleInputChange}
-                      placeholder="Sin cebolla, por favor..."
-                      className="mt-1"
-                    />
-                  </div>
-                </div>
-
-                {/* Botón de checkout */}
                 <Button
-                  onClick={handleCheckout}
-                  disabled={!canCheckout}
-                  className="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-6 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={handleGoToCheckout}
+                  className="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold py-6 rounded-lg"
                 >
-                  <MessageCircle className="w-5 h-5 mr-2" />
-                  Enviar Pedido por WhatsApp
+                  Finalizar Pedido
+                  <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
 
-                {!canCheckout && items.length > 0 && (
-                  <p className="text-xs text-center text-red-500">
-                    * Completa todos los campos requeridos
-                  </p>
-                )}
+                <p className="text-xs text-center text-gray-500">
+                  Completa tu pedido en la siguiente pantalla
+                </p>
               </div>
             </>
           )}
@@ -355,4 +242,5 @@ const SidebarCart = () => {
     </Sheet>
   );
 };
+
 export default SidebarCart;

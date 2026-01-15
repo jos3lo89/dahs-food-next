@@ -27,17 +27,14 @@ export default function UserDropdown() {
 
   return (
     <div className="relative">
-      {/* TRIGGER BUTTON */}
       <button
         onClick={toggleDropdown}
         className="flex items-center gap-2 px-3 py-2 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
       >
-        {/* Avatar */}
         <div className="w-9 h-9 bg-linear-to-br from-pink-500 to-pink-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
           {session?.user?.name?.charAt(0).toUpperCase() || "U"}
         </div>
 
-        {/* Name + Chevron */}
         <div className="hidden md:flex items-center gap-2">
           <span className="font-medium text-gray-700 dark:text-gray-200 text-sm">
             {session?.user?.name || "Usuario"}

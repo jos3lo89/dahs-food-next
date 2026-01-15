@@ -20,7 +20,6 @@ export default function UsuariosPage() {
     "all" | "active" | "inactive"
   >("all");
 
-  // Query con filtros
   const { data, isLoading, error } = useUsuarios({
     search: search || undefined,
     isActive:
@@ -35,7 +34,6 @@ export default function UsuariosPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -48,9 +46,7 @@ export default function UsuariosPage() {
         <CreateUserDialog />
       </div>
 
-      {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-4">
-        {/* Search */}
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <Input
@@ -61,7 +57,6 @@ export default function UsuariosPage() {
           />
         </div>
 
-        {/* Status Filter */}
         <Select
           value={statusFilter}
           onValueChange={(v: any) => setStatusFilter(v)}
@@ -77,7 +72,6 @@ export default function UsuariosPage() {
         </Select>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white dark:bg-gray-800 rounded-lg p-6 border border-gray-200 dark:border-gray-700">
           <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -101,7 +95,6 @@ export default function UsuariosPage() {
         </div>
       </div>
 
-      {/* Table */}
       {isLoading ? (
         <div className="flex justify-center items-center py-12">
           <Loader2 className="w-8 h-8 animate-spin text-pink-500" />

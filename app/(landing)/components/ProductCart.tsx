@@ -1,76 +1,111 @@
 "use client";
+
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cartStore";
-import { ProductsI } from "@/types/products";
-import { Minus, Plus, ShoppingCart } from "lucide-react";
+import { Producto } from "@/types/products";
+import { Minus, Plus, ShoppingCart, Star, AlertCircle } from "lucide-react";
 
 type Props = {
-  product: ProductsI;
+  product: Producto;
+  featured?: boolean;
 };
 
-const ProductCart = ({ product }: Props) => {
+const ProductCard = ({ product, featured = false }: Props) => {
   const { increaseQuantity, decreaseQuantity, getItemQuantity, addItem } =
     useCartStore();
-
   const quantity = getItemQuantity(product.id);
 
-  const handleAddToCart = () => {
-    addItem(product);
-  };
+  const handleAddToCart = () => addItem(product);
+
+  const formattedPrice = new Intl.NumberFormat("es-PE", {
+    style: "currency",
+    currency: "PEN",
+  }).format(Number(product.price));
 
   return (
-    <div className="bg-white rounded-3xl shadow-lg overflow-hidden card-hover">
-      <div className="relative h-56 overflow-hidden">
+    <div className="flex flex-col bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 h-full group">
+      <div className="relative w-full aspect-square bg-gray-50 flex items-center justify-center p-2 overflow-hidden">
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+          className="w-full h-full object-contain mix-blend-multiply"
         />
-        <div className="absolute top-4 right-4 bg-pink-500 text-white px-4 py-2 rounded-full font-bold shadow-md">
-          S/ {Number(product.price).toFixed(2)}
-        </div>
       </div>
 
-      <div className="p-6">
-        <h3 className="text-2xl font-bold text-pink-900 mb-2">
+      <div className="flex flex-col flex-1 p-2">
+        <div className="flex justify-between items-start mb-2">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-pink-500 bg-pink-50 px-2 py-1 rounded-md">
+            {product.category.name}
+          </span>
+          {featured && (
+            <div className="flex items-center gap-1 text-yellow-600 bg-yellow-50 px-2 py-1 rounded-md">
+              <Star className="w-3 h-3 fill-yellow-500" />
+              <span className="text-[10px] font-bold">Destacado</span>
+            </div>
+          )}
+        </div>
+
+        <h3 className="text-gray-800 font-bold text-base leading-tight line-clamp-2 mb-1 min-h-10">
           {product.name}
         </h3>
-        <p className="text-gray-600 mb-6">{product.description}</p>
 
-        {quantity > 0 ? (
-          <div className="flex items-center justify-around gap-4">
-            <div className="flex items-center bg-pink-50 rounded-full overflow-hidden">
+        {product.stock > 0 && product.stock < 10 && (
+          <div className="flex items-center gap-1 mb-2 text-orange-600 text-xs font-medium">
+            <AlertCircle className="w-3 h-3" />
+            <span>¡Solo quedan {product.stock}!</span>
+          </div>
+        )}
+
+        <div className="mt-auto mb-4">
+          <span className="text-xl font-extrabold text-pink-600">
+            {formattedPrice}
+          </span>
+        </div>
+
+        <div className="mt-auto">
+          {product.stock === 0 ? (
+            <Button
+              disabled
+              variant="outline"
+              className="w-full bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed hover:bg-gray-100"
+            >
+              Agotado
+            </Button>
+          ) : quantity > 0 ? (
+            <div className="flex items-center justify-between bg-pink-50 rounded-lg p-1 border border-pink-100">
               <Button
+                size="icon"
                 variant="ghost"
-                className="px-4 py-2 rounded-l-full text-pink-600 hover:bg-pink-200 transition font-bold cursor-pointer"
+                className="h-8 w-8 text-pink-600 hover:bg-pink-200 hover:text-pink-700 rounded-md"
                 onClick={() => decreaseQuantity(product.id)}
               >
-                <Minus />
+                <Minus className="w-4 h-4" />
               </Button>
-              <span className="quantity px-4 py-2 font-semibold text-pink-900 cursor-default">
+              <span className="font-bold text-pink-900 text-sm">
                 {quantity}
               </span>
               <Button
+                size="icon"
                 variant="ghost"
-                className="px-4 py-2 rounded-r-full text-pink-600 hover:bg-pink-200 transition font-bold cursor-pointer"
+                className="h-8 w-8 text-pink-600 hover:bg-pink-200 hover:text-pink-700 rounded-md"
                 onClick={() => increaseQuantity(product.id)}
               >
-                <Plus />
+                <Plus className="w-4 h-4" />
               </Button>
             </div>
-          </div>
-        ) : (
-          <Button
-            className="w-full bg-pink-500 hover:bg-pink-600 text-white font-semibold px-6 py-3 rounded-full transition-all duration-300 hover:shadow-lg"
-            onClick={handleAddToCart}
-          >
-            <ShoppingCart className="w-4 h-4 mr-2" />
-            Agregar al carrito
-          </Button>
-        )}
+          ) : (
+            <Button
+              className="w-full bg-pink-600 hover:bg-pink-700 text-white shadow-sm hover:shadow-md transition-all h-10 font-semibold rounded-lg"
+              onClick={handleAddToCart}
+            >
+              <ShoppingCart className="w-4 h-4 mr-2" />
+              Agregar
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   );
 };
 
-export default ProductCart;
+export default ProductCard;

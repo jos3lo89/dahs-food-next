@@ -139,7 +139,6 @@ export function PromocionesTable({ promociones }: PromocionesTableProps) {
           <TableBody>
             {promociones.map((promocion) => (
               <TableRow key={promocion.id}>
-                {/* Promoción */}
                 <TableCell>
                   <div className="flex items-center gap-3">
                     {promocion.image ? (
@@ -186,7 +185,6 @@ export function PromocionesTable({ promociones }: PromocionesTableProps) {
                   </div>
                 </TableCell>
 
-                {/* Tipo */}
                 <TableCell>
                   <Badge
                     variant="outline"
@@ -196,14 +194,12 @@ export function PromocionesTable({ promociones }: PromocionesTableProps) {
                   </Badge>
                 </TableCell>
 
-                {/* Descuento */}
                 <TableCell>
                   <p className="font-semibold text-pink-600 dark:text-pink-400">
                     {promocion.discount}%
                   </p>
                 </TableCell>
 
-                {/* Vigencia */}
                 <TableCell>
                   <div className="text-sm">
                     <p className="text-gray-900 dark:text-white">
@@ -220,7 +216,6 @@ export function PromocionesTable({ promociones }: PromocionesTableProps) {
                   </div>
                 </TableCell>
 
-                {/* Estado */}
                 <TableCell>
                   <div className="flex flex-col gap-2">
                     {getStatusBadge(promocion)}
@@ -237,7 +232,6 @@ export function PromocionesTable({ promociones }: PromocionesTableProps) {
                   </div>
                 </TableCell>
 
-                {/* Destacado */}
                 <TableCell>
                   <Button
                     variant="ghost"
@@ -257,7 +251,6 @@ export function PromocionesTable({ promociones }: PromocionesTableProps) {
                   </Button>
                 </TableCell>
 
-                {/* Acciones */}
                 <TableCell className="text-right">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>

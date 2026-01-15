@@ -41,7 +41,6 @@ export function PromocionCard({
   const end = new Date(promocion.endDate);
   const daysLeft = differenceInDays(end, now);
 
-  // Estados de la promoción
   const isProgrammed = isFuture(start);
   const isExpired = isPast(end);
   const isActive = promocion.active && !isProgrammed && !isExpired;
@@ -49,11 +48,9 @@ export function PromocionCard({
 
   const Icon = typeIcons[promocion.type];
 
-  // Variant: Featured (para slider principal)
   if (variant === "featured") {
     return (
       <div className="relative w-full h-96 rounded-2xl overflow-hidden group">
-        {/* Imagen de fondo */}
         {promocion.image ? (
           <Image
             src={promocion.image}
@@ -66,12 +63,9 @@ export function PromocionCard({
           <div className="absolute inset-0 bg-linear-to-br from-pink-500 via-purple-500 to-indigo-500" />
         )}
 
-        {/* Overlay oscuro */}
         <div className="absolute inset-0 bg-black/40 group-hover:bg-black/50 transition-colors" />
 
-        {/* Contenido */}
         <div className="absolute inset-0 p-8 flex flex-col justify-end text-white">
-          {/* Badges superiores */}
           <div className="absolute top-8 left-8 flex gap-2">
             <Badge className="bg-pink-500 hover:bg-pink-600">
               {typeLabels[promocion.type]}
@@ -84,7 +78,6 @@ export function PromocionCard({
             )}
           </div>
 
-          {/* Descuento grande */}
           <div className="mb-4">
             <p className="text-7xl font-bold drop-shadow-lg">
               {promocion.discount}%
@@ -92,19 +85,16 @@ export function PromocionCard({
             <p className="text-2xl font-semibold">de descuento</p>
           </div>
 
-          {/* Nombre */}
           <h2 className="text-4xl font-bold mb-2 drop-shadow-lg">
             {promocion.name}
           </h2>
 
-          {/* Descripción */}
           {promocion.description && (
             <p className="text-lg mb-4 line-clamp-2 max-w-2xl">
               {promocion.description}
             </p>
           )}
 
-          {/* Vigencia */}
           <div className="flex items-center gap-2 text-sm mb-4">
             <Calendar className="w-4 h-4" />
             <span>
@@ -112,7 +102,6 @@ export function PromocionCard({
             </span>
           </div>
 
-          {/* Botón */}
           {showDetails && (
             <Button
               onClick={onViewDetails}
@@ -126,7 +115,6 @@ export function PromocionCard({
     );
   }
 
-  // Variant: Compact (para listados pequeños)
   if (variant === "compact") {
     return (
       <Card
@@ -134,7 +122,6 @@ export function PromocionCard({
         onClick={onViewDetails}
       >
         <CardContent className="p-4 flex items-center gap-3">
-          {/* Imagen */}
           {promocion.image ? (
             <div className="relative w-16 h-16 rounded-lg overflow-hidden shrink-0">
               <Image
@@ -151,7 +138,6 @@ export function PromocionCard({
             </div>
           )}
 
-          {/* Info */}
           <div className="flex-1 min-w-0">
             <h3 className="font-semibold text-gray-900 dark:text-white truncate">
               {promocion.name}
@@ -172,11 +158,9 @@ export function PromocionCard({
     );
   }
 
-  // Variant: Default (tarjeta estándar)
   return (
     <Card className="overflow-hidden hover:shadow-lg transition-shadow group">
       <div className="relative h-48 bg-gray-100 dark:bg-gray-800">
-        {/* Imagen */}
         {promocion.image ? (
           <Image
             src={promocion.image}
@@ -190,7 +174,6 @@ export function PromocionCard({
           </div>
         )}
 
-        {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-2">
           <Badge className="bg-pink-500 hover:bg-pink-600 w-fit">
             -{promocion.discount}%
@@ -202,7 +185,6 @@ export function PromocionCard({
           )}
         </div>
 
-        {/* Estado */}
         <div className="absolute top-3 right-3">
           {isProgrammed && (
             <Badge className="bg-yellow-500">Próximamente</Badge>
@@ -212,7 +194,6 @@ export function PromocionCard({
       </div>
 
       <CardContent className="p-4 space-y-3">
-        {/* Título */}
         <div>
           <h3 className="font-semibold text-lg text-gray-900 dark:text-white line-clamp-1">
             {promocion.name}
@@ -222,14 +203,12 @@ export function PromocionCard({
           </p>
         </div>
 
-        {/* Descripción */}
         {promocion.description && (
           <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
             {promocion.description}
           </p>
         )}
 
-        {/* Código */}
         {promocion.code && (
           <div className="flex items-center gap-2 p-2 bg-gray-50 dark:bg-gray-800 rounded-lg">
             <Tag className="w-4 h-4 text-gray-500" />
@@ -239,7 +218,6 @@ export function PromocionCard({
           </div>
         )}
 
-        {/* Productos/Packs */}
         {promocion._count && (
           <div className="flex gap-4 text-sm text-gray-600 dark:text-gray-400">
             {promocion._count.products > 0 && (
@@ -251,13 +229,11 @@ export function PromocionCard({
           </div>
         )}
 
-        {/* Vigencia */}
         <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-3">
           <Calendar className="w-4 h-4" />
           <span>Hasta el {format(end, "dd/MM/yyyy", { locale: es })}</span>
         </div>
 
-        {/* Botón */}
         {showDetails && (
           <Button
             onClick={onViewDetails}

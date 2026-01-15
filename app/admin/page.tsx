@@ -58,7 +58,6 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
@@ -82,7 +81,6 @@ export default function DashboardPage() {
         </Button>
       </div>
 
-      {/* Stats Cards - Ventas */}
       <div>
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           💰 Ventas e Ingresos
@@ -121,56 +119,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Stats Cards - Pedidos */}
-      <div>
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-          📦 Pedidos
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-          <StatCard
-            title="Total Pedidos"
-            value={stats.totalOrders}
-            icon={ShoppingBag}
-            iconColor="text-pink-600 dark:text-pink-400"
-            iconBgColor="bg-pink-100 dark:bg-pink-900/20"
-            trend={stats.ordersGrowth}
-            trendLabel="vs mes anterior"
-          />
-          <StatCard
-            title="Pedidos Hoy"
-            value={stats.todayOrders}
-            icon={Clock}
-            iconColor="text-blue-600 dark:text-blue-400"
-            iconBgColor="bg-blue-100 dark:bg-blue-900/20"
-          />
-          <StatCard
-            title="Pendientes"
-            value={stats.pendingOrders}
-            icon={Clock}
-            iconColor="text-yellow-600 dark:text-yellow-400"
-            iconBgColor="bg-yellow-100 dark:bg-yellow-900/20"
-          />
-          <StatCard
-            title="En Preparación"
-            value={
-              stats.ordersByStatus.find((o) => o.status === "PREPARING")
-                ?.count || 0
-            }
-            icon={ChefHat}
-            iconColor="text-purple-600 dark:text-purple-400"
-            iconBgColor="bg-purple-100 dark:bg-purple-900/20"
-          />
-          <StatCard
-            title="Completados"
-            value={stats.completedOrders}
-            icon={CheckCircle}
-            iconColor="text-green-600 dark:text-green-400"
-            iconBgColor="bg-green-100 dark:bg-green-900/20"
-          />
-        </div>
-      </div>
-
-      {/* Stats Cards - Productos y Otros */}
       <div>
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           📊 Inventario y General
@@ -197,23 +145,21 @@ export default function DashboardPage() {
             iconColor="text-green-600 dark:text-green-400"
             iconBgColor="bg-green-100 dark:bg-green-900/20"
           />
-          <StatCard
+          {/* <StatCard
             title="Promociones Activas"
             value={`${stats.activePromotions} (${stats.featuredPromotions} destacadas)`}
             icon={Tag}
             iconColor="text-pink-600 dark:text-pink-400"
             iconBgColor="bg-pink-100 dark:bg-pink-900/20"
-          />
+          /> */}
         </div>
       </div>
 
-      {/* Gráficos */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <SalesChart data={stats.salesChart} />
         <CategorySalesChart data={stats.salesByCategory} />
       </div>
 
-      {/* Métodos de Pago */}
       {stats.paymentMethods.length > 0 && (
         <Card>
           <CardHeader>
@@ -245,17 +191,14 @@ export default function DashboardPage() {
         </Card>
       )}
 
-      {/* Top Productos */}
       {stats.topProducts.length > 0 && (
         <TopProductsTable products={stats.topProducts} />
       )}
 
-      {/* Pedidos Recientes */}
       {stats.recentOrders.length > 0 && (
         <RecentOrdersTable orders={stats.recentOrders} />
       )}
 
-      {/* Accesos Rápidos */}
       <div>
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
           🚀 Accesos Rápidos
@@ -281,7 +224,7 @@ export default function DashboardPage() {
             count={stats.activeProducts}
             countLabel="productos activos"
           />
-          <QuickAccessCard
+          {/* <QuickAccessCard
             title="Promociones"
             description="Crea y gestiona ofertas y descuentos"
             icon={Tag}
@@ -290,7 +233,7 @@ export default function DashboardPage() {
             href="/admin/promociones"
             count={stats.activePromotions}
             countLabel="promociones activas"
-          />
+          /> */}
           <QuickAccessCard
             title="Categorías"
             description="Organiza tus productos por categorías"
@@ -322,7 +265,6 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Alertas y Notificaciones */}
       {(stats.pendingOrders > 0 ||
         stats.lowStockProducts > 0 ||
         stats.outOfStockProducts > 0) && (

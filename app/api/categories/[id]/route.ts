@@ -10,7 +10,6 @@ const updateCategorySchema = z.object({
   active: z.boolean().optional(),
 });
 
-// GET /api/categorias/[id]
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -45,7 +44,6 @@ export async function GET(
   }
 }
 
-// PATCH /api/categorias/[id]
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -63,7 +61,6 @@ export async function PATCH(
     const body = await request.json();
     const validatedData = updateCategorySchema.parse(body);
 
-    // Si se actualiza el nombre, verificar que no esté en uso
     if (validatedData.name) {
       const existingByName = await prisma.category.findFirst({
         where: {
@@ -80,7 +77,6 @@ export async function PATCH(
       }
     }
 
-    // Si se actualiza el slug, verificar que no esté en uso
     if (validatedData.slug) {
       const existingBySlug = await prisma.category.findFirst({
         where: {
@@ -98,7 +94,6 @@ export async function PATCH(
     }
 
     if (validatedData.order !== undefined) {
-      // Obtener la categoría actual
       const currentCategory = await prisma.category.findUnique({
         where: { id },
         select: { order: true },
@@ -114,9 +109,7 @@ export async function PATCH(
       const oldOrder = currentCategory.order;
       const newOrder = validatedData.order;
 
-      // Solo procesar si el orden cambió
       if (oldOrder !== newOrder) {
-        // Verificar que el nuevo order sea válido (≥ 1)
         if (newOrder < 1) {
           return NextResponse.json(
             { success: false, error: "El orden debe ser mayor o igual a 1" },
@@ -124,7 +117,6 @@ export async function PATCH(
           );
         }
 
-        // Verificar si existe una categoría con ese order
         const categoryInTargetPosition = await prisma.category.findFirst({
           where: {
             order: newOrder,
@@ -132,9 +124,7 @@ export async function PATCH(
           },
         });
 
-        // Si existe, moverla al final
         if (categoryInTargetPosition) {
-          // Obtener el orden máximo
           const maxOrderCategory = await prisma.category.findFirst({
             orderBy: { order: "desc" },
             select: { order: true },
@@ -142,7 +132,6 @@ export async function PATCH(
 
           const maxOrder = maxOrderCategory?.order || 0;
 
-          // Mover la categoría desplazada al final
           await prisma.category.update({
             where: { id: categoryInTargetPosition.id },
             data: { order: maxOrder + 1 },
@@ -151,7 +140,6 @@ export async function PATCH(
       }
     }
 
-    // Actualizar la categoría
     const categoria = await prisma.category.update({
       where: { id },
       data: validatedData,
@@ -183,7 +171,6 @@ export async function PATCH(
   }
 }
 
-// DELETE /api/categorias/[id] - SOFT DELETE
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -198,7 +185,6 @@ export async function DELETE(
       );
     }
 
-    // Verificar si tiene productos asociados
     const productsCount = await prisma.product.count({
       where: { categoryId: id },
     });
@@ -213,7 +199,6 @@ export async function DELETE(
       );
     }
 
-    // Soft delete (desactivar)
     const categoria = await prisma.category.update({
       where: { id },
       data: { active: false },

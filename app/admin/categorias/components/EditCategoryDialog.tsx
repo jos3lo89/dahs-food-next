@@ -92,7 +92,6 @@ export function EditCategoryDialog({
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Nombre */}
           <div>
             <Label htmlFor="edit-name">Nombre de la Categoría *</Label>
             <Input
@@ -106,7 +105,6 @@ export function EditCategoryDialog({
             )}
           </div>
 
-          {/* Slug */}
           <div>
             <Label htmlFor="edit-slug">Slug (URL amigable) *</Label>
             <Input id="edit-slug" {...register("slug")} disabled={isPending} />
@@ -115,7 +113,6 @@ export function EditCategoryDialog({
             )}
           </div>
 
-          {/* Orden */}
           <div>
             <Label htmlFor="edit-order">Posición en el listado *</Label>
             <Input
@@ -135,7 +132,6 @@ export function EditCategoryDialog({
             </p>
           </div>
 
-          {/* Info de productos */}
           {categoria?._count?.products !== undefined && (
             <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
               <p className="text-sm text-blue-700 dark:text-blue-300">
@@ -146,7 +142,6 @@ export function EditCategoryDialog({
             </div>
           )}
 
-          {/* Buttons */}
           <div className="flex justify-end gap-3 pt-4">
             <Button
               type="button"

@@ -61,7 +61,6 @@ export function EditPromocionDialog({
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
   const [packs, setPacks] = useState<CreatePackDto[]>([]);
 
-  // Referencias originales para cleanup
   const originalPromoImageRef = useRef<string>("");
   const originalPacksRef = useRef<CreatePackDto[]>([]);
 
@@ -83,7 +82,6 @@ export function EditPromocionDialog({
 
   useEffect(() => {
     if (promocion) {
-      // Formatear fechas para datetime-local
       const startDate = format(
         new Date(promocion.startDate),
         "yyyy-MM-dd'T'HH:mm"
@@ -105,12 +103,9 @@ export function EditPromocionDialog({
       setPromoImage(promocion.image || "");
       originalPromoImageRef.current = promocion.image || "";
 
-      // Cargar productos seleccionados
       if (promocion.products) {
         setSelectedProductIds(promocion.products.map((p) => p.productId));
       }
-
-      // Cargar packs
       if (promocion.packs) {
         const packsData = promocion.packs.map((pack) => ({
           name: pack.name,
@@ -126,16 +121,13 @@ export function EditPromocionDialog({
     }
   }, [promocion, reset]);
 
-  // Obtener imágenes nuevas
   const getNewImages = () => {
     const newImages: string[] = [];
 
-    // Verificar imagen principal
     if (promoImage && promoImage !== originalPromoImageRef.current) {
       newImages.push(promoImage);
     }
 
-    // Verificar imágenes de packs
     packs.forEach((pack) => {
       const originalPack = originalPacksRef.current.find(
         (p) => p.name === pack.name
@@ -148,7 +140,6 @@ export function EditPromocionDialog({
     return newImages;
   };
 
-  // Cleanup de imágenes nuevas
   const cleanupNewImages = async () => {
     const newImages = getNewImages();
 
@@ -166,7 +157,6 @@ export function EditPromocionDialog({
   const onSubmit = (data: EditPromocionForm) => {
     if (!promocion) return;
 
-    // Validar según tipo
     if (data.type === "DISCOUNT" && selectedProductIds.length === 0) {
       alert("Debes seleccionar al menos un producto");
       return;
@@ -188,7 +178,6 @@ export function EditPromocionDialog({
       { id: promocion.id, data: payload },
       {
         onSuccess: () => {
-          // Actualizar referencias originales
           originalPromoImageRef.current = promoImage;
           originalPacksRef.current = [...packs];
           onOpenChange(false);
@@ -203,7 +192,6 @@ export function EditPromocionDialog({
   const handleCancel = async () => {
     await cleanupNewImages();
 
-    // Restaurar estado original
     setPromoImage(originalPromoImageRef.current);
     setPacks(originalPacksRef.current);
 
@@ -226,7 +214,6 @@ export function EditPromocionDialog({
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Tipo de Promoción */}
           <div>
             <Label htmlFor="edit-type">Tipo de Promoción *</Label>
             <Select
@@ -248,7 +235,6 @@ export function EditPromocionDialog({
             </Select>
           </div>
 
-          {/* Nombre */}
           <div>
             <Label htmlFor="edit-name">Nombre de la Promoción *</Label>
             <Input id="edit-name" {...register("name")} disabled={isPending} />
@@ -257,7 +243,6 @@ export function EditPromocionDialog({
             )}
           </div>
 
-          {/* Descripción */}
           <div>
             <Label htmlFor="edit-description">Descripción</Label>
             <Textarea
@@ -268,7 +253,6 @@ export function EditPromocionDialog({
             />
           </div>
 
-          {/* Descuento */}
           <div>
             <Label htmlFor="edit-discount">Descuento (%) *</Label>
             <Input
@@ -287,13 +271,11 @@ export function EditPromocionDialog({
             )}
           </div>
 
-          {/* Código de Promoción */}
           <div>
             <Label htmlFor="edit-code">Código Promocional (opcional)</Label>
             <Input id="edit-code" {...register("code")} disabled={isPending} />
           </div>
 
-          {/* Fechas */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label htmlFor="edit-startDate">Fecha de Inicio *</Label>
@@ -334,7 +316,6 @@ export function EditPromocionDialog({
             </div>
           </div>
 
-          {/* Imagen del Banner */}
           <ImageUpload
             value={promoImage}
             onChange={setPromoImage}
@@ -342,7 +323,6 @@ export function EditPromocionDialog({
             disabled={isPending}
           />
 
-          {/* Selector de Productos (solo para DISCOUNT) */}
           {promotionType === "DISCOUNT" && (
             <ProductSelector
               selectedProductIds={selectedProductIds}
@@ -351,7 +331,6 @@ export function EditPromocionDialog({
             />
           )}
 
-          {/* Pack Builder (solo para PACK) */}
           {promotionType === "PACK" && (
             <PackBuilder
               packs={packs}
@@ -360,7 +339,6 @@ export function EditPromocionDialog({
             />
           )}
 
-          {/* Destacado */}
           <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
             <div>
               <Label htmlFor="edit-featured" className="cursor-pointer">
@@ -378,7 +356,6 @@ export function EditPromocionDialog({
             />
           </div>
 
-          {/* Buttons */}
           <div className="flex justify-end gap-3 pt-4">
             <Button
               type="button"

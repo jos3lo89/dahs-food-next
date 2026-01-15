@@ -12,7 +12,6 @@ const updateUserSchema = z.object({
   isActive: z.boolean().optional(),
 });
 
-// GET /api/usuarios/[id]
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -60,7 +59,6 @@ export async function GET(
   }
 }
 
-// PATCH /api/usuarios/[id]
 export async function PATCH(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -78,7 +76,6 @@ export async function PATCH(
     const body = await request.json();
     const validatedData = updateUserSchema.parse(body);
 
-    // Si se actualiza el email, verificar que no esté en uso
     if (validatedData.email) {
       const existingUser = await prisma.user.findFirst({
         where: {
@@ -95,7 +92,6 @@ export async function PATCH(
       }
     }
 
-    // Si se actualiza la contraseña, hacer hash
     const dataToUpdate: any = { ...validatedData };
     if (validatedData.password) {
       dataToUpdate.password = await hashPassword(validatedData.password);
@@ -136,7 +132,6 @@ export async function PATCH(
   }
 }
 
-// DELETE /api/usuarios/[id] - SOFT DELETE
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -151,7 +146,6 @@ export async function DELETE(
       );
     }
 
-    // Evitar que el admin se desactive a sí mismo
     if (id === session.user.id) {
       return NextResponse.json(
         { success: false, error: "No puedes desactivar tu propia cuenta" },
@@ -159,7 +153,6 @@ export async function DELETE(
       );
     }
 
-    // Soft delete (desactivar)
     const usuario = await prisma.user.update({
       where: { id },
       data: { isActive: false },
