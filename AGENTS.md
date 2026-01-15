@@ -95,6 +95,7 @@ export const useProducts = (params: ProductsParams) => {
 - Define schemas with Spanish error messages
 - Export inferred types: `type LoginType = z.infer<typeof loginSchema>`
 - Validate environment variables with Zod in `config/envVars.config.ts`
+- Keep public env vars like `NEXT_PUBLIC_WHATSAPP_PHONE` for UI contact links
 
 ### Database (Prisma)
 - Custom Prisma client path: import from `@/app/generated/prisma/client`
