@@ -9,20 +9,18 @@ import Image from "next/image";
 import { uploadApi } from "@/services/upload.service";
 import { toast } from "sonner";
 
-interface YapePaymentProps {
+interface PlinPaymentProps {
   amount: number;
   onReceiptUpload: (imageUrl: string) => void;
 }
 
-const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE ?? "";
-
-const YAPE_CONFIG = {
-  qrImage: "/images/payment/yape-qr.png",
-  phoneNumber: whatsappPhone,
-  recipientName: "Desayunos Dulces SAC",
+const PLIN_CONFIG = {
+  qrImage: "/images/payment/plin-qr.png",
+  phoneNumber: "931 626 242",
+  recipientName: "Dahs Food",
 };
 
-export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
+export function PlinPayment({ amount, onReceiptUpload }: PlinPaymentProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
 
@@ -83,16 +81,16 @@ export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl p-4 border border-purple-200 dark:border-purple-800">
+      <div className="bg-pink-50 dark:bg-pink-900/20 rounded-xl p-4 border border-pink-200 dark:border-pink-800">
         <div className="flex items-center gap-3 mb-3">
-          <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center">
-            <span className="text-2xl">📱</span>
+          <div className="w-12 h-12 bg-pink-500 rounded-full flex items-center justify-center">
+            <span className="text-2xl">💸</span>
           </div>
           <div>
-            <h3 className="font-bold text-purple-900 dark:text-purple-100 text-lg">
-              Pago con Yape
+            <h3 className="font-bold text-pink-900 dark:text-pink-100 text-lg">
+              Pago con Plin
             </h3>
-            <p className="text-sm text-purple-700 dark:text-purple-300">
+            <p className="text-sm text-pink-700 dark:text-pink-300">
               Escanea el QR o usa el número
             </p>
           </div>
@@ -102,7 +100,7 @@ export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">
             Monto a pagar:
           </p>
-          <p className="text-3xl font-bold text-purple-600 dark:text-purple-400">
+          <p className="text-3xl font-bold text-pink-600 dark:text-pink-400">
             {formatPrice(amount)}
           </p>
         </div>
@@ -116,8 +114,8 @@ export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
               Instrucciones:
             </h4>
             <ol className="text-sm text-blue-800 dark:text-blue-200 space-y-2 list-decimal list-inside">
-              <li>Abre tu app de Yape</li>
-              <li>Escanea el código QR o yapea al número</li>
+              <li>Abre tu app de Plin</li>
+              <li>Escanea el código QR o envíalo al número</li>
               <li>
                 Ingresa el monto exacto: <strong>{formatPrice(amount)}</strong>
               </li>
@@ -129,39 +127,39 @@ export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border-2 border-purple-200 dark:border-purple-800 text-center">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border-2 border-pink-200 dark:border-pink-800 text-center">
           <h4 className="font-semibold text-gray-900 dark:text-white mb-4">
             Escanea el QR
           </h4>
           <div className="relative w-48 h-48 mx-auto bg-white rounded-xl p-4 shadow-lg">
             <Image
-              src={YAPE_CONFIG.qrImage}
-              alt="QR Yape"
+              src={PLIN_CONFIG.qrImage}
+              alt="QR Plin"
               fill
               className="object-contain"
             />
           </div>
         </div>
 
-        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border-2 border-purple-200 dark:border-purple-800">
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border-2 border-pink-200 dark:border-pink-800">
           <h4 className="font-semibold text-gray-900 dark:text-white mb-4">
-            O yapea directamente
+            O envía directamente por Plin
           </h4>
           <div className="space-y-4">
             <div>
               <Label className="text-sm text-gray-600 dark:text-gray-400">
-                Número de Yape:
+                Número de Plin:
               </Label>
-              <div className="mt-1 flex items-center justify-between bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3">
-                <span className="font-mono font-bold text-purple-900 dark:text-purple-100 text-lg">
-                  {YAPE_CONFIG.phoneNumber}
+              <div className="mt-1 flex items-center justify-between bg-pink-50 dark:bg-pink-900/20 rounded-lg p-3">
+                <span className="font-mono font-bold text-pink-900 dark:text-pink-100 text-lg">
+                  {PLIN_CONFIG.phoneNumber}
                 </span>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => {
                     navigator.clipboard.writeText(
-                      YAPE_CONFIG.phoneNumber.replace(/\s/g, "")
+                      PLIN_CONFIG.phoneNumber.replace(/\s/g, "")
                     );
                     toast.success("Número copiado");
                   }}
@@ -177,7 +175,7 @@ export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
               </Label>
               <div className="mt-1 bg-gray-50 dark:bg-gray-900 rounded-lg p-3">
                 <span className="font-semibold text-gray-900 dark:text-white">
-                  {YAPE_CONFIG.recipientName}
+                  {PLIN_CONFIG.recipientName}
                 </span>
               </div>
             </div>
@@ -186,8 +184,8 @@ export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
               <Label className="text-sm text-gray-600 dark:text-gray-400">
                 Monto exacto:
               </Label>
-              <div className="mt-1 bg-purple-50 dark:bg-purple-900/20 rounded-lg p-3">
-                <span className="font-bold text-purple-600 dark:text-purple-400 text-xl">
+              <div className="mt-1 bg-pink-50 dark:bg-pink-900/20 rounded-lg p-3">
+                <span className="font-bold text-pink-600 dark:text-pink-400 text-xl">
                   {formatPrice(amount)}
                 </span>
               </div>
@@ -229,7 +227,7 @@ export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
         ) : (
           <div>
             <Label
-              htmlFor="receipt-upload"
+              htmlFor="plin-receipt-upload"
               className="flex flex-col items-center justify-center w-full h-64 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 transition"
             >
               <div className="flex flex-col items-center justify-center pt-5 pb-6">
@@ -243,7 +241,7 @@ export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
                 </p>
               </div>
               <Input
-                id="receipt-upload"
+                id="plin-receipt-upload"
                 type="file"
                 className="hidden"
                 accept="image/*"
@@ -254,7 +252,7 @@ export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
 
             {isUploading && (
               <div className="mt-4 text-center">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-pink-500"></div>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-2">
                   Subiendo comprobante...
                 </p>

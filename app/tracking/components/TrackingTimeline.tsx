@@ -100,8 +100,8 @@ export function TrackingTimeline({
                     isCurrent
                       ? "bg-pink-500 ring-4 ring-pink-200 dark:ring-pink-800"
                       : isCompleted
-                      ? "bg-green-500"
-                      : "bg-gray-300 dark:bg-gray-600"
+                        ? "bg-green-500"
+                        : "bg-gray-300 dark:bg-gray-600"
                   }`}
                 >
                   <Icon
@@ -122,8 +122,8 @@ export function TrackingTimeline({
                       isCurrent
                         ? "text-pink-600 dark:text-pink-400"
                         : isCompleted
-                        ? "text-green-600 dark:text-green-400"
-                        : "text-gray-500 dark:text-gray-400"
+                          ? "text-green-600 dark:text-green-400"
+                          : "text-gray-500 dark:text-gray-400"
                     }`}
                   >
                     {step.label}
@@ -138,7 +138,7 @@ export function TrackingTimeline({
                     {step.description}
                   </p>
 
-                  {isCurrent && (
+                  {isCurrent && step.label !== "Entregado" && (
                     <div className="mt-2 inline-flex items-center gap-2 bg-pink-100 dark:bg-pink-900/20 text-pink-700 dark:text-pink-300 px-3 py-1 rounded-full text-xs font-semibold">
                       <span className="relative flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>

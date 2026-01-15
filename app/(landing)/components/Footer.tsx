@@ -1,6 +1,3 @@
-"use client";
-
-import Image from "next/image";
 import Link from "next/link";
 import {
   Facebook,
@@ -10,34 +7,17 @@ import {
   Phone,
   Mail,
   Clock,
-  CreditCard,
 } from "lucide-react";
 
 const Footer = () => {
-  const currentYear = new Date().getFullYear();
+  const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE ?? "";
+  const whatsappDigits = whatsappPhone.replace(/\D/g, "");
+  const whatsappTel = whatsappPhone.replace(/\s/g, "");
 
   return (
     <footer className="bg-linear-to-r from-pink-200 to-pink-300">
       <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
-          <div className="space-y-4">
-            <div className="flex items-center space-x-3">
-              <div className="relative w-12 h-12">
-                <Image
-                  src="/images/logo/logo.webp"
-                  alt="Logo"
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-contain"
-                />
-              </div>
-            </div>
-            <p className="text-pink-700 text-sm">
-              Desayunos frescos y deliciosos preparados con los mejores
-              ingredientes para alegrar tu mañana.
-            </p>
-          </div>
-
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-8">
           <div>
             <h4 className="text-lg font-bold text-pink-900 mb-4">
               Enlaces Rápidos
@@ -97,10 +77,10 @@ const Footer = () => {
                 <Phone className="w-5 h-5 shrink-0" />
 
                 <a
-                  href="tel:+51999999999"
+                  href={`tel:${whatsappTel || whatsappDigits}`}
                   className="hover:text-pink-900 transition"
                 >
-                  +51 999 999 999
+                  {whatsappPhone}
                 </a>
               </li>
               <li className="flex items-center gap-2 text-sm text-pink-700">
@@ -161,9 +141,6 @@ const Footer = () => {
         <div className="border-t border-pink-400 my-8"></div>
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          <p className="text-pink-700 text-sm text-center md:text-left">
-            © {currentYear} Desayunos Dulces. Todos los derechos reservados.
-          </p>
           <div className="flex gap-4 text-sm">
             <Link
               href="/terminos"

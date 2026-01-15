@@ -41,7 +41,7 @@ export interface CreateOrderDto {
   }>;
   subtotal: number;
   discount: number;
-  deliveryFee?: number;
+  deliveryFee: number; // Mantenido para compatibilidad, siempre será 0
   total: number;
   paymentMethod: PaymentMethod;
   promotionCode?: string;

@@ -8,6 +8,8 @@ export const metadata: Metadata = {
 };
 
 export default function TerminosPage() {
+  const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE ?? "";
+
   return (
     <div className="min-h-screen bg-linear-to-br from-pink-50 to-rose-50 py-12">
       <div className="container mx-auto px-4 max-w-4xl">
@@ -200,11 +202,10 @@ export default function TerminosPage() {
             </ul>
 
             <h3 className="text-xl font-semibold text-pink-800 mb-3 mt-4">
-              6.3. Costo de Envío
+              6.3. Envío
             </h3>
             <p className="text-gray-700">
-              El costo de envío es de S/ 5.00. Pedidos mayores a S/ 50.00 tienen
-              envío gratuito.
+              El envío está incluido en el precio de los productos. No hay costo adicional por entrega.
             </p>
 
             <h3 className="text-xl font-semibold text-pink-800 mb-3 mt-4">
@@ -349,7 +350,7 @@ export default function TerminosPage() {
             </p>
             <ul className="space-y-2 text-gray-700">
               <li>
-                <strong>WhatsApp:</strong> +51 999 999 999
+                <strong>WhatsApp:</strong> {whatsappPhone}
               </li>
               <li>
                 <strong>Email:</strong> info@desayunosdulces.pe

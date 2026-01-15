@@ -69,8 +69,8 @@ export function PaymentMethodSelector({
                 isDisabled
                   ? "opacity-50 cursor-not-allowed bg-gray-50"
                   : isSelected
-                  ? method.activeColor + " ring-4 ring-opacity-30"
-                  : method.color + " hover:shadow-md"
+                    ? method.activeColor + " ring-4 ring-opacity-30"
+                    : method.color + " hover:shadow-md"
               }`}
             >
               {isDisabled && (
@@ -82,9 +82,7 @@ export function PaymentMethodSelector({
               <div className="flex items-center gap-3">
                 <div
                   className={`w-12 h-12 rounded-full flex items-center justify-center ${
-                    isSelected
-                      ? "bg-white bg-opacity-20"
-                      : "bg-white bg-opacity-50"
+                    isSelected ? "bg-opacity-20" : "bg-opacity-50"
                   }`}
                 >
                   <Icon className="w-6 h-6" />

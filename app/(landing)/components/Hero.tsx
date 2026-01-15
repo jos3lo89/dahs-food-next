@@ -5,6 +5,7 @@ import { ShoppingCart, Clock, Truck } from "lucide-react";
 import Image from "next/image";
 
 const Hero = () => {
+  const imgPath = "/images/hero-breakfast.jpg";
   return (
     <section
       id="hero"
@@ -16,16 +17,6 @@ const Hero = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
           <div className="flex-1 text-center md:text-left animate-fade-in">
-            <div className="inline-flex items-center gap-2 bg-pink-500 text-white px-4 py-2 rounded-full mb-6 shadow-lg">
-              <span className="relative flex h-3 w-3">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
-              </span>
-              <span className="font-semibold text-sm">
-                ¡Envío gratis en compras mayores a S/ 50!
-              </span>
-            </div>
-
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-pink-900 mb-6 leading-tight">
               Los desayunos más{" "}
               <span className="text-pink-600 relative inline-block">
@@ -43,7 +34,7 @@ const Hero = () => {
                     strokeLinecap="round"
                   />
                 </svg>
-              </span>{" "}
+              </span>
               para alegrar tu mañana
             </h1>
 
@@ -66,49 +57,11 @@ const Hero = () => {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="w-full sm:w-auto border-2 border-pink-500 text-pink-600 hover:bg-pink-50 font-semibold px-8 py-6 rounded-full"
+                  className="w-full cursor-pointer sm:w-auto border-2 border-pink-500 text-pink-600 hover:bg-pink-100 font-semibold px-8 py-6 rounded-full"
                 >
                   🔥 Ver Promociones
                 </Button>
               </a>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8">
-              <div className="flex items-center gap-3 bg-white/60 backdrop-blur-sm rounded-2xl p-4 shadow-md">
-                <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center shrink-0">
-                  <Clock className="w-6 h-6 text-pink-600" />
-                </div>
-                <div className="text-left">
-                  <p className="font-semibold text-pink-900 text-sm">
-                    Entrega Rápida
-                  </p>
-                  <p className="text-xs text-pink-600">30-45 min</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 bg-white/60 backdrop-blur-sm rounded-2xl p-4 shadow-md">
-                <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center shrink-0">
-                  <Truck className="w-6 h-6 text-pink-600" />
-                </div>
-                <div className="text-left">
-                  <p className="font-semibold text-pink-900 text-sm">
-                    Envío Gratis
-                  </p>
-                  <p className="text-xs text-pink-600">Desde S/ 50</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-3 bg-white/60 backdrop-blur-sm rounded-2xl p-4 shadow-md">
-                <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center shrink-0">
-                  <span className="text-2xl">❤️</span>
-                </div>
-                <div className="text-left">
-                  <p className="font-semibold text-pink-900 text-sm">
-                    Hecho con Amor
-                  </p>
-                  <p className="text-xs text-pink-600">100% Fresco</p>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -117,7 +70,7 @@ const Hero = () => {
               <div className="absolute inset-0 bg-pink-300 rounded-full blur-3xl opacity-30 animate-pulse"></div>
               <div className="relative rounded-3xl shadow-2xl overflow-hidden">
                 <Image
-                  src="/images/hero-breakfast.jpg"
+                  src={imgPath}
                   alt="Desayuno delicioso"
                   width={600}
                   height={600}

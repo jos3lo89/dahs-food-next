@@ -17,6 +17,8 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacidadPage() {
+  const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE ?? "";
+
   return (
     <div className="min-h-screen bg-linear-to-br from-pink-50 to-rose-50 py-12">
       <div className="container mx-auto px-4 max-w-4xl">
@@ -455,7 +457,7 @@ export default function PrivacidadPage() {
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-pink-500" />
-                <strong>WhatsApp:</strong> +51 999 999 999
+                <strong>WhatsApp:</strong> {whatsappPhone}
               </li>
             </ul>
             <p className="text-gray-700 mt-3 text-sm">
@@ -600,7 +602,7 @@ export default function PrivacidadPage() {
 
               <div>
                 <p className="text-sm text-gray-600 mb-1">WhatsApp:</p>
-                <p className="font-semibold text-gray-900">+51 999 999 999</p>
+                <p className="font-semibold text-gray-900">{whatsappPhone}</p>
               </div>
 
               <div>

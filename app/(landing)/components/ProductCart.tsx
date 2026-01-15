@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useCartStore } from "@/store/cartStore";
 import { Producto } from "@/types/products";
 import { Minus, Plus, ShoppingCart, Star, AlertCircle } from "lucide-react";
@@ -25,15 +24,15 @@ const ProductCard = ({ product, featured = false }: Props) => {
 
   return (
     <div className="flex flex-col bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 h-full group">
-      <div className="relative w-full aspect-square bg-gray-50 flex items-center justify-center p-4 overflow-hidden">
+      <div className="relative w-full aspect-square bg-gray-50 flex items-center justify-center p-2 overflow-hidden">
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500"
+          className="w-full h-full object-contain mix-blend-multiply"
         />
       </div>
 
-      <div className="flex flex-col flex-1 p-4">
+      <div className="flex flex-col flex-1 p-2">
         <div className="flex justify-between items-start mb-2">
           <span className="text-[10px] font-bold uppercase tracking-wider text-pink-500 bg-pink-50 px-2 py-1 rounded-md">
             {product.category.name}

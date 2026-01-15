@@ -11,6 +11,8 @@ import Link from "next/link";
 export default function TrackingSearchPage() {
   const router = useRouter();
   const [orderNumber, setOrderNumber] = useState("");
+  const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE ?? "";
+  const whatsappDigits = whatsappPhone.replace(/\D/g, "");
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -102,7 +104,6 @@ export default function TrackingSearchPage() {
             </div>
           </div>
         </div>
-        Links adicionales
         <div className="text-center space-y-3">
           <Link
             href="/"
@@ -114,12 +115,12 @@ export default function TrackingSearchPage() {
 
           <p className="text-sm text-gray-500">
             ¿Problemas para rastrear?{" "}
-            <a
-              href="https://wa.me/51999999999"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-pink-600 hover:underline font-medium"
-            >
+              <a
+                href={`https://wa.me/${whatsappDigits}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-pink-600 hover:underline font-medium"
+              >
               Contáctanos
             </a>
           </p>

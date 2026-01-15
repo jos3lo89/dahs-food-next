@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { promocionesApi } from "@/services/promotion.service";
 import { PropagateLoader } from "react-spinners";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircleIcon, Tag, Calendar, Percent } from "lucide-react";
+import { AlertCircleIcon, Tag, Calendar } from "lucide-react";
 import Image from "next/image";
 import { format, differenceInDays } from "date-fns";
 import { es } from "date-fns/locale";
@@ -68,7 +68,7 @@ const PromotionsSection = () => {
           {promociones.map((promo) => {
             const daysLeft = differenceInDays(
               new Date(promo.endDate),
-              new Date()
+              new Date(),
             );
             const isEndingSoon = daysLeft <= 3;
 

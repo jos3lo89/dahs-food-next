@@ -6,7 +6,14 @@ import { Decimal } from "@/app/generated/prisma/internal/prismaNamespace";
 
 const updateOrderSchema = z.object({
   status: z
-    .enum(["PENDING", "CONFIRMED", "PREPARING", "DELIVERED", "CANCELLED"])
+    .enum([
+      "PENDING",
+      "CONFIRMED",
+      "PREPARING",
+      "OUT_FOR_DELIVERY",
+      "DELIVERED",
+      "CANCELLED",
+    ])
     .optional(),
   paymentMethod: z.enum(["culqi", "yape", "plin", "efectivo"]).optional(),
   paymentId: z.string().optional(),
@@ -49,8 +56,8 @@ function serializeOrder(order: any) {
 }
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  _: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -58,7 +65,7 @@ export async function GET(
     if (!session || session.user.role !== "ADMIN") {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -87,7 +94,7 @@ export async function GET(
     if (!order) {
       return NextResponse.json(
         { success: false, error: "Pedido no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -98,14 +105,14 @@ export async function GET(
   } catch (error) {
     return NextResponse.json(
       { success: false, error: "Error al obtener pedido" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -113,12 +120,14 @@ export async function PATCH(
     if (!session || session.user.role !== "ADMIN") {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
     const body = await request.json();
     const validatedData = updateOrderSchema.parse(body);
+
+    console.log("datos validados: ", validatedData);
 
     const updateData: any = { ...validatedData };
 
@@ -136,6 +145,11 @@ export async function PATCH(
             updateData.preparingAt = now;
           }
           break;
+        case "OUT_FOR_DELIVERY":
+          if (!updateData.outForDeliveryAt) {
+            updateData.outForDeliveryAt = now;
+          }
+          break;
         case "DELIVERED":
           if (!updateData.deliveredAt) {
             updateData.deliveredAt = now;
@@ -151,7 +165,7 @@ export async function PATCH(
 
     if (updateData.estimatedDeliveryTime) {
       updateData.estimatedDeliveryTime = new Date(
-        updateData.estimatedDeliveryTime
+        updateData.estimatedDeliveryTime,
       );
     }
 
@@ -187,14 +201,14 @@ export async function PATCH(
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { success: false, error: "Datos inválidos", details: error.message },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     console.error("Error al actualizar pedido:", error);
     return NextResponse.json(
       { success: false, error: "Error al actualizar pedido" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

@@ -8,6 +8,8 @@ export type OrderStatus =
 
 export type PaymentMethod = "culqi" | "yape" | "plin" | "efectivo";
 
+export type PaymentVerificationStatus = "PENDING" | "VERIFIED" | "REJECTED";
+
 export interface AddressDetails {
   street: string;
   district?: string;
@@ -35,11 +37,16 @@ export interface Order {
   paymentMethod: PaymentMethod | null;
   paymentId: string | null;
   receiptImage: string | null;
+  paymentStatus: PaymentVerificationStatus | null;
+  paymentVerificationNotes: string | null;
+  verifiedBy: string | null;
+  verifiedAt: string | null;
   notes: string | null;
   promotionCode: string | null;
   estimatedDeliveryTime: string | null;
   confirmedAt: string | null;
   preparingAt: string | null;
+  outForDeliveryAt: string | null;
   deliveredAt: string | null;
   cancelledAt: string | null;
   createdAt: string;
@@ -68,6 +75,8 @@ export interface UpdateOrderDto {
   status?: OrderStatus;
   paymentMethod?: PaymentMethod;
   paymentId?: string;
+  paymentStatus?: PaymentVerificationStatus;
+  paymentVerificationNotes?: string;
   notes?: string;
   estimatedDeliveryTime?: string;
   confirmedAt?: string;

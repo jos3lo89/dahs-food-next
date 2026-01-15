@@ -64,8 +64,7 @@ export default function CheckoutPage() {
   const discount = getDiscount();
   const total = getTotal();
 
-  const deliveryFee = total >= 50 ? 0 : 5;
-  const finalTotal = total + deliveryFee;
+  // Delivery fee eliminado - incluido en precio del producto
 
   useEffect(() => {
     if (items.length === 0) {
@@ -169,8 +168,8 @@ export default function CheckoutPage() {
 
       subtotal,
       discount,
-      deliveryFee,
-      total: finalTotal,
+      deliveryFee: 0, // Eliminado - incluido en precio del producto
+      total: total,
 
       paymentMethod: paymentMethod!,
       promotionCode: promotion?.code,
@@ -377,7 +376,7 @@ export default function CheckoutPage() {
 
                   {paymentMethod === "yape" && (
                     <YapePayment
-                      amount={finalTotal}
+                      amount={total}
                       onReceiptUpload={setReceiptImage}
                     />
                   )}
@@ -401,7 +400,7 @@ export default function CheckoutPage() {
                       </p>
                       <p className="text-sm text-orange-800 dark:text-orange-200 mt-2">
                         <strong>Total a pagar:</strong> S/{" "}
-                        {finalTotal.toFixed(2)}
+                        {total.toFixed(2)}
                       </p>
                     </div>
                   )}

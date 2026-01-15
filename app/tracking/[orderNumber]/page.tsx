@@ -20,6 +20,8 @@ import Image from "next/image";
 export default function TrackingPage() {
   const params = useParams();
   const orderNumber = params.orderNumber as string;
+  const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE ?? "";
+  const whatsappDigits = whatsappPhone.replace(/\D/g, "");
 
   const { data, isLoading, error, refetch, isRefetching } = useQuery({
     queryKey: ["order-tracking", orderNumber],
@@ -35,6 +37,18 @@ export default function TrackingPage() {
       style: "currency",
       currency: "PEN",
     }).format(price);
+  };
+
+  const buildItemsSummary = () => {
+    if (!order?.items?.length) {
+      return "Sin productos";
+    }
+
+    return order.items
+      .map((item: { product: { name: string }; quantity: number }) => {
+        return `${item.quantity}x ${item.product.name}`;
+      })
+      .join(", ");
   };
 
   const getPaymentMethodLabel = (method: string) => {
@@ -271,7 +285,9 @@ export default function TrackingPage() {
           </p>
 
           <a
-            href={`https://wa.me/51999999999?text=Hola, tengo una consulta sobre mi pedido ${order.orderNumber}`}
+            href={`https://wa.me/${whatsappDigits}?text=${encodeURIComponent(
+              `Hola, tengo una consulta sobre mi pedido #${order.orderNumber}. Resumen: ${buildItemsSummary()}. Total: ${formatPrice(order.total)}. Dirección: ${order.customerAddress}. Su pedido fue recibido y está pendiente de confirmación. Le avisaremos cuando esté confirmado.`,
+            )}`}
             target="_blank"
             rel="noopener noreferrer"
           >

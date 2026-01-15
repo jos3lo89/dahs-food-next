@@ -25,6 +25,8 @@ import Image from "next/image";
 export default function ConfirmacionPage() {
   const params = useParams();
   const orderNumber = params.orderNumber as string;
+  const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE ?? "";
+  const whatsappDigits = whatsappPhone.replace(/\D/g, "");
 
   const { data, isLoading, error } = useQuery({
     queryKey: ["order-tracking", orderNumber],
@@ -49,6 +51,18 @@ export default function ConfirmacionPage() {
       style: "currency",
       currency: "PEN",
     }).format(price);
+  };
+
+  const buildItemsSummary = () => {
+    if (!order?.items?.length) {
+      return "Sin productos";
+    }
+
+    return order.items
+      .map((item: { product: { name: string }; quantity: number }) => {
+        return `${item.quantity}x ${item.product.name}`;
+      })
+      .join(", ");
   };
 
   const formatDateTime = (dateString: string) => {
@@ -326,23 +340,8 @@ export default function ConfirmacionPage() {
                 </span>
               </div>
             )}
-            {order.deliveryFee !== undefined && (
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600 flex items-center gap-1">
-                  <Truck className="w-3 h-3" />
-                  Envío:
-                </span>
-                <span className="font-medium">
-                  {order.deliveryFee === 0 ? (
-                    <span className="text-green-600 font-bold">GRATIS</span>
-                  ) : (
-                    formatPrice(order.deliveryFee)
-                  )}
-                </span>
-              </div>
-            )}
             <div className="flex justify-between text-lg font-bold text-pink-600 pt-2 border-t border-gray-200">
-              <span>Total:</span>
+              <span>Total (incluye envío):</span>
               <span>{formatPrice(order.total)}</span>
             </div>
           </div>
@@ -368,8 +367,8 @@ export default function ConfirmacionPage() {
                 {order.status === "PENDING" && (
                   <p className="text-sm text-blue-800">
                     {order.paymentMethod === "efectivo"
-                      ? "Pagarás en efectivo al recibir tu pedido."
-                      : "Estamos verificando tu comprobante de pago. Te confirmaremos por WhatsApp en breve."}
+                      ? "Pagará en efectivo al recibir su pedido."
+                      : "Estamos verificando su comprobante de pago. Le confirmaremos por WhatsApp en breve."}
                   </p>
                 )}
                 {order.status === "CONFIRMED" && (
@@ -385,7 +384,7 @@ export default function ConfirmacionPage() {
         <div className="grid md:grid-cols-2 gap-4">
           <Link href={`/tracking/${order.orderNumber}`}>
             <Button className="w-full bg-pink-500 hover:bg-pink-600 py-6 text-lg">
-              📦 Rastrear Pedido
+              Rastrear Pedido
             </Button>
           </Link>
           <Link href="/">
@@ -402,10 +401,12 @@ export default function ConfirmacionPage() {
           <p>
             ¿Necesitas ayuda? Contacta por WhatsApp:{" "}
             <a
-              href={`https://wa.me/51999999999?text=Hola, consulta sobre pedido ${order.orderNumber}`}
+              href={`https://wa.me/${whatsappDigits}?text=${encodeURIComponent(
+                `Hola, tengo una consulta sobre mi pedido #${order.orderNumber}. Resumen: ${buildItemsSummary()}. Total: ${formatPrice(order.total)}. Dirección: ${order.customerAddress}. Su pedido fue recibido y está pendiente de confirmación. Le avisaremos cuando esté confirmado.`,
+              )}`}
               className="text-pink-600 font-semibold hover:underline"
             >
-              +51 999 999 999
+              {whatsappPhone}
             </a>
           </p>
         </div>

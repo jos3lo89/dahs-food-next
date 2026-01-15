@@ -64,6 +64,21 @@ export const ordersApi = {
     return data;
   },
 
+  approvePayment: async (id: string) => {
+    const { data } = await axiosInstance.patch<OrderResponse>(
+      `/orders/${id}/approve-payment`
+    );
+    return data;
+  },
+
+  rejectPayment: async (id: string, notes: string) => {
+    const { data } = await axiosInstance.patch<OrderResponse>(
+      `/orders/${id}/reject-payment`,
+      { notes }
+    );
+    return data;
+  },
+
   createOrder: async (order: CreateOrderDto) => {
     const { data } = await axiosInstance.post<CreateOrderResponse>(
       "/orders/create",
