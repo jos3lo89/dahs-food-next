@@ -9,6 +9,14 @@ const rejectPaymentSchema = z.object({
 });
 
 function serializeOrder(order: any) {
+  const receipts = (order.receipts ?? []).map((receipt: any) => ({
+    ...receipt,
+    createdAt: receipt.createdAt?.toISOString?.() ?? receipt.createdAt,
+    updatedAt: receipt.updatedAt?.toISOString?.() ?? receipt.updatedAt,
+    verifiedAt: receipt.verifiedAt?.toISOString?.() ?? receipt.verifiedAt,
+  }));
+  const latestReceipt = receipts[0] ?? null;
+
   return {
     ...order,
     subtotal:
@@ -27,6 +35,8 @@ function serializeOrder(order: any) {
       order.total instanceof Decimal
         ? order.total.toNumber()
         : Number(order.total),
+    receipts,
+    latestReceipt,
     items: order.items?.map((item: any) => ({
       ...item,
       price:
@@ -60,6 +70,9 @@ export async function PATCH(
 
     const order = await prisma.order.findUnique({
       where: { id },
+      include: {
+        receipts: { orderBy: { createdAt: "desc" } },
+      },
     });
 
     if (!order) {
@@ -69,32 +82,52 @@ export async function PATCH(
       );
     }
 
-    const updatedOrder = await prisma.order.update({
-      where: { id },
-      data: {
-        paymentStatus: "REJECTED",
-        paymentVerificationNotes: validatedData.notes,
-        verifiedAt: new Date(),
-        verifiedBy: session.user.email || "admin",
-      },
-      include: {
-        items: {
-          include: {
-            product: {
-              select: {
-                id: true,
-                name: true,
-                image: true,
-                category: {
-                  select: {
-                    name: true,
+    const now = new Date();
+    const latestReceipt = order.receipts?.[0];
+
+    const updatedOrder = await prisma.$transaction(async (tx) => {
+      if (latestReceipt && latestReceipt.status === "PENDING") {
+        await tx.paymentReceipt.update({
+          where: { id: latestReceipt.id },
+          data: {
+            status: "REJECTED",
+            notes: validatedData.notes,
+            verifiedAt: now,
+            verifiedBy: session.user.email || "admin",
+          },
+        });
+      }
+
+      return tx.order.update({
+        where: { id },
+        data: {
+          paymentStatus: "REJECTED",
+          paymentVerificationNotes: validatedData.notes,
+          verifiedAt: now,
+          verifiedBy: session.user.email || "admin",
+          status: "CANCELLED",
+          cancelledAt: now,
+        },
+        include: {
+          receipts: { orderBy: { createdAt: "desc" } },
+          items: {
+            include: {
+              product: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                  category: {
+                    select: {
+                      name: true,
+                    },
                   },
                 },
               },
             },
           },
         },
-      },
+      });
     });
 
     return NextResponse.json({

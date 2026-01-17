@@ -51,6 +51,7 @@ const paymentStatusLabels: Record<PaymentVerificationStatus, string> = {
 export function OrderPaymentInfo({ order }: OrderPaymentInfoProps) {
   const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
   const [rejectNotes, setRejectNotes] = useState("");
+  const [activeReceiptId, setActiveReceiptId] = useState<string | null>(null);
   const [imageZoomOpen, setImageZoomOpen] = useState(false);
   const [zoomedImage, setZoomedImage] = useState<string | null>(null);
 
@@ -58,16 +59,36 @@ export function OrderPaymentInfo({ order }: OrderPaymentInfoProps) {
     useApprovePayment();
   const { mutate: rejectPayment, isPending: isRejecting } = useRejectPayment();
 
-  const needsVerification =
-    order.receiptImage &&
-    order.paymentMethod !== "efectivo" &&
-    order.paymentStatus !== "VERIFIED";
+  const receipts = order.receipts ?? [];
+  const latestReceipt = receipts[0] ?? null;
+  const legacyReceipt =
+    !receipts.length && order.receiptImage
+      ? {
+          id: `legacy-${order.id}`,
+          orderId: order.id,
+          imageUrl: order.receiptImage,
+          status: order.paymentStatus ?? "PENDING",
+          notes: order.paymentVerificationNotes,
+          verifiedBy: order.verifiedBy,
+          verifiedAt: order.verifiedAt,
+          createdAt: order.createdAt,
+          updatedAt: order.updatedAt,
+          legacy: true,
+        }
+      : null;
+  const displayReceipts = legacyReceipt ? [legacyReceipt] : receipts;
 
-  const handleApprovePayment = () => {
-    approvePayment(
-      { id: order.id },
-      { onSuccess: () => toast.success("Pago aprobado") },
-    );
+  const isLegacyReceipt = (receiptId: string) =>
+    receiptId.startsWith("legacy-");
+
+  const needsVerification =
+    !!latestReceipt &&
+    latestReceipt.status === "PENDING" &&
+    order.paymentMethod !== "efectivo" &&
+    !isLegacyReceipt(latestReceipt.id);
+
+  const handleApprovePayment = (receiptId: string) => {
+    approvePayment({ receiptId });
   };
 
   const handleRejectPayment = () => {
@@ -75,16 +96,19 @@ export function OrderPaymentInfo({ order }: OrderPaymentInfoProps) {
       toast.error("Ingresa el motivo del rechazo");
       return;
     }
-    rejectPayment(
-      { id: order.id, notes: rejectNotes },
-      {
-        onSuccess: () => {
-          toast.success("Pago rechazado");
-          setRejectDialogOpen(false);
-          setRejectNotes("");
-        },
+
+    if (!activeReceiptId) {
+      toast.error("No se encontró el comprobante");
+      return;
+    }
+
+    rejectPayment({ receiptId: activeReceiptId, notes: rejectNotes }, {
+      onSuccess: () => {
+        setRejectDialogOpen(false);
+        setRejectNotes("");
+        setActiveReceiptId(null);
       },
-    );
+    });
   };
 
   const handleZoomImage = (imageUrl: string) => {
@@ -92,15 +116,9 @@ export function OrderPaymentInfo({ order }: OrderPaymentInfoProps) {
     setImageZoomOpen(true);
   };
 
-  const formatPrice = (price: number) =>
-    new Intl.NumberFormat("es-PE", {
-      style: "currency",
-      currency: "PEN",
-    }).format(price);
-
   return (
     <>
-      <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+      <div className="bg-pink-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-gray-900 dark:text-white flex items-center gap-2">
             <CreditCard className="w-5 h-5 text-pink-500" />
@@ -133,98 +151,128 @@ export function OrderPaymentInfo({ order }: OrderPaymentInfoProps) {
             </div>
           )}
 
-          {order.receiptImage && (
+          {displayReceipts.length > 0 && (
             <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
               <p className="text-gray-500 dark:text-gray-400 mb-3 flex items-center gap-2">
                 <ImageIcon className="w-4 h-4" />
-                Comprobante de pago:
+                Historial de comprobantes:
               </p>
 
-              <div className="relative w-full h-48 rounded-lg overflow-hidden border-2 border-gray-200 dark:border-gray-700 cursor-pointer group">
-                <img
-                  src={order.receiptImage}
-                  alt="Comprobante"
-                  className="object-contain"
-                />
-                <div
-                  onClick={() => handleZoomImage(order.receiptImage!)}
-                  className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
-                >
-                  <ZoomIn className="w-8 h-8 text-white" />
-                </div>
-              </div>
+              <div className="space-y-4">
+                {displayReceipts.map((receipt) => (
+                  <div
+                    key={receipt.id}
+                    className="rounded-lg border border-gray-200 dark:border-gray-700 p-4"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs text-gray-500">
+                        {new Date(receipt.createdAt).toLocaleString("es-PE")}
+                      </span>
+                      <Badge className={paymentStatusColors[receipt.status]}>
+                        {paymentStatusLabels[receipt.status]}
+                      </Badge>
+                    </div>
 
-              <div className="flex items-center gap-2 mt-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleZoomImage(order.receiptImage!)}
-                >
-                  <Eye className="w-4 h-4 mr-1" />
-                  Zoom
-                </Button>
-                <a
-                  href={order.receiptImage}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline text-sm"
-                >
-                  Abrir en nueva pestaña
-                </a>
-              </div>
+                    <div className="relative w-full h-48 rounded-lg overflow-hidden border-2 border-gray-200 dark:border-gray-700 group">
+                      <Image
+                        src={receipt.imageUrl}
+                        alt="Comprobante"
+                        fill
+                        sizes="(max-width: 768px) 90vw, 480px"
+                        className="object-contain"
+                      />
+                      <div
+                        onClick={() => handleZoomImage(receipt.imageUrl)}
+                        className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                      >
+                        <ZoomIn className="w-8 h-8 text-white" />
+                      </div>
+                    </div>
 
-              {needsVerification && (
-                <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                  <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-3">
-                    Verificación de pago:
-                  </p>
-                  <div className="flex gap-2">
-                    <Button
-                      size="sm"
-                      className="bg-green-600 hover:bg-green-700"
-                      onClick={handleApprovePayment}
-                      disabled={isApproving}
-                    >
-                      <CheckCircle className="w-4 h-4 mr-1" />
-                      {isApproving ? "Aprobando..." : "Aprobar"}
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => setRejectDialogOpen(true)}
-                      disabled={isRejecting}
-                    >
-                      <XCircle className="w-4 h-4 mr-1" />
-                      Rechazar
-                    </Button>
+                    <div className="flex items-center gap-2 mt-3">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleZoomImage(receipt.imageUrl)}
+                      >
+                        <Eye className="w-4 h-4 mr-1" />
+                        Zoom
+                      </Button>
+                      <a
+                        href={receipt.imageUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-600 hover:underline text-sm"
+                      >
+                        Abrir en nueva pestaña
+                      </a>
+                    </div>
+
+                    {receipt.notes && receipt.status === "REJECTED" && (
+                      <div className="mt-3 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+                        <p className="text-sm font-medium text-red-800 dark:text-red-200">
+                          Motivo del rechazo:
+                        </p>
+                        <p className="text-sm text-red-700 dark:text-red-300">
+                          {receipt.notes}
+                        </p>
+                      </div>
+                    )}
+
+                    {isLegacyReceipt(receipt.id) && (
+                      <p className="mt-3 text-xs text-yellow-700">
+                        Comprobante antiguo: no se puede validar automáticamente.
+                      </p>
+                    )}
+
+                    {needsVerification && receipt.id === latestReceipt?.id && (
+                      <div className="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                        <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-3">
+                          Verificación de pago:
+                        </p>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            className="bg-green-600 hover:bg-green-700"
+                            onClick={() => handleApprovePayment(receipt.id)}
+                            disabled={isApproving}
+                          >
+                            <CheckCircle className="w-4 h-4 mr-1" />
+                            {isApproving ? "Aprobando..." : "Aprobar"}
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => {
+                              setActiveReceiptId(receipt.id);
+                              setRejectDialogOpen(true);
+                            }}
+                            disabled={isRejecting}
+                          >
+                            <XCircle className="w-4 h-4 mr-1" />
+                            Rechazar
+                          </Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
-              )}
-
-              {order.paymentStatus === "REJECTED" &&
-                order.paymentVerificationNotes && (
-                  <div className="mt-3 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
-                    <p className="text-sm font-medium text-red-800 dark:text-red-200">
-                      Motivo del rechazo:
-                    </p>
-                    <p className="text-sm text-red-700 dark:text-red-300">
-                      {order.paymentVerificationNotes}
-                    </p>
-                  </div>
-                )}
-
-              {order.verifiedAt && (
-                <p className="text-xs text-gray-500 mt-2">
-                  Verificado el{" "}
-                  {new Date(order.verifiedAt).toLocaleString("es-PE")}
-                </p>
-              )}
+                ))}
+              </div>
             </div>
           )}
         </div>
       </div>
 
-      <Dialog open={rejectDialogOpen} onOpenChange={setRejectDialogOpen}>
+      <Dialog
+        open={rejectDialogOpen}
+        onOpenChange={(open) => {
+          setRejectDialogOpen(open);
+          if (!open) {
+            setRejectNotes("");
+            setActiveReceiptId(null);
+          }
+        }}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-red-600">
@@ -269,13 +317,17 @@ export function OrderPaymentInfo({ order }: OrderPaymentInfoProps) {
           </DialogHeader>
           <div className="relative">
             {zoomedImage && (
-              <img
+              <Image
                 src={zoomedImage}
                 alt="Comprobante zoom"
-                className="object-contain"
+                width={900}
+                height={900}
+                sizes="(max-width: 768px) 90vw, 900px"
+                className="h-auto w-full object-contain"
               />
             )}
           </div>
+
           <div className="flex justify-center mt-4">
             <Button variant="outline" onClick={() => setImageZoomOpen(false)}>
               Cerrar

@@ -23,12 +23,12 @@ export function OrderAdminNotes({ order }: OrderAdminNotesProps) {
         onSuccess: () => {
           toast.success("Notas guardadas");
         },
-      }
+      },
     );
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+    <div className="bg-pink-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
       <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
         <FileText className="w-5 h-5 text-pink-500" />
         Notas Administrativas
@@ -40,13 +40,13 @@ export function OrderAdminNotes({ order }: OrderAdminNotesProps) {
           onChange={(e) => setNotes(e.target.value)}
           placeholder="Notas internas sobre el pedido..."
           rows={4}
-          className="resize-none"
+          className="resize-none bg-white"
         />
         <Button
           onClick={handleUpdateNotes}
           disabled={isPending || !notes.trim()}
           variant="outline"
-          className="w-full"
+          className="w-full cursor-pointer"
         >
           {isPending ? "Guardando..." : "Guardar Notas"}
         </Button>

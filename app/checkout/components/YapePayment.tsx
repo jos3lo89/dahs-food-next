@@ -4,10 +4,19 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Upload, Check, AlertCircle } from "lucide-react";
+import { Upload, Check, AlertCircle, Eye } from "lucide-react";
 import Image from "next/image";
 import { uploadApi } from "@/services/upload.service";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import yapeQrImage from "../../../public/images/payment/yape-qr.png";
 
 interface YapePaymentProps {
   amount: number;
@@ -17,9 +26,9 @@ interface YapePaymentProps {
 const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE ?? "";
 
 const YAPE_CONFIG = {
-  qrImage: "/images/payment/yape-qr.png",
+  qrImage: yapeQrImage,
   phoneNumber: whatsappPhone,
-  recipientName: "Desayunos Dulces SAC",
+  recipientName: "Danyeth Jhoselin Punil Gamboa",
 };
 
 export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
@@ -37,7 +46,9 @@ export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith("image/")) {
+    const allowedTypes = ["image/png", "image/jpeg", "image/webp"];
+
+    if (!allowedTypes.includes(file.type)) {
       toast.error("Solo se permiten imágenes");
       return;
     }
@@ -133,13 +144,42 @@ export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
           <h4 className="font-semibold text-gray-900 dark:text-white mb-4">
             Escanea el QR
           </h4>
-          <div className="relative w-48 h-48 mx-auto bg-white rounded-xl p-4 shadow-lg">
+          <div className="relative mx-auto bg-white rounded-xl p-4 shadow-lg">
             <Image
               src={YAPE_CONFIG.qrImage}
+              width={500}
+              height={500}
               alt="QR Yape"
-              fill
               className="object-contain"
+              placeholder="blur"
+              loading="eager"
             />
+          </div>
+          <div className="mt-4 flex justify-center">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Eye className="w-4 h-4 mr-2" />
+                  Ver QR grande
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-2xl">
+                <DialogHeader>
+                  <DialogTitle>QR de Yape</DialogTitle>
+                  <DialogDescription></DialogDescription>
+                </DialogHeader>
+                <div className="relative w-full aspect-square rounded-lg bg-white p-4">
+                  <Image
+                    src={YAPE_CONFIG.qrImage}
+                    alt="QR Yape"
+                    fill
+                    sizes="(max-width: 768px) 90vw, 600px"
+                    className="object-contain"
+                    placeholder="blur"
+                  />
+                </div>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
 
@@ -157,14 +197,20 @@ export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
                   {YAPE_CONFIG.phoneNumber}
                 </span>
                 <Button
-                  variant="ghost"
+                  variant="outline"
                   size="sm"
-                  onClick={() => {
-                    navigator.clipboard.writeText(
-                      YAPE_CONFIG.phoneNumber.replace(/\s/g, "")
-                    );
-                    toast.success("Número copiado");
+                  onClick={async () => {
+                    try {
+                      const value = YAPE_CONFIG.phoneNumber
+                        .replace(/\s/g, "")
+                        .split("+51")[1];
+                      await navigator.clipboard.writeText(value);
+                      toast.success("Número copiado");
+                    } catch (error) {
+                      toast.warning("No se pudo copear");
+                    }
                   }}
+                  className="cursor-pointer"
                 >
                   Copiar
                 </Button>
@@ -246,7 +292,7 @@ export function YapePayment({ amount, onReceiptUpload }: YapePaymentProps) {
                 id="receipt-upload"
                 type="file"
                 className="hidden"
-                accept="image/*"
+                accept="image/png,image/jpeg,image/webp"
                 onChange={handleFileChange}
                 disabled={isUploading}
               />

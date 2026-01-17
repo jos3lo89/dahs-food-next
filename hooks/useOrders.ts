@@ -5,10 +5,10 @@ import {
   Order,
   OrderStatus,
   PaymentMethod,
-  PaymentVerificationStatus,
 } from "@/types/orders";
 import { toast } from "sonner";
 import { CreateOrderDto } from "@/types/checkout";
+import { AxiosError } from "axios";
 
 export const useOrders = (params?: {
   status?: OrderStatus;
@@ -111,41 +111,16 @@ export const useApprovePayment = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id }: { id: string }) => ordersApi.approvePayment(id),
-
-    onMutate: async ({ id }) => {
-      await queryClient.cancelQueries({ queryKey: ["orders"] });
-      await queryClient.cancelQueries({ queryKey: ["order", id] });
-      const previousOrders = queryClient.getQueryData(["orders"]);
-
-      queryClient.setQueryData(["orders"], (old: any) => {
-        if (!old?.data) return old;
-        return {
-          ...old,
-          data: old.data.map((order: Order) =>
-            order.id === id
-              ? {
-                  ...order,
-                  paymentStatus: "VERIFIED" as PaymentVerificationStatus,
-                  verifiedAt: new Date().toISOString(),
-                }
-              : order,
-          ),
-        };
-      });
-
-      return { previousOrders };
-    },
+    mutationFn: ({ receiptId }: { receiptId: string }) =>
+      ordersApi.approvePayment(receiptId),
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["order"] });
+      toast.success("Pago aprobado");
     },
 
-    onError: (error: any, _, context) => {
-      if (context?.previousOrders) {
-        queryClient.setQueryData(["orders"], context.previousOrders);
-      }
+    onError: (error: any) => {
       toast.error(error.response?.data?.error || "Error al aprobar pago");
     },
   });
@@ -155,43 +130,36 @@ export const useRejectPayment = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, notes }: { id: string; notes: string }) =>
-      ordersApi.rejectPayment(id, notes),
-
-    onMutate: async ({ id }) => {
-      await queryClient.cancelQueries({ queryKey: ["orders"] });
-      await queryClient.cancelQueries({ queryKey: ["order", id] });
-      const previousOrders = queryClient.getQueryData(["orders"]);
-
-      queryClient.setQueryData(["orders"], (old: any) => {
-        if (!old?.data) return old;
-        return {
-          ...old,
-          data: old.data.map((order: Order) =>
-            order.id === id
-              ? {
-                  ...order,
-                  paymentStatus: "REJECTED" as PaymentVerificationStatus,
-                  paymentVerificationNotes: "",
-                }
-              : order,
-          ),
-        };
-      });
-
-      return { previousOrders };
-    },
+    mutationFn: ({ receiptId, notes }: { receiptId: string; notes: string }) =>
+      ordersApi.rejectPayment(receiptId, notes),
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["order"] });
+      toast.success("Pago rechazado");
     },
 
-    onError: (error: any, _, context) => {
-      if (context?.previousOrders) {
-        queryClient.setQueryData(["orders"], context.previousOrders);
-      }
+    onError: (error: any) => {
       toast.error(error.response?.data?.error || "Error al rechazar pago");
+    },
+  });
+};
+
+export const useCreateReceipt = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ orderId, imageUrl }: { orderId: string; imageUrl: string }) =>
+      ordersApi.createReceipt(orderId, imageUrl),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["order"] });
+      queryClient.invalidateQueries({ queryKey: ["order-tracking"] });
+      toast.success("Comprobante enviado para verificación");
+    },
+    onError: (error: any) => {
+      toast.error(
+        error.response?.data?.error || "Error al enviar el comprobante",
+      );
     },
   });
 };
@@ -202,8 +170,12 @@ export const useCreateOrder = () => {
     onSuccess: () => {
       toast.success("Pedido creado exitosamente");
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.error || "Error al crear pedido");
+    onError: (error) => {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data?.error || "Error al crear pedido");
+      } else {
+        toast.error("Error al crear pedido");
+      }
     },
   });
 };

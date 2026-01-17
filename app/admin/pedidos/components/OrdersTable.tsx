@@ -9,53 +9,38 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import {
-  MoreVertical,
-  Eye,
-  CheckCircle,
-  ChefHat,
-  Package,
-  XCircle,
-} from "lucide-react";
-import { Order, OrderStatus } from "@/types/orders";
-import { useUpdateOrderStatus } from "@/hooks/useOrders";
+import { MoreVertical, Eye, Package } from "lucide-react";
+import { Order, PaymentVerificationStatus } from "@/types/orders";
 import { OrderStatusBadge } from "./OrderStatusBadge";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 import { useRouter } from "next/navigation";
+import { formatDateTime } from "@/utils/formatDateTime";
+import { formatSMoney } from "@/utils/formatMoney";
 
 interface OrdersTableProps {
   orders: Order[];
 }
 
+const paymentStatusColors: Record<PaymentVerificationStatus, string> = {
+  PENDING: "bg-gray-100 text-gray-800 border-gray-300",
+  VERIFIED: "bg-green-100 text-green-800 border-green-300",
+  REJECTED: "bg-red-100 text-red-800 border-red-300",
+};
+
+const paymentStatusLabels: Record<PaymentVerificationStatus, string> = {
+  PENDING: "Pago pendiente",
+  VERIFIED: "Pago verificado",
+  REJECTED: "Pago rechazado",
+};
+
 export function OrdersTable({ orders }: OrdersTableProps) {
-  const { mutate: updateStatus } = useUpdateOrderStatus();
   const router = useRouter();
-
-  const handleStatusChange = (orderId: string, newStatus: OrderStatus) => {
-    updateStatus({ id: orderId, status: newStatus });
-  };
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("es-PE", {
-      style: "currency",
-      currency: "PEN",
-    }).format(price);
-  };
 
   if (orders.length === 0) {
     return (
@@ -120,11 +105,11 @@ export function OrdersTable({ orders }: OrdersTableProps) {
               <TableCell>
                 <div>
                   <p className="font-semibold text-gray-900 dark:text-white">
-                    {formatPrice(order.total)}
+                    {formatSMoney(order.total)}
                   </p>
                   {order.discount > 0 && (
                     <p className="text-xs text-green-600 dark:text-green-400">
-                      -{formatPrice(order.discount)}
+                      -{formatSMoney(order.total)}
                     </p>
                   )}
                 </div>
@@ -133,57 +118,33 @@ export function OrdersTable({ orders }: OrdersTableProps) {
               <TableCell>
                 <div className="flex flex-col gap-2">
                   <OrderStatusBadge status={order.status} showIcon />
-                  {order.status !== "DELIVERED" &&
-                    order.status !== "CANCELLED" && (
-                      <Select
-                        value={order.status}
-                        onValueChange={(value) =>
-                          handleStatusChange(order.id, value as OrderStatus)
-                        }
-                      >
-                        <SelectTrigger className="h-8 text-xs">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {order.status === "PENDING" && (
-                            <SelectItem value="CONFIRMED">
-                              Confirmar
-                            </SelectItem>
-                          )}
-                          {(order.status === "PENDING" ||
-                            order.status === "CONFIRMED") && (
-                            <SelectItem value="PREPARING">
-                              Preparar
-                            </SelectItem>
-                          )}
-                          {order.status !== "PENDING" && (
-                            <SelectItem value="OUT_FOR_DELIVERY">
-                              En Camino
-                            </SelectItem>
-                          )}
-                          {order.status !== "PENDING" && (
-                            <SelectItem value="DELIVERED">
-                              Entregar
-                            </SelectItem>
-                          )}
-                          <SelectItem value="CANCELLED">Cancelar</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    )}
+                  {order.paymentMethod && order.paymentMethod !== "efectivo" && (
+                    <Badge
+                      className={
+                        paymentStatusColors[
+                          (order.latestReceipt?.status ||
+                            order.paymentStatus ||
+                            "PENDING") as PaymentVerificationStatus
+                        ]
+                      }
+                    >
+                      {paymentStatusLabels[
+                        (order.latestReceipt?.status ||
+                          order.paymentStatus ||
+                          "PENDING") as PaymentVerificationStatus
+                      ]}
+                    </Badge>
+                  )}
                 </div>
               </TableCell>
 
               <TableCell>
                 <div className="text-sm">
                   <p className="text-gray-900 dark:text-white">
-                    {format(new Date(order.createdAt), "dd MMM", {
-                      locale: es,
-                    })}
+                    {formatDateTime(order.createdAt, "date")}
                   </p>
                   <p className="text-gray-500 dark:text-gray-400">
-                    {format(new Date(order.createdAt), "HH:mm", {
-                      locale: es,
-                    })}
+                    {formatDateTime(order.createdAt, "time")}
                   </p>
                 </div>
               </TableCell>
@@ -202,68 +163,6 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                       <Eye className="w-4 h-4 mr-2" />
                       Ver Detalles
                     </DropdownMenuItem>
-
-                    {order.status !== "DELIVERED" &&
-                      order.status !== "CANCELLED" && (
-                        <>
-                          <DropdownMenuSeparator />
-                          {order.status === "PENDING" && (
-                            <DropdownMenuItem
-                              onClick={() =>
-                                handleStatusChange(order.id, "CONFIRMED")
-                              }
-                              className="text-blue-600"
-                            >
-                              <CheckCircle className="w-4 h-4 mr-2" />
-                              Confirmar
-                            </DropdownMenuItem>
-                          )}
-                          {(order.status === "PENDING" ||
-                            order.status === "CONFIRMED") && (
-                            <DropdownMenuItem
-                              onClick={() =>
-                                handleStatusChange(order.id, "PREPARING")
-                              }
-                              className="text-purple-600"
-                            >
-                              <ChefHat className="w-4 h-4 mr-2" />
-                              En Preparación
-                            </DropdownMenuItem>
-                          )}
-                          {order.status !== "PENDING" && (
-                            <DropdownMenuItem
-                              onClick={() =>
-                                handleStatusChange(order.id, "OUT_FOR_DELIVERY")
-                              }
-                              className="text-orange-600"
-                            >
-                              <Package className="w-4 h-4 mr-2" />
-                              En Camino
-                            </DropdownMenuItem>
-                          )}
-                          {order.status !== "PENDING" && (
-                            <DropdownMenuItem
-                              onClick={() =>
-                                handleStatusChange(order.id, "DELIVERED")
-                              }
-                              className="text-green-600"
-                            >
-                              <Package className="w-4 h-4 mr-2" />
-                              Entregar
-                            </DropdownMenuItem>
-                          )}
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            onClick={() =>
-                              handleStatusChange(order.id, "CANCELLED")
-                            }
-                            className="text-red-600"
-                          >
-                            <XCircle className="w-4 h-4 mr-2" />
-                            Cancelar
-                          </DropdownMenuItem>
-                        </>
-                      )}
                   </DropdownMenuContent>
                 </DropdownMenu>
               </TableCell>

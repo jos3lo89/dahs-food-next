@@ -51,7 +51,7 @@ const Header = () => {
               </div>
             </div>
             <div className="flex flex-col">
-              <span className="text-pink-400 font-semibold">Dahs</span>
+              <span className="text-pink-400 font-semibold">Dahs Jhoss</span>
             </div>
           </Link>
 

@@ -29,7 +29,7 @@ const createOrderSchema = z.object({
         productId: z.string(),
         quantity: z.number().int().positive(),
         price: z.number().positive(),
-      })
+      }),
     )
     .min(1, "Debes agregar al menos un producto"),
   subtotal: z.number().positive(),
@@ -59,6 +59,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const validatedData = createOrderSchema.parse(body);
 
+    console.log("datos validados: ", validatedData);
+
     const productIds = validatedData.items.map((item) => item.productId);
     const products = await prisma.product.findMany({
       where: {
@@ -70,7 +72,7 @@ export async function POST(request: NextRequest) {
     if (products.length !== productIds.length) {
       return NextResponse.json(
         { success: false, error: "Algunos productos no están disponibles" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -79,7 +81,7 @@ export async function POST(request: NextRequest) {
       if (!product) {
         return NextResponse.json(
           { success: false, error: `Producto ${item.productId} no encontrado` },
-          { status: 400 }
+          { status: 400 },
         );
       }
       if (product.stock < item.quantity) {
@@ -88,7 +90,7 @@ export async function POST(request: NextRequest) {
             success: false,
             error: `Stock insuficiente para ${product.name}. Solo quedan ${product.stock} unidades`,
           },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -140,6 +142,18 @@ export async function POST(request: NextRequest) {
           confirmedAt,
         },
       });
+
+      if (validatedData.receiptImage) {
+        const paymentReceipt = await tx.paymentReceipt.create({
+          data: {
+            orderId: newOrder.id,
+            imageUrl: validatedData.receiptImage,
+            status: "PENDING",
+          },
+        });
+
+        console.log("payments table: ", paymentReceipt);
+      }
 
       await tx.orderItem.createMany({
         data: validatedData.items.map((item) => ({
@@ -204,14 +218,14 @@ export async function POST(request: NextRequest) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { success: false, error: "Datos inválidos", details: error.message },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     console.error("Error al crear pedido:", error);
     return NextResponse.json(
       { success: false, error: "Error al crear pedido" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

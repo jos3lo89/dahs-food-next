@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
+import { z } from "zod";
 import { Decimal } from "@/app/generated/prisma/internal/prismaNamespace";
+
+const rejectReceiptSchema = z.object({
+  notes: z.string().min(1, "El motivo del rechazo es obligatorio"),
+});
 
 function serializeOrder(order: any) {
   const receipts = (order.receipts ?? []).map((receipt: any) => ({
@@ -48,7 +53,7 @@ function serializeOrder(order: any) {
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -56,49 +61,54 @@ export async function PATCH(
     if (!session || session.user.role !== "ADMIN") {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
-    const order = await prisma.order.findUnique({
+    const body = await request.json();
+    const validatedData = rejectReceiptSchema.parse(body);
+
+    const receipt = await prisma.paymentReceipt.findUnique({
       where: { id },
-      include: {
-        receipts: { orderBy: { createdAt: "desc" } },
-      },
+      include: { order: true },
     });
 
-    if (!order) {
+    if (!receipt) {
       return NextResponse.json(
-        { success: false, error: "Pedido no encontrado" },
-        { status: 404 }
+        { success: false, error: "Comprobante no encontrado" },
+        { status: 404 },
+      );
+    }
+
+    if (receipt.status !== "PENDING") {
+      return NextResponse.json(
+        { success: false, error: "El comprobante ya fue procesado" },
+        { status: 400 },
       );
     }
 
     const now = new Date();
-    const latestReceipt = order.receipts?.[0];
 
     const updatedOrder = await prisma.$transaction(async (tx) => {
-      if (latestReceipt && latestReceipt.status === "PENDING") {
-        await tx.paymentReceipt.update({
-          where: { id: latestReceipt.id },
-          data: {
-            status: "VERIFIED",
-            verifiedAt: now,
-            verifiedBy: session.user.email || "admin",
-            notes: null,
-          },
-        });
-      }
-
-      return tx.order.update({
+      await tx.paymentReceipt.update({
         where: { id },
         data: {
-          paymentStatus: "VERIFIED",
+          status: "REJECTED",
+          notes: validatedData.notes,
           verifiedAt: now,
           verifiedBy: session.user.email || "admin",
-          paymentVerificationNotes: null,
-          status: order.status === "PENDING" ? "CONFIRMED" : order.status,
-          confirmedAt: order.status === "PENDING" ? now : order.confirmedAt,
+        },
+      });
+
+      return tx.order.update({
+        where: { id: receipt.orderId },
+        data: {
+          paymentStatus: "REJECTED",
+          paymentVerificationNotes: validatedData.notes,
+          verifiedAt: now,
+          verifiedBy: session.user.email || "admin",
+          status: "CANCELLED",
+          cancelledAt: now,
         },
         include: {
           receipts: { orderBy: { createdAt: "desc" } },
@@ -125,13 +135,21 @@ export async function PATCH(
     return NextResponse.json({
       success: true,
       data: serializeOrder(updatedOrder),
-      message: "Pago aprobado exitosamente",
+      message: "Pago rechazado",
     });
   } catch (error) {
-    console.error("Error al aprobar pago:", error);
+    if (error instanceof z.ZodError) {
+      const firstError = error.issues[0];
+      return NextResponse.json(
+        { success: false, error: firstError?.message || "Datos inválidos" },
+        { status: 400 },
+      );
+    }
+
+    console.error("Error al rechazar comprobante:", error);
     return NextResponse.json(
-      { success: false, error: "Error al aprobar pago" },
-      { status: 500 }
+      { success: false, error: "Error al rechazar pago" },
+      { status: 500 },
     );
   }
 }

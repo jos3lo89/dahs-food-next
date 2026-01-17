@@ -1,7 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import prisma from "@/lib/prisma";
-import { auth } from "@/auth";
 import { Decimal } from "@/app/generated/prisma/internal/prismaNamespace";
+
+const createReceiptSchema = z.object({
+  imageUrl: z.string().url("URL inválida"),
+});
 
 function serializeOrder(order: any) {
   const receipts = (order.receipts ?? []).map((receipt: any) => ({
@@ -46,62 +50,76 @@ function serializeOrder(order: any) {
   };
 }
 
-export async function PATCH(
+export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
-    const session = await auth();
-    if (!session || session.user.role !== "ADMIN") {
-      return NextResponse.json(
-        { success: false, error: "No autorizado" },
-        { status: 401 }
-      );
-    }
+    const body = await request.json();
+    const validatedData = createReceiptSchema.parse(body);
 
     const order = await prisma.order.findUnique({
       where: { id },
       include: {
-        receipts: { orderBy: { createdAt: "desc" } },
+        receipts: {
+          where: { status: "PENDING" },
+          orderBy: { createdAt: "desc" },
+        },
       },
     });
 
     if (!order) {
       return NextResponse.json(
         { success: false, error: "Pedido no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
-    const now = new Date();
-    const latestReceipt = order.receipts?.[0];
+    if (order.paymentMethod === "efectivo") {
+      return NextResponse.json(
+        { success: false, error: "El pedido es pago en efectivo" },
+        { status: 400 },
+      );
+    }
+
+    if (order.paymentStatus === "VERIFIED") {
+      return NextResponse.json(
+        { success: false, error: "El pago ya fue verificado" },
+        { status: 400 },
+      );
+    }
+
+    if (order.receipts.length > 0) {
+      return NextResponse.json(
+        { success: false, error: "Ya existe un comprobante pendiente" },
+        { status: 400 },
+      );
+    }
 
     const updatedOrder = await prisma.$transaction(async (tx) => {
-      if (latestReceipt && latestReceipt.status === "PENDING") {
-        await tx.paymentReceipt.update({
-          where: { id: latestReceipt.id },
-          data: {
-            status: "VERIFIED",
-            verifiedAt: now,
-            verifiedBy: session.user.email || "admin",
-            notes: null,
-          },
-        });
-      }
+      await tx.paymentReceipt.create({
+        data: {
+          orderId: id,
+          imageUrl: validatedData.imageUrl,
+        },
+      });
 
       return tx.order.update({
         where: { id },
         data: {
-          paymentStatus: "VERIFIED",
-          verifiedAt: now,
-          verifiedBy: session.user.email || "admin",
+          paymentStatus: "PENDING",
+          status: "PENDING",
+          receiptImage: validatedData.imageUrl,
           paymentVerificationNotes: null,
-          status: order.status === "PENDING" ? "CONFIRMED" : order.status,
-          confirmedAt: order.status === "PENDING" ? now : order.confirmedAt,
+          verifiedAt: null,
+          verifiedBy: null,
+          cancelledAt: null,
         },
         include: {
-          receipts: { orderBy: { createdAt: "desc" } },
+          receipts: {
+            orderBy: { createdAt: "desc" },
+          },
           items: {
             include: {
               product: {
@@ -122,16 +140,29 @@ export async function PATCH(
       });
     });
 
+    const serializedOrder = serializeOrder(updatedOrder);
+
     return NextResponse.json({
       success: true,
-      data: serializeOrder(updatedOrder),
-      message: "Pago aprobado exitosamente",
+      data: {
+        receipt: serializedOrder.latestReceipt,
+        order: serializedOrder,
+      },
+      message: "Comprobante registrado",
     });
   } catch (error) {
-    console.error("Error al aprobar pago:", error);
+    if (error instanceof z.ZodError) {
+      const firstError = error.issues[0];
+      return NextResponse.json(
+        { success: false, error: firstError?.message || "Datos inválidos" },
+        { status: 400 },
+      );
+    }
+
+    console.error("Error al registrar comprobante:", error);
     return NextResponse.json(
-      { success: false, error: "Error al aprobar pago" },
-      { status: 500 }
+      { success: false, error: "Error al registrar comprobante" },
+      { status: 500 },
     );
   }
 }

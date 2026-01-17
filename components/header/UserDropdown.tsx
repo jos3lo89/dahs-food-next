@@ -10,7 +10,7 @@ export default function UserDropdown() {
   const { data: session } = useSession();
 
   const toggleDropdown = (
-    e: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
   ) => {
     e.stopPropagation();
     setIsOpen((prev) => !prev);
@@ -31,7 +31,7 @@ export default function UserDropdown() {
         onClick={toggleDropdown}
         className="flex items-center gap-2 px-3 py-2 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
       >
-        <div className="w-9 h-9 bg-linear-to-br from-pink-500 to-pink-600 rounded-full flex items-center justify-center text-white font-semibold text-sm">
+        <div className="w-9 h-9 bg-linear-to-br from-pink-500 to-pink-600 rounded-full flex items-center justify-center font-semibold text-sm">
           {session?.user?.name?.charAt(0).toUpperCase() || "U"}
         </div>
 
@@ -62,9 +62,9 @@ export default function UserDropdown() {
         onClose={closeDropdown}
         className="absolute right-0 mt-2 w-64 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 shadow-lg overflow-hidden"
       >
-        <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+        <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700  dark:bg-gray-800/50">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-linear-to-br from-pink-500 to-pink-600 rounded-full flex items-center justify-center text-white font-semibold">
+            <div className="w-10 h-10 bg-linear-to-br from-pink-500 to-pink-600 rounded-full flex items-center justify-center font-semibold">
               {session?.user?.name?.charAt(0).toUpperCase() || "U"}
             </div>
             <div className="flex-1 min-w-0">

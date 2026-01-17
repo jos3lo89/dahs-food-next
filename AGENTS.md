@@ -8,23 +8,17 @@ Guidelines for agentic coding agents working in this repository.
 
 Dahs Food is a Spanish-language food delivery e-commerce platform built with Next.js 16 (React 19), TypeScript, PostgreSQL, and Prisma. The app uses App Router, Server Actions, React Query, and Zustand.
 
-## Build, Lint, and Test Commands
+## Build and Dev Commands
 
 ### Primary commands
 - `npm run dev`: Start development server at `http://localhost:3000`
 - `npm run build`: Build production application
 - `npm run start`: Start production server
-- `npm run lint`: Run ESLint across the project
 
 ### Prisma / database
 - `npx prisma generate`: Generate Prisma client at `@/app/generated/prisma/client`
 - `npx prisma db push`: Push schema to database (dev)
 - `npx tsx prisma/seed.ts`: Seed database
-
-### Tests
-- No test runner scripts are configured in `package.json`.
-- No Jest/Vitest/Playwright configs found in repo root.
-- Single-test command: **not available yet**. Add a test runner and script before running individual tests.
 
 ## Project Structure
 
@@ -137,16 +131,27 @@ export const useProducts = (params: ProductsParams) => {
 - **Constants**: SCREAMING_SNAKE_CASE.
 - **Database**: snake_case columns, singular model names.
 
-### Formatting & Linting
-- ESLint uses `eslint-config-next` (core-web-vitals + TypeScript).
+### Formatting
 - Prefer explicit return types for exported functions.
 - Avoid unused imports and variables.
 
+### Working Philosophy (Do/Don't)
+- Do keep changes small and targeted to the request.
+- Do reuse existing patterns and shared utilities.
+- Do keep UI text in Spanish and code identifiers in English.
+- Do not add new dependencies unless requested.
+- Do not change unrelated files or refactor without need.
+- Do not introduce new env vars without updating `.env.template`.
+- Do not store secrets or real credentials in the repo.
+- Do not run linters/tests unless the user asks.
+
 ### Git Workflow
+- Work only on the `dev` branch.
 - Commit messages in English.
-- Feature branches: `feature/description`.
-- Bug fixes: `fix/description`.
-- Run `npm run lint` before committing.
+- When asked to commit:
+  1. Verify you are on `dev`.
+  2. `git add` the intended files.
+  3. `git commit -m "message"` with a concise reason.
 
 ## Key Dependencies
 

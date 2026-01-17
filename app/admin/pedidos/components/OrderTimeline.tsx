@@ -71,9 +71,9 @@ const getStatusIndex = (status: OrderStatus): number => {
   return statusOrder.indexOf(status);
 };
 
-const formatDateTime = (dateString: string | null): string => {
+const formatDateTime2 = (dateString: string | null): string => {
   if (!dateString) return "";
-  return format(new Date(dateString), "PPP 'a las' HH:mm", { locale: es });
+  return format(new Date(dateString), "PPP 'a las' HH:mm a", { locale: es });
 };
 
 export function OrderTimeline({ order }: OrderTimelineProps) {
@@ -131,15 +131,15 @@ export function OrderTimeline({ order }: OrderTimelineProps) {
                         : "text-gray-400",
                     )}
                   >
-                    {status === "PENDING" && formatDateTime(order.createdAt)}
+                    {status === "PENDING" && formatDateTime2(order.createdAt)}
                     {status === "CONFIRMED" &&
-                      formatDateTime(order.confirmedAt)}
+                      formatDateTime2(order.confirmedAt)}
                     {status === "PREPARING" &&
-                      formatDateTime(order.preparingAt)}
+                      formatDateTime2(order.preparingAt)}
                     {status === "OUT_FOR_DELIVERY" &&
-                      formatDateTime(order.outForDeliveryAt)}
+                      formatDateTime2(order.outForDeliveryAt)}
                     {status === "DELIVERED" &&
-                      formatDateTime(order.deliveredAt)}
+                      formatDateTime2(order.deliveredAt)}
                   </p>
                 )}
               </div>
@@ -164,7 +164,7 @@ export function OrderTimeline({ order }: OrderTimelineProps) {
                 </span>
               </div>
               <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                {formatDateTime(order.cancelledAt)}
+                {formatDateTime2(order.cancelledAt)}
               </p>
             </div>
           </div>
@@ -178,7 +178,7 @@ export function OrderTimeline({ order }: OrderTimelineProps) {
             <span className="font-medium">Entrega estimada:</span>
           </div>
           <p className="text-pink-600 dark:text-pink-400 mt-1 font-semibold">
-            {formatDateTime(order.estimatedDeliveryTime)}
+            {formatDateTime2(order.estimatedDeliveryTime)}
           </p>
         </div>
       )}

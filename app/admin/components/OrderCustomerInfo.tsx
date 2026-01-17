@@ -2,7 +2,6 @@
 
 import { Order } from "@/types/orders";
 import { User, Phone, Mail } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface OrderCustomerInfoProps {
   order: Order;
@@ -10,7 +9,7 @@ interface OrderCustomerInfoProps {
 
 export function OrderCustomerInfo({ order }: OrderCustomerInfoProps) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+    <div className="bg-pink-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
       <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
         <User className="w-5 h-5 text-pink-500" />
         Información del Cliente

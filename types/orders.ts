@@ -10,6 +10,18 @@ export type PaymentMethod = "culqi" | "yape" | "plin" | "efectivo";
 
 export type PaymentVerificationStatus = "PENDING" | "VERIFIED" | "REJECTED";
 
+export interface PaymentReceipt {
+  id: string;
+  orderId: string;
+  imageUrl: string;
+  status: PaymentVerificationStatus;
+  notes: string | null;
+  verifiedBy: string | null;
+  verifiedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface AddressDetails {
   street: string;
   district?: string;
@@ -51,6 +63,8 @@ export interface Order {
   cancelledAt: string | null;
   createdAt: string;
   updatedAt: string;
+  receipts?: PaymentReceipt[];
+  latestReceipt?: PaymentReceipt | null;
   items?: OrderItem[];
 }
 
@@ -107,4 +121,88 @@ export interface OrderResponse {
   success: boolean;
   data: Order;
   message?: string;
+}
+
+export interface PaymentReceiptResponse {
+  success: boolean;
+  data: {
+    receipt: PaymentReceipt;
+    order: Order;
+  };
+  message?: string;
+}
+
+// trackOrder
+export enum TrackOrderStatus {
+  PENDING = "PENDING",
+  CONFIRMED = "CONFIRMED",
+  PREPARING = "PREPARING",
+  OUT_FOR_DELIVERY = "OUT_FOR_DELIVERY",
+  DELIVERED = "DELIVERED",
+  CANCELLED = "CANCELLED",
+}
+
+export enum TrackOrderPaymentStatus {
+  PENDING = "PENDING",
+  VERIFIED = "VERIFIED",
+  REJECTED = "REJECTED",
+}
+
+export interface TrackOrderResponse {
+  success: boolean;
+  data: {
+    id: string;
+    orderNumber: string;
+    customerName: string;
+    customerPhone: string;
+    customerEmail: string;
+    customerAddress: string;
+    addressDetails: {
+      city: string;
+      street: string;
+      district: string;
+      reference: string;
+    };
+    subtotal: number;
+    discount: number;
+    deliveryFee: string;
+    total: number;
+    status: TrackOrderStatus;
+    receiptImage: string | null;
+    paymentMethod: string;
+    paymentId: string | null;
+    paymentStatus: TrackOrderPaymentStatus;
+    paymentVerificationNotes: string | null;
+    verifiedBy: string | null;
+    verifiedAt: string | null;
+    latestReceipt: PaymentReceipt | null;
+    receipts: PaymentReceipt[];
+    notes: string;
+    estimatedDeliveryTime: string;
+    confirmedAt: string | null;
+    preparingAt: string | null;
+    outForDeliveryAt: string | null;
+    deliveredAt: string | null;
+    cancelledAt: string | null;
+    createdAt: string;
+    updatedAt: string;
+    promotionCode: string | null;
+    items: Array<{
+      id: string;
+      orderId: string;
+      productId: string;
+      quantity: number;
+      price: number;
+      subtotal: number;
+      createdAt: string;
+      product: {
+        id: string;
+        name: string;
+        image: string;
+        category: {
+          name: string;
+        };
+      };
+    }>;
+  };
 }

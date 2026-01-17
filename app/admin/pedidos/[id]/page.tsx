@@ -15,6 +15,9 @@ import { ArrowLeft, Package, Loader2, MessageCircle } from "lucide-react";
 import { useRouter, useParams } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { OrderStatus, PaymentVerificationStatus } from "@/types/orders";
+import { formatSMoney } from "@/utils/formatMoney";
+import { formatDateTime } from "@/utils/formatDateTime";
+import { toast } from "sonner";
 
 const statusColors: Record<OrderStatus, string> = {
   PENDING: "bg-yellow-100 text-yellow-800 border-yellow-300",
@@ -78,13 +81,6 @@ export default function OrderDetailPage() {
 
   const order = data.data;
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("es-PE", {
-      style: "currency",
-      currency: "PEN",
-    }).format(price);
-  };
-
   const buildItemsSummary = () => {
     if (!order.items?.length) {
       return "Sin productos";
@@ -96,7 +92,7 @@ export default function OrderDetailPage() {
   };
 
   const handleWhatsApp = () => {
-    const message = `Hola, le escribimos de Dahs Food por su pedido #${order.orderNumber}. Resumen: ${buildItemsSummary()}. Total: ${formatPrice(order.total)}. Dirección: ${order.customerAddress}. Su pago fue confirmado y su pedido está en preparación. Le avisaremos cuando esté en camino.`;
+    const message = `Hola, le escribimos de Dahs Food por su pedido #${order.orderNumber}. Resumen: ${buildItemsSummary()}. Total: ${formatSMoney(order.total)}. Dirección: ${order.customerAddress}. Su pago fue confirmado y su pedido está en preparación. Le avisaremos cuando esté en camino.`;
     const whatsappDigits = order.customerPhone.replace(/\D/g, "");
     const link = `https://wa.me/51${whatsappDigits}?text=${encodeURIComponent(message)}`;
     window.open(link, "_blank");
@@ -104,19 +100,22 @@ export default function OrderDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" onClick={() => router.back()}>
+          <Button
+            variant="outline"
+            onClick={() => router.back()}
+            className="cursor-pointer"
+          >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Volver
           </Button>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              Pedido #{order.orderNumber}
+            <h1 className="text-2xl font-bold text-gray-900 bg-gray-200 p-1 rounded-lg">
+              {order.orderNumber}
             </h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">
-              Creado el {new Date(order.createdAt).toLocaleString("es-PE")}
+              Creado el {formatDateTime(order.createdAt)}
             </p>
           </div>
         </div>
@@ -148,7 +147,6 @@ export default function OrderDetailPage() {
         </div>
       </div>
 
-      {/* Timeline */}
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
         <h3 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
           <Package className="w-5 h-5 text-pink-500" />
@@ -157,9 +155,7 @@ export default function OrderDetailPage() {
         <OrderTimeline order={order} />
       </div>
 
-      {/* Grid principal */}
       <div className="grid lg:grid-cols-3 gap-6">
-        {/* Columna izquierda */}
         <div className="lg:col-span-2 space-y-6">
           <OrderCustomerInfo order={order} />
           <OrderAddressInfo order={order} />
@@ -167,7 +163,6 @@ export default function OrderDetailPage() {
           <OrderProductsList order={order} />
         </div>
 
-        {/* Columna derecha */}
         <div className="space-y-6">
           <OrderSummary order={order} />
           <OrderStatusForm order={order} />

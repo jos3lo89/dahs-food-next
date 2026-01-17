@@ -4,16 +4,14 @@ import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { ordersApi } from "@/services/orders.service";
 import { Button } from "@/components/ui/button";
+import { useCartStore } from "@/store/cartStore";
 import {
   CheckCircle,
   Package,
   Phone,
   MapPin,
-  Clock,
   Loader2,
-  Mail,
   CreditCard,
-  Truck,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -21,14 +19,18 @@ import confetti from "canvas-confetti";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import Image from "next/image";
+import { TrackOrderStatus } from "@/types/orders";
+import { ReceiptResubmit } from "@/components/common/ReceiptResubmit";
+import { toast } from "sonner";
 
 export default function ConfirmacionPage() {
   const params = useParams();
   const orderNumber = params.orderNumber as string;
   const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE ?? "";
+  const { clearCart, clearCheckoutData } = useCartStore();
   const whatsappDigits = whatsappPhone.replace(/\D/g, "");
 
-  const { data, isLoading, error } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["order-tracking", orderNumber],
     queryFn: () => ordersApi.trackOrder(orderNumber),
     enabled: !!orderNumber,
@@ -39,12 +41,18 @@ export default function ConfirmacionPage() {
   useEffect(() => {
     if (order) {
       confetti({
-        particleCount: 100,
+        particleCount: 150,
         spread: 70,
         origin: { y: 0.6 },
       });
     }
   }, [order]);
+
+  useEffect(() => {
+    if (!order) return;
+    clearCart();
+    clearCheckoutData();
+  }, [order, clearCart, clearCheckoutData]);
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("es-PE", {
@@ -73,7 +81,7 @@ export default function ConfirmacionPage() {
     return format(new Date(dateString), "HH:mm", { locale: es });
   };
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = (status: TrackOrderStatus) => {
     switch (status) {
       case "PENDING":
         return "bg-yellow-100 text-yellow-700 border-yellow-300";
@@ -92,7 +100,7 @@ export default function ConfirmacionPage() {
     }
   };
 
-  const getStatusLabel = (status: string) => {
+  const getStatusLabel = (status: TrackOrderStatus) => {
     switch (status) {
       case "PENDING":
         return "Pendiente de Confirmación";
@@ -125,6 +133,17 @@ export default function ConfirmacionPage() {
     ? typeof order.addressDetails === "string"
       ? JSON.parse(order.addressDetails)
       : order.addressDetails
+    : null;
+
+  const latestReceipt = order?.latestReceipt ?? null;
+  const receiptStatus = latestReceipt?.status ?? order?.paymentStatus;
+  const receiptNotes = latestReceipt?.notes ?? order?.paymentVerificationNotes;
+  const receiptStatusLabel = receiptStatus
+    ? receiptStatus === "VERIFIED"
+      ? "Verificado"
+      : receiptStatus === "REJECTED"
+        ? "Rechazado"
+        : "Pendiente"
     : null;
 
   if (isLoading) {
@@ -163,31 +182,47 @@ export default function ConfirmacionPage() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-br from-pink-50 to-rose-50 py-12">
+    <div className="mt-10">
       <div className="container mx-auto px-4 max-w-4xl">
         <div className="text-center mb-8 animate-fade-in">
           <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
             <CheckCircle className="w-16 h-16 text-green-500" />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            ¡Pedido Confirmado!
+            ¡Pedido{" "}
+            {order.status === TrackOrderStatus.CONFIRMED
+              ? "Confirmado"
+              : order.status === TrackOrderStatus.CANCELLED
+                ? "Cancelado"
+                : "Recibido"}
+            !
           </h1>
           <p className="text-xl text-gray-600">
             Gracias por tu compra, <strong>{order.customerName}</strong>
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+        <div className="rounded-2xl shadow-lg p-6 mb-6">
           <div className="flex items-center justify-between flex-wrap gap-4">
             <div>
               <p className="text-sm text-gray-600 mb-1">Número de pedido:</p>
-              <p className="text-3xl font-bold text-pink-600">
-                #{order.orderNumber}
+              <p
+                className="text-3xl font-bold text-pink-600 cursor-pointer bg-pink-50 p-1 rounded-lg"
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(order.orderNumber);
+                    toast.success("Copeado");
+                  } catch (error) {
+                    toast.warning("Error al copear");
+                  }
+                }}
+              >
+                {order.orderNumber}
               </p>
             </div>
             <div
               className={`px-4 py-2 rounded-full border-2 ${getStatusColor(
-                order.status
+                order.status,
               )}`}
             >
               <span className="font-semibold">
@@ -197,23 +232,8 @@ export default function ConfirmacionPage() {
           </div>
         </div>
 
-        {order.estimatedDeliveryTime && order.status !== "DELIVERED" && (
-          <div className="bg-linear-to-r from-pink-500 to-purple-500 rounded-2xl p-6 text-white text-center mb-6">
-            <Clock className="w-12 h-12 mx-auto mb-3" />
-            <h3 className="text-2xl font-bold mb-2">
-              Tiempo estimado de entrega
-            </h3>
-            <p className="text-4xl font-bold">
-              {formatTime(order.estimatedDeliveryTime)}
-            </p>
-            <p className="text-sm opacity-90 mt-2">
-              {formatDateTime(order.estimatedDeliveryTime)}
-            </p>
-          </div>
-        )}
-
         <div className="grid md:grid-cols-2 gap-6 mb-6">
-          <div className="bg-white rounded-2xl shadow-lg p-6">
+          <div className="rounded-2xl shadow-lg p-6">
             <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
               <Phone className="w-5 h-5 text-pink-500" />
               Información de Contacto
@@ -252,7 +272,7 @@ export default function ConfirmacionPage() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-lg p-6">
+          <div className="rounded-2xl shadow-lg p-6">
             <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
               <MapPin className="w-5 h-5 text-pink-500" />
               Dirección de Entrega
@@ -291,22 +311,20 @@ export default function ConfirmacionPage() {
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
+        <div className="rounded-2xl shadow-lg p-6 mb-6">
           <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
             <Package className="w-5 h-5 text-pink-500" />
             Productos
           </h3>
           <div className="space-y-3">
-            {order.items?.map((item: any) => (
-              <div
-                key={item.id}
-                className="flex gap-4 p-3 bg-pink-50 rounded-lg"
-              >
-                <div className="relative w-16 h-16 rounded-lg overflow-hidden bg-gray-100">
+            {order.items?.map((item) => (
+              <div key={item.id} className="flex gap-4 p-3 rounded-lg">
+                <div className="relative w-16 h-16 rounded-lg overflow-hidden">
                   <Image
                     src={item.product.image}
                     alt={item.product.name}
-                    fill
+                    width={200}
+                    height={200}
                     className="object-cover"
                   />
                 </div>
@@ -356,25 +374,36 @@ export default function ConfirmacionPage() {
                   Método de pago: {getPaymentMethodLabel(order.paymentMethod)}
                 </h3>
 
-                {order.receiptImage && (
+                {latestReceipt && receiptStatusLabel && (
                   <div className="mt-3">
                     <p className="text-sm text-blue-800 mb-2">
-                      Comprobante recibido ✓
+                      Último comprobante: {receiptStatusLabel}
                     </p>
                   </div>
                 )}
 
-                {order.status === "PENDING" && (
+                {receiptStatus === "REJECTED" ? (
+                  <p className="text-sm text-red-700">
+                    Pago rechazado.{" "}
+                    {receiptNotes ||
+                      "Revisa el comprobante y vuelve a subirlo."}
+                  </p>
+                ) : order.status === "PENDING" ? (
                   <p className="text-sm text-blue-800">
                     {order.paymentMethod === "efectivo"
                       ? "Pagará en efectivo al recibir su pedido."
                       : "Estamos verificando su comprobante de pago. Le confirmaremos por WhatsApp en breve."}
                   </p>
-                )}
-                {order.status === "CONFIRMED" && (
+                ) : order.status === "CONFIRMED" ? (
                   <p className="text-sm text-green-800">
                     ✓ Pago confirmado. Tu pedido está siendo preparado.
                   </p>
+                ) : null}
+
+                {receiptStatus === "REJECTED" && (
+                  <div className="mt-4">
+                    <ReceiptResubmit orderId={order.id} onUploaded={refetch} />
+                  </div>
                 )}
               </div>
             </div>
@@ -402,9 +431,10 @@ export default function ConfirmacionPage() {
             ¿Necesitas ayuda? Contacta por WhatsApp:{" "}
             <a
               href={`https://wa.me/${whatsappDigits}?text=${encodeURIComponent(
-                `Hola, tengo una consulta sobre mi pedido #${order.orderNumber}. Resumen: ${buildItemsSummary()}. Total: ${formatPrice(order.total)}. Dirección: ${order.customerAddress}. Su pedido fue recibido y está pendiente de confirmación. Le avisaremos cuando esté confirmado.`,
+                `Hola, tengo una consulta sobre mi pedido #${order.orderNumber}. Resumen: ${buildItemsSummary()}. Total: ${formatPrice(order.total)}. Dirección: ${order.customerAddress}.`,
               )}`}
               className="text-pink-600 font-semibold hover:underline"
+              target="_blank"
             >
               {whatsappPhone}
             </a>

@@ -15,8 +15,11 @@ export interface CustomerInfo {
   name: string;
   phone: string;
   address: string;
-  email?: string;
-  notes?: string;
+  email: string;
+  notes: string;
+  district: string;
+  city: string;
+  reference: string;
 }
 
 export interface AppliedPromotion {
