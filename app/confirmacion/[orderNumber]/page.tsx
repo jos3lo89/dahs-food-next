@@ -12,6 +12,8 @@ import {
   MapPin,
   Loader2,
   CreditCard,
+  ArrowLeft,
+  RefreshCw,
 } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
@@ -30,7 +32,7 @@ export default function ConfirmacionPage() {
   const { clearCart, clearCheckoutData } = useCartStore();
   const whatsappDigits = whatsappPhone.replace(/\D/g, "");
 
-  const { data, isLoading, error, refetch } = useQuery({
+  const { data, isLoading, error, refetch, isRefetching } = useQuery({
     queryKey: ["order-tracking", orderNumber],
     queryFn: () => ordersApi.trackOrder(orderNumber),
     enabled: !!orderNumber,
@@ -184,6 +186,29 @@ export default function ConfirmacionPage() {
   return (
     <div className="mt-10">
       <div className="container mx-auto px-4 max-w-4xl">
+        <div className="mb-8 flex justify-between items-center">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 text-pink-600 hover:text-pink-700 mb-4"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Volver a la tienda
+          </Link>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => refetch()}
+            disabled={isRefetching}
+          >
+            {isRefetching ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <RefreshCw className="w-4 h-4" />
+            )}
+          </Button>
+        </div>
+
         <div className="text-center mb-8 animate-fade-in">
           <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-bounce">
             <CheckCircle className="w-16 h-16 text-green-500" />
