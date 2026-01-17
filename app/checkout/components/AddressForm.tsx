@@ -46,21 +46,12 @@ export function AddressForm({ formData, onChange }: AddressFormProps) {
             id="district"
             value={formData.district}
             onChange={(e) => onChange("district", e.target.value)}
-            placeholder="Andahuaylas, San jeronimo, Talavera"
+            placeholder="Uripa, Chincheros"
             className="mt-1"
           />
         </div>
 
-        <div>
-          <Label htmlFor="city">Ciudad *</Label>
-          <Input
-            id="city"
-            value={formData.city}
-            onChange={(e) => onChange("city", e.target.value)}
-            placeholder="Adahuaylas"
-            className="mt-1"
-          />
-        </div>
+        <Input id="city" type="hidden" value={formData.city} readOnly />
 
         <div className="md:col-span-2">
           <Label htmlFor="reference">Referencia (opcional)</Label>

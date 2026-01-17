@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
 import { Button } from "@/components/ui/button";
@@ -46,13 +46,16 @@ export default function CheckoutPage() {
   const { mutate: createOrder, isPending: isCreatingOrder } = useCreateOrder();
 
   const [currentStep, setCurrentStep] = useState(1);
+  const [isFetchingDni, setIsFetchingDni] = useState(false);
+  const [lastDniLookup, setLastDniLookup] = useState<string | null>(null);
   const [formData, setFormData] = useState({
+    dni: "",
     name: customerInfo?.name || "",
     phone: customerInfo?.phone || "",
     email: customerInfo?.email || "",
     address: customerInfo?.address || "",
     district: customerInfo?.district || "",
-    city: customerInfo?.city || "Andahuaylas",
+    city: "URIPA",
     reference: customerInfo?.reference || "",
     notes: customerInfo?.notes || "",
   });
@@ -67,9 +70,46 @@ export default function CheckoutPage() {
     }
   }, [items, router]);
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = useCallback((field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  }, []);
+
+  const fetchDniInfo = useCallback(
+    async (dniValue: string) => {
+      if (dniValue.length !== 8) return;
+
+      setIsFetchingDni(true);
+      try {
+        const response = await fetch(`/api/dni?document=${dniValue}`);
+        const data = await response.json();
+
+        if (!response.ok || !data?.success) {
+          toast.error(data?.message ?? "No se encontró el DNI");
+          return;
+        }
+
+        if (data?.data?.nombre_completo) {
+          handleInputChange("name", data.data.nombre_completo);
+        }
+      } catch (error) {
+        toast.error("No se pudo consultar el DNI");
+      } finally {
+        setIsFetchingDni(false);
+        setLastDniLookup(dniValue);
+      }
+    },
+    [handleInputChange]
+  );
+
+  useEffect(() => {
+    if (
+      formData.dni.length === 8 &&
+      formData.dni !== lastDniLookup &&
+      !isFetchingDni
+    ) {
+      void fetchDniInfo(formData.dni);
+    }
+  }, [fetchDniInfo, formData.dni, isFetchingDni, lastDniLookup]);
 
   const validateStep1 = () => {
     return items.length > 0;
@@ -288,6 +328,42 @@ export default function CheckoutPage() {
                     </div>
 
                     <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <Label htmlFor="dni">DNI (opcional)</Label>
+                        <div className="mt-1 flex flex-col sm:flex-row gap-2">
+                          <Input
+                            id="dni"
+                            value={formData.dni}
+                            onChange={(e) => {
+                              const value = e.target.value
+                                .replace(/\D/g, "")
+                                .slice(0, 8);
+                              handleInputChange("dni", value);
+                              if (value.length < 8) {
+                                setLastDniLookup(null);
+                              }
+                            }}
+                            placeholder="12345678"
+                            className="flex-1"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => fetchDniInfo(formData.dni)}
+                            disabled={formData.dni.length !== 8 || isFetchingDni}
+                          >
+                            {isFetchingDni ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                              "Buscar"
+                            )}
+                          </Button>
+                        </div>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          Completa tu DNI para autocompletar el nombre.
+                        </p>
+                      </div>
+
                       <div>
                         <Label htmlFor="name">Nombre completo *</Label>
                         <Input
