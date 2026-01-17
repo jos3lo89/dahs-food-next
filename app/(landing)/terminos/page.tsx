@@ -1,15 +1,47 @@
+import type { ReactElement } from "react";
 import { Metadata } from "next";
 import Link from "next/link";
 import { ArrowLeft, FileText } from "lucide-react";
 
+interface BusinessInfo {
+  legalName: string;
+  ruc: string;
+  tradeName: string;
+  activity: string;
+  serviceMode: string;
+  salesChannel: string;
+}
+
+interface ContactInfo {
+  email: string;
+  phone: string;
+  address: string;
+}
+
 export const metadata: Metadata = {
   title: "Términos y Condiciones",
   description:
-    "Condiciones de uso, pagos y delivery para realizar pedidos en Dahs Jhoss.",
+    "Términos, cambios, devoluciones y reclamos para pedidos en DAHS.",
 };
 
-export default function TerminosPage() {
-  const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE ?? "";
+export default function TerminosPage(): ReactElement {
+  const whatsappPhone = process.env.NEXT_PUBLIC_WHATSAPP_PHONE ?? "982 294 241";
+  const whatsappDigits = whatsappPhone.replace(/\D/g, "");
+
+  const businessInfo: BusinessInfo = {
+    legalName: "DAHS",
+    ruc: "10600469059",
+    tradeName: "DAHS",
+    activity: "Venta y preparación de desayunos, jugos naturales y extras",
+    serviceMode: "Delivery (pedidos vía web y canales digitales)",
+    salesChannel: "Página web propia con pagos en línea",
+  };
+
+  const contactInfo: ContactInfo = {
+    email: "dahsjhoss@gmail.com",
+    phone: whatsappPhone,
+    address: "Chincheros, Chincheros, Apurímac – Perú",
+  };
 
   return (
     <div className="min-h-screen bg-linear-to-br from-pink-50 to-rose-50 py-12">
@@ -45,320 +77,205 @@ export default function TerminosPage() {
         <div className="bg-white rounded-2xl shadow-lg p-8 space-y-8">
           <section>
             <h2 className="text-2xl font-bold text-pink-900 mb-4">
-              1. Aceptación de los Términos
+              1. Identificación del negocio
             </h2>
-            <p className="text-gray-700 mb-3">
-              Bienvenido a Desayunos Dulces. Al acceder y utilizar este sitio
-              web y nuestro servicio de delivery de desayunos, usted acepta
-              estar sujeto a estos Términos y Condiciones, todas las leyes y
-              regulaciones aplicables, y acepta que es responsable del
-              cumplimiento de las leyes locales aplicables.
-            </p>
-            <p className="text-gray-700">
-              Si no está de acuerdo con alguno de estos términos, tiene
-              prohibido usar o acceder a este sitio y servicios.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-pink-900 mb-4">
-              2. Descripción del Servicio
-            </h2>
-            <p className="text-gray-700 mb-3">
-              Desayunos Dulces ofrece un servicio de venta y entrega a domicilio
-              de desayunos y productos alimenticios preparados. Nuestros
-              servicios incluyen:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
-              <li>Venta de desayunos preparados y productos complementarios</li>
-              <li>Servicio de entrega a domicilio (delivery)</li>
-              <li>Plataforma de pedidos en línea</li>
-              <li>Opciones de pago en línea y contra entrega</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-pink-900 mb-4">
-              3. Información del Usuario
-            </h2>
-            <p className="text-gray-700 mb-3">
-              Al realizar un pedido, usted se compromete a:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
-              <li>Proporcionar información verídica, precisa y completa</li>
-              <li>Mantener actualizada su dirección de entrega</li>
-              <li>
-                Proporcionar un número de teléfono activo para coordinaciones
-              </li>
-              <li>
-                Ser mayor de 18 años o contar con autorización de un tutor
-              </li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-pink-900 mb-4">
-              4. Realización de Pedidos
-            </h2>
-
-            <h3 className="text-xl font-semibold text-pink-800 mb-3 mt-4">
-              4.1. Proceso de Pedido
-            </h3>
-            <p className="text-gray-700 mb-3">
-              Los pedidos se realizan a través de nuestro sitio web. Al
-              confirmar un pedido, usted acepta comprar los productos
-              seleccionados bajo las condiciones especificadas.
-            </p>
-
-            <h3 className="text-xl font-semibold text-pink-800 mb-3 mt-4">
-              4.2. Confirmación
-            </h3>
-            <p className="text-gray-700 mb-3">
-              Recibirá una confirmación del pedido vía WhatsApp y/o correo
-              electrónico. Esta confirmación no constituye aceptación del
-              pedido, sino solo un acuse de recibo.
-            </p>
-
-            <h3 className="text-xl font-semibold text-pink-800 mb-3 mt-4">
-              4.3. Disponibilidad
-            </h3>
-            <p className="text-gray-700">
-              Todos los productos están sujetos a disponibilidad. Nos reservamos
-              el derecho de limitar las cantidades de cualquier producto o
-              servicio que ofrecemos. En caso de no disponibilidad, nos
-              comunicaremos con usted para ofrecer alternativas o cancelar el
-              pedido.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-pink-900 mb-4">
-              5. Precios y Métodos de Pago
-            </h2>
-
-            <h3 className="text-xl font-semibold text-pink-800 mb-3 mt-4">
-              5.1. Precios
-            </h3>
-            <p className="text-gray-700 mb-3">
-              Todos los precios están expresados en Soles Peruanos (PEN) e
-              incluyen el IGV cuando corresponda. Los precios pueden cambiar sin
-              previo aviso, pero los cambios no afectarán pedidos ya
-              confirmados.
-            </p>
-
-            <h3 className="text-xl font-semibold text-pink-800 mb-3 mt-4">
-              5.2. Métodos de Pago Aceptados
-            </h3>
-            <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
-              <li>
-                <strong>Yape:</strong> Transferencia inmediata con QR
-              </li>
-              <li>
-                <strong>Plin:</strong> Transferencia bancaria rápida
-              </li>
-              <li>
-                <strong>Tarjetas:</strong> Débito y crédito (próximamente)
-              </li>
-              <li>
-                <strong>Efectivo:</strong> Pago contra entrega
-              </li>
-            </ul>
-
-            <h3 className="text-xl font-semibold text-pink-800 mb-3 mt-4">
-              5.3. Comprobantes de Pago
-            </h3>
-            <p className="text-gray-700">
-              Para pagos con Yape o Plin, es obligatorio subir el comprobante de
-              transferencia. Su pedido será confirmado una vez verificado el
-              pago, lo cual puede tomar hasta 15 minutos.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-pink-900 mb-4">
-              6. Política de Entrega (Delivery)
-            </h2>
-
-            <h3 className="text-xl font-semibold text-pink-800 mb-3 mt-4">
-              6.1. Zonas de Cobertura
-            </h3>
-            <p className="text-gray-700 mb-3">
-              Actualmente realizamos entregas en Lima Metropolitana. Consulte
-              disponibilidad para zonas específicas al momento de realizar su
-              pedido.
-            </p>
-
-            <h3 className="text-xl font-semibold text-pink-800 mb-3 mt-4">
-              6.2. Tiempo de Entrega
-            </h3>
-            <p className="text-gray-700 mb-3">
-              El tiempo estimado de entrega es de 30 a 45 minutos desde la
-              confirmación del pedido. Este tiempo puede variar según:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
-              <li>Distancia del punto de entrega</li>
-              <li>Tráfico y condiciones climáticas</li>
-              <li>Volumen de pedidos</li>
-              <li>Disponibilidad de repartidores</li>
-            </ul>
-
-            <h3 className="text-xl font-semibold text-pink-800 mb-3 mt-4">
-              6.3. Envío
-            </h3>
-            <p className="text-gray-700">
-              El envío está incluido en el precio de los productos. No hay costo adicional por entrega.
-            </p>
-
-            <h3 className="text-xl font-semibold text-pink-800 mb-3 mt-4">
-              6.4. Recepción del Pedido
-            </h3>
-            <p className="text-gray-700">
-              El cliente o una persona autorizada debe estar disponible en la
-              dirección de entrega. Si no hay nadie disponible, intentaremos
-              contactarlo por teléfono. Si no podemos completar la entrega, el
-              pedido podrá ser cancelado con cargo de envío.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-pink-900 mb-4">
-              7. Cancelaciones y Devoluciones
-            </h2>
-
-            <h3 className="text-xl font-semibold text-pink-800 mb-3 mt-4">
-              7.1. Cancelación por el Cliente
-            </h3>
-            <p className="text-gray-700 mb-3">
-              Puede cancelar su pedido sin costo hasta 10 minutos después de
-              confirmado. Después de este tiempo, el pedido podría estar en
-              preparación y no será posible cancelarlo.
-            </p>
-
-            <h3 className="text-xl font-semibold text-pink-800 mb-3 mt-4">
-              7.2. Cancelación por Desayunos Dulces
-            </h3>
-            <p className="text-gray-700 mb-3">
-              Nos reservamos el derecho de cancelar pedidos en casos de:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
-              <li>Falta de disponibilidad de productos</li>
-              <li>Información de contacto incorrecta</li>
-              <li>Problemas con la verificación del pago</li>
-              <li>Condiciones climáticas extremas</li>
-              <li>Dirección fuera de zona de cobertura</li>
-            </ul>
-
-            <h3 className="text-xl font-semibold text-pink-800 mb-3 mt-4">
-              7.3. Reembolsos
-            </h3>
-            <p className="text-gray-700">
-              En caso de cancelación procedente, el reembolso se realizará en un
-              plazo de 3 a 5 días hábiles mediante el mismo método de pago
-              utilizado.
-            </p>
-
-            <h3 className="text-xl font-semibold text-pink-800 mb-3 mt-4">
-              7.4. Productos con Problemas
-            </h3>
-            <p className="text-gray-700">
-              Si recibe un producto en mal estado, debe reportarlo dentro de las
-              2 horas siguientes a la entrega. Envíe fotos del producto al
-              WhatsApp de atención al cliente para evaluación y reemplazo.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-pink-900 mb-4">
-              8. Calidad y Seguridad Alimentaria
-            </h2>
-            <p className="text-gray-700 mb-3">Nos comprometemos a:</p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
-              <li>Utilizar ingredientes frescos y de calidad</li>
-              <li>Mantener estándares de higiene y manipulación</li>
-              <li>Preparar los alimentos el mismo día de la entrega</li>
-              <li>Cumplir con normativas sanitarias vigentes</li>
-              <li>Mantener la cadena de frío cuando corresponda</li>
-            </ul>
-
-            <h3 className="text-xl font-semibold text-pink-800 mb-3 mt-4">
-              8.1. Alergias e Intolerancias
-            </h3>
-            <p className="text-gray-700">
-              Si tiene alergias o intolerancias alimentarias, indíquelo en las
-              notas del pedido. Sin embargo, debido a las condiciones de nuestra
-              cocina, no podemos garantizar la ausencia total de alérgenos.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-pink-900 mb-4">
-              9. Propiedad Intelectual
-            </h2>
-            <p className="text-gray-700">
-              Todo el contenido del sitio web, incluyendo textos, gráficos,
-              logos, imágenes, y software, es propiedad de Desayunos Dulces y
-              está protegido por las leyes de propiedad intelectual de Perú.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-pink-900 mb-4">
-              10. Limitación de Responsabilidad
-            </h2>
-            <p className="text-gray-700 mb-3">
-              Desayunos Dulces no será responsable por:
-            </p>
-            <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
-              <li>Retrasos en la entrega por causas de fuerza mayor</li>
-              <li>Daños derivados del mal uso o almacenamiento de productos</li>
-              <li>Reacciones alérgicas no reportadas previamente</li>
-              <li>Problemas técnicos del sitio web o plataforma de pago</li>
-            </ul>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-pink-900 mb-4">
-              11. Modificaciones de los Términos
-            </h2>
-            <p className="text-gray-700">
-              Nos reservamos el derecho de modificar estos términos en cualquier
-              momento. Los cambios entrarán en vigor inmediatamente después de
-              su publicación en el sitio web. El uso continuado del servicio
-              después de dichos cambios constituye su aceptación de los nuevos
-              términos.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-pink-900 mb-4">
-              12. Ley Aplicable y Jurisdicción
-            </h2>
-            <p className="text-gray-700">
-              Estos Términos y Condiciones se rigen por las leyes de la
-              República del Perú. Cualquier disputa derivada de estos términos
-              será sometida a la jurisdicción exclusiva de los tribunales de
-              Lima, Perú.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-2xl font-bold text-pink-900 mb-4">
-              13. Contacto
-            </h2>
-            <p className="text-gray-700 mb-3">
-              Para cualquier consulta sobre estos Términos y Condiciones, puede
-              contactarnos a través de:
-            </p>
             <ul className="space-y-2 text-gray-700">
               <li>
-                <strong>WhatsApp:</strong> {whatsappPhone}
+                <strong>Nombre legal:</strong> {businessInfo.legalName}
               </li>
               <li>
-                <strong>Email:</strong> info@desayunosdulces.pe
+                <strong>RUC:</strong> {businessInfo.ruc}
               </li>
               <li>
-                <strong>Dirección:</strong> Av. Principal 123, Miraflores, Lima,
-                Perú
+                <strong>Razón social:</strong> {businessInfo.tradeName}
+              </li>
+              <li>
+                <strong>Actividad:</strong> {businessInfo.activity}
+              </li>
+              <li>
+                <strong>Modalidad de atención:</strong>{" "}
+                {businessInfo.serviceMode}
+              </li>
+              <li>
+                <strong>Canal de ventas:</strong> {businessInfo.salesChannel}
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-bold text-pink-900 mb-4">
+              2. Uso del sitio web
+            </h2>
+            <p className="text-gray-700">
+              El acceso y uso del sitio web implica la aceptación plena de estos
+              Términos y Condiciones. El usuario se compromete a utilizar la web
+              de manera lícita y conforme a la normativa vigente.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-bold text-pink-900 mb-4">
+              3. Servicio ofrecido
+            </h2>
+            <p className="text-gray-700">
+              DAHS ofrece la preparación y venta de desayunos, jugos naturales y
+              extras mediante la modalidad de delivery, según disponibilidad y
+              cobertura establecida.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-bold text-pink-900 mb-4">
+              4. Responsabilidad del proveedor
+            </h2>
+            <p className="text-gray-700">
+              DAHS se compromete a brindar productos elaborados bajo estándares
+              de calidad e higiene, y a atender los pedidos confirmados a través
+              de sus canales oficiales.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-bold text-pink-900 mb-4">
+              5. Responsabilidad del consumidor
+            </h2>
+            <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
+              <li>Brindar datos correctos para la entrega del pedido.</li>
+              <li>Revisar el producto al momento de recibirlo.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-bold text-pink-900 mb-4">
+              6. Casos fortuitos o fuerza mayor
+            </h2>
+            <p className="text-gray-700 mb-3">
+              DAHS no será responsable por demoras o incumplimientos ocasionados
+              por hechos ajenos a su control, tales como:
+            </p>
+            <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4">
+              <li>Condiciones climáticas.</li>
+              <li>Tráfico.</li>
+              <li>Bloqueos.</li>
+              <li>Fallas de comunicación.</li>
+              <li>Otros casos fortuitos.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-bold text-pink-900 mb-4">
+              7. Política de cambios y devoluciones
+            </h2>
+
+            <h3 className="text-xl font-semibold text-pink-800 mb-3">
+              7.1. Plazo para solicitar
+            </h3>
+            <p className="text-gray-700 mb-3">
+              El cliente puede solicitar un cambio o reembolso dentro de las 24
+              horas posteriores a la recepción del pedido, solo en los
+              siguientes casos:
+            </p>
+            <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4 mb-4">
+              <li>Producto en mal estado al momento de la entrega.</li>
+              <li>Producto equivocado.</li>
+              <li>Pedido incompleto.</li>
+              <li>Incidencia atribuible a la preparación o al delivery.</li>
+            </ul>
+
+            <h3 className="text-xl font-semibold text-pink-800 mb-3">
+              7.2. Condiciones para la evaluación
+            </h3>
+            <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4 mb-4">
+              <li>Reportar el problema dentro del plazo indicado.</li>
+              <li>Enviar evidencia (foto o video) del producto y/o pedido.</li>
+              <li>Conservar el empaque original cuando aplique.</li>
+            </ul>
+
+            <h3 className="text-xl font-semibold text-pink-800 mb-3">
+              7.3. Productos no sujetos a devolución
+            </h3>
+            <p className="text-gray-700 mb-3">
+              Por tratarse de productos perecibles y de consumo inmediato, no se
+              aceptan devoluciones por cambio de opinión, gusto personal o
+              consumo parcial, salvo que exista un defecto o error atribuible al
+              negocio.
+            </p>
+
+            <h3 className="text-xl font-semibold text-pink-800 mb-3">
+              7.4. Solución ofrecida
+            </h3>
+            <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4 mb-4">
+              <li>Reposición del producto.</li>
+              <li>Envío del faltante.</li>
+              <li>Reembolso total o parcial.</li>
+            </ul>
+
+            <h3 className="text-xl font-semibold text-pink-800 mb-3">
+              7.5. Reembolsos
+            </h3>
+            <p className="text-gray-700">
+              El reembolso se realizará por el mismo medio de pago utilizado en
+              la compra, una vez validada la solicitud. Los tiempos de
+              procesamiento pueden variar según la entidad financiera o el
+              método de pago.
+            </p>
+          </section>
+
+          {/* <section>
+            <h2 className="text-2xl font-bold text-pink-900 mb-4">
+              8. Libro de reclamaciones
+            </h2>
+            <p className="text-gray-700 mb-3">
+              DAHS cuenta con un Libro de Reclamaciones virtual integrado en la
+              web, conforme al Código de Protección y Defensa del Consumidor.
+            </p>
+            <p className="text-gray-700 mb-3">Datos obligatorios del formulario:</p>
+            <ul className="list-disc list-inside space-y-2 text-gray-700 ml-4 mb-4">
+              <li>Nombre del consumidor.</li>
+              <li>DNI.</li>
+              <li>Dirección.</li>
+              <li>Correo electrónico.</li>
+              <li>Detalle del reclamo o queja.</li>
+              <li>Pedido del consumidor.</li>
+            </ul>
+            <div className="bg-pink-50 border-l-4 border-pink-400 p-4">
+              <p className="text-pink-900 text-sm">
+                “Conforme a lo establecido en el Código de Protección y Defensa
+                del Consumidor, este establecimiento cuenta con un Libro de
+                Reclamaciones virtual a disposición del consumidor.”
+              </p>
+            </div>
+          </section> */}
+
+          <section>
+            <h2 className="text-2xl font-bold text-pink-900 mb-4">
+              8. Aceptación
+            </h2>
+            <p className="text-gray-700">
+              El usuario declara: “He leído y acepto los Términos y Condiciones
+              y la Política de Cambios y Devoluciones.”
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-bold text-pink-900 mb-4">
+              9. Medios de contacto
+            </h2>
+            <ul className="space-y-2 text-gray-700">
+              <li>
+                <strong>Correo electrónico:</strong> {contactInfo.email}
+              </li>
+              <li>
+                <strong>WhatsApp / Teléfono:</strong>{" "}
+                <a
+                  href={`tel:${whatsappDigits}`}
+                  className="text-pink-700 hover:text-pink-900 transition"
+                >
+                  {contactInfo.phone}
+                </a>
+              </li>
+              <li>
+                <strong>Dirección fiscal:</strong> {contactInfo.address}
               </li>
             </ul>
           </section>
