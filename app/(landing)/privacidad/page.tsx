@@ -11,9 +11,9 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Política de Privacidad | Desayunos Dulces",
+  title: "Política de Privacidad",
   description:
-    "Política de privacidad y protección de datos de Desayunos Dulces",
+    "Conoce cómo Dahs Jhoss protege tus datos, pedidos y comunicaciones en nuestro servicio de delivery.",
 };
 
 export default function PrivacidadPage() {

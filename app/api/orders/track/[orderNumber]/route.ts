@@ -3,6 +3,14 @@ import prisma from "@/lib/prisma";
 import { Decimal } from "@/app/generated/prisma/internal/prismaNamespace";
 
 function serializeOrder(order: any) {
+  const receipts = (order.receipts ?? []).map((receipt: any) => ({
+    ...receipt,
+    createdAt: receipt.createdAt?.toISOString?.() ?? receipt.createdAt,
+    updatedAt: receipt.updatedAt?.toISOString?.() ?? receipt.updatedAt,
+    verifiedAt: receipt.verifiedAt?.toISOString?.() ?? receipt.verifiedAt,
+  }));
+  const latestReceipt = receipts[0] ?? null;
+
   return {
     ...order,
     subtotal:
@@ -17,6 +25,8 @@ function serializeOrder(order: any) {
       order.total instanceof Decimal
         ? order.total.toNumber()
         : Number(order.total),
+    receipts,
+    latestReceipt,
     items: order.items?.map((item: any) => ({
       ...item,
       price:
@@ -32,8 +42,8 @@ function serializeOrder(order: any) {
 }
 
 export async function GET(
-  request: NextRequest,
-  { params }: { params: Promise<{ orderNumber: string }> }
+  _: NextRequest,
+  { params }: { params: Promise<{ orderNumber: string }> },
 ) {
   try {
     const { orderNumber } = await params;
@@ -41,13 +51,16 @@ export async function GET(
     if (!orderNumber) {
       return NextResponse.json(
         { success: false, error: "Número de pedido requerido" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     const order = await prisma.order.findUnique({
       where: { orderNumber },
       include: {
+        receipts: {
+          orderBy: { createdAt: "desc" },
+        },
         items: {
           include: {
             product: {
@@ -70,7 +83,7 @@ export async function GET(
     if (!order) {
       return NextResponse.json(
         { success: false, error: "Pedido no encontrado" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -82,7 +95,7 @@ export async function GET(
     console.error("Error al rastrear pedido:", error);
     return NextResponse.json(
       { success: false, error: "Error al rastrear pedido" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

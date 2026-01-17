@@ -52,15 +52,16 @@ export interface CreateOrderDto {
 
 export interface CreateOrderResponse {
   success: boolean;
+  message: string;
   data: {
     id: string;
     orderNumber: string;
     customerName: string;
+    customerEmail: string;
     total: number;
     status: string;
     paymentMethod: string;
-    estimatedDeliveryTime?: string;
+    estimatedDeliveryTime: string;
     createdAt: string;
   };
-  message?: string;
 }

@@ -3,8 +3,9 @@ import Link from "next/link";
 import { ArrowLeft, FileText } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Términos y Condiciones | Desayunos Dulces",
-  description: "Términos y condiciones de uso de Desayunos Dulces",
+  title: "Términos y Condiciones",
+  description:
+    "Condiciones de uso, pagos y delivery para realizar pedidos en Dahs Jhoss.",
 };
 
 export default function TerminosPage() {

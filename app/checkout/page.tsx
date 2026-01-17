@@ -13,7 +13,7 @@ import { YapePayment } from "./components/YapePayment";
 import { OrderSummary } from "./components/OrderSummary";
 import { AddressForm } from "./components/AddressForm";
 import { useCreateOrder } from "@/hooks/useOrders";
-import { PaymentMethod } from "@/types/checkout";
+import { CreateOrderDto, PaymentMethod } from "@/types/checkout";
 import {
   ArrowLeft,
   ArrowRight,
@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { addMinutes } from "date-fns";
+import Image from "next/image";
 import Link from "next/link";
 
 export default function CheckoutPage() {
@@ -40,23 +41,19 @@ export default function CheckoutPage() {
     setCustomerInfo,
     setPaymentMethod,
     setReceiptImage,
-    clearCart,
-    clearCheckoutData,
   } = useCartStore();
 
-  const { mutate: createOrder, isPending } = useCreateOrder();
+  const { mutate: createOrder, isPending: isCreatingOrder } = useCreateOrder();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
     name: customerInfo?.name || "",
     phone: customerInfo?.phone || "",
     email: customerInfo?.email || "",
-
     address: customerInfo?.address || "",
-    district: "",
-    city: "Lima",
-    reference: "",
-
+    district: customerInfo?.district || "",
+    city: customerInfo?.city || "Andahuaylas",
+    reference: customerInfo?.reference || "",
     notes: customerInfo?.notes || "",
   });
 
@@ -64,11 +61,8 @@ export default function CheckoutPage() {
   const discount = getDiscount();
   const total = getTotal();
 
-  // Delivery fee eliminado - incluido en precio del producto
-
   useEffect(() => {
     if (items.length === 0) {
-      toast.error("Tu carrito está vacío");
       router.push("/");
     }
   }, [items, router]);
@@ -85,7 +79,7 @@ export default function CheckoutPage() {
     return (
       formData.name.trim().length >= 3 &&
       formData.phone.trim().length >= 9 &&
-      formData.address.trim().length >= 10 &&
+      formData.address.trim().length >= 5 &&
       formData.district.trim().length >= 3 &&
       formData.city.trim().length >= 3
     );
@@ -116,8 +110,11 @@ export default function CheckoutPage() {
         name: formData.name,
         phone: formData.phone,
         email: formData.email,
-        address: `${formData.address}, ${formData.district}, ${formData.city}`,
+        address: formData.address,
         notes: formData.notes,
+        city: formData.city,
+        district: formData.district,
+        reference: formData.reference,
       });
     }
 
@@ -139,15 +136,10 @@ export default function CheckoutPage() {
     setCurrentStep((prev) => Math.max(prev - 1, 1));
   };
 
-  const handleSubmitOrder = () => {
-    if (!validateStep2() || !validateStep3()) {
-      toast.error("Completa todos los pasos");
-      return;
-    }
-
+  const buildOrderPayload = (method: PaymentMethod): CreateOrderDto => {
     const estimatedDeliveryTime = addMinutes(new Date(), 40).toISOString();
 
-    const orderData = {
+    return {
       customerName: formData.name,
       customerPhone: formData.phone,
       customerEmail: formData.email || undefined,
@@ -168,22 +160,36 @@ export default function CheckoutPage() {
 
       subtotal,
       discount,
-      deliveryFee: 0, // Eliminado - incluido en precio del producto
+      deliveryFee: 0,
       total: total,
 
-      paymentMethod: paymentMethod!,
+      paymentMethod: method,
       promotionCode: promotion?.code,
       notes: formData.notes,
       receiptImage: receiptImage || undefined,
       estimatedDeliveryTime,
     };
+  };
 
+  const handleOrderSuccess = (orderNumber: string) => {
+    router.push(`/confirmacion/${orderNumber}`);
+  };
+
+  const handleSubmitOrder = async () => {
+    if (!validateStep2() || !validateStep3()) {
+      toast.error("Completa todos los pasos");
+      return;
+    }
+
+    if (!paymentMethod) {
+      toast.error("Selecciona un método de pago");
+      return;
+    }
+
+    const orderData = buildOrderPayload(paymentMethod);
     createOrder(orderData, {
-      onSuccess: (response) => {
-        const orderNumber = response.data.orderNumber;
-        clearCart();
-        clearCheckoutData();
-        router.push(`/confirmacion/${orderNumber}`);
+      onSuccess(data) {
+        handleOrderSuccess(data.data.orderNumber);
       },
     });
   };
@@ -232,10 +238,12 @@ export default function CheckoutPage() {
                         className="flex gap-4 p-4 bg-pink-50 dark:bg-pink-900/20 rounded-lg"
                       >
                         <div className="relative w-20 h-20 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-900">
-                          <img
+                          <Image
                             src={item.image}
                             alt={item.name}
-                            className="w-full h-full object-cover"
+                            fill
+                            sizes="80px"
+                            className="object-cover"
                           />
                         </div>
                         <div className="flex-1">
@@ -298,9 +306,12 @@ export default function CheckoutPage() {
                         <Input
                           id="phone"
                           value={formData.phone}
-                          onChange={(e) =>
-                            handleInputChange("phone", e.target.value)
-                          }
+                          onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, "");
+                            if (value.length <= 9) {
+                              handleInputChange("phone", value);
+                            }
+                          }}
                           placeholder="999 999 999"
                           className="mt-1"
                         />
@@ -399,8 +410,7 @@ export default function CheckoutPage() {
                         de tener el monto exacto o cambio disponible.
                       </p>
                       <p className="text-sm text-orange-800 dark:text-orange-200 mt-2">
-                        <strong>Total a pagar:</strong> S/{" "}
-                        {total.toFixed(2)}
+                        <strong>Total a pagar:</strong> S/ {total.toFixed(2)}
                       </p>
                     </div>
                   )}
@@ -428,10 +438,10 @@ export default function CheckoutPage() {
                 ) : (
                   <Button
                     onClick={handleSubmitOrder}
-                    disabled={isPending || !validateStep3()}
+                    disabled={isCreatingOrder || !validateStep3()}
                     className="bg-green-500 hover:bg-green-600"
                   >
-                    {isPending ? (
+                    {isCreatingOrder ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                         Procesando...

@@ -3,6 +3,7 @@ import { ThemeToggleButton } from "@/components/common/ThemeToggleButton";
 import UserDropdown from "@/components/header/UserDropdown";
 import { useSidebar } from "@/context/SidebarContext";
 import Link from "next/link";
+import Image from "next/image";
 import React, { useState, useEffect, useRef } from "react";
 
 const AppHeader: React.FC = () => {
@@ -81,11 +82,13 @@ const AppHeader: React.FC = () => {
           </button>
 
           <Link href="/admin" className="lg:hidden">
-            <div className="w-14 h-14 flex items-center justify-center">
-              <img
+            <div className="relative w-14 h-14 flex items-center justify-center">
+              <Image
                 src="/images/logo/logo.webp"
-                alt="Dash Food"
-                className="w-full h-full object-contain"
+                alt="Dahs Food"
+                fill
+                sizes="56px"
+                className="object-contain"
               />
             </div>
           </Link>

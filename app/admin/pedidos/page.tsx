@@ -31,7 +31,7 @@ export default function PedidosPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | OrderStatus>("all");
   const [paymentFilter, setPaymentFilter] = useState<"all" | PaymentMethod>(
-    "all"
+    "all",
   );
   const [dateRange, setDateRange] = useState<{
     start: string;
@@ -245,16 +245,18 @@ export default function PedidosPage() {
             </p>
           </div>
 
-          <div className="bg-linear-to-br from-pink-500 to-purple-500 rounded-lg p-4">
+          <div className="rounded-lg bg-white dark:bg-gray-800 p-4 border border-gray-200 dark:border-gray-700">
             <div className="flex items-center gap-2 mb-2">
-              <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-4 h-4 text-white" />
+              <div className="w-8 h-8 bg-green-100 dark:bg-green-900/20 rounded-lg flex items-center justify-center">
+                <DollarSign className="w-4 h-4 text-green-600" />
               </div>
             </div>
-            <p className="text-2xl font-bold text-white">
+            <p className="text-2xl font-bold">
               {formatPrice(stats.todayRevenue)}
             </p>
-            <p className="text-xs text-white/80">Ventas Hoy</p>
+            <p className="text-xs text-gray-600 dark:text-gray-400">
+              Ventas Hoy
+            </p>
           </div>
         </div>
       )}

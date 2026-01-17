@@ -1,8 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -26,6 +24,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const SidebarCart = () => {
   const router = useRouter();
@@ -42,8 +41,6 @@ const SidebarCart = () => {
     isOpen,
     openCart,
     closeCart,
-    customerInfo,
-    setCustomerInfo,
     promotion,
   } = useCartStore();
 
@@ -57,6 +54,10 @@ const SidebarCart = () => {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  if (!mounted) {
+    return null;
+  }
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("es-PE", {
@@ -80,7 +81,7 @@ const SidebarCart = () => {
         <button className="relative cursor-pointer bg-pink-500 hover:bg-pink-600 text-white px-6 py-3 rounded-full shadow-md transition-all duration-300 hover:shadow-xl flex items-center">
           <ShoppingCart />
           {mounted && itemsCount > 0 && (
-            <span className="absolute -top-2 -right-2 bg-pink-700 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center animate-bounce">
+            <span className="absolute -top-2 -right-2 bg-pink-700 text-white text-xs font-bold rounded-full w-6 h-6 flex items-center justify-center">
               {itemsCount}
             </span>
           )}
@@ -140,10 +141,12 @@ const SidebarCart = () => {
                       className="flex gap-4 bg-pink-50 rounded-lg p-3"
                     >
                       <div className="relative w-20 h-20 shrink-0 rounded-lg overflow-hidden">
-                        <img
+                        <Image
                           src={item.image}
                           alt={item.name}
-                          className="w-full h-full object-cover"
+                          fill
+                          sizes="80px"
+                          className="object-cover"
                         />
                       </div>
 

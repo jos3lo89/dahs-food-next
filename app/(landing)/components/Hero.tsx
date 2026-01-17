@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { ShoppingCart, Clock, Truck } from "lucide-react";
+import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
 
 const Hero = () => {
@@ -53,13 +53,13 @@ const Hero = () => {
                   Ver Desayunos
                 </Button>
               </a>
-              <a href="#promociones">
+              <a href="#extras">
                 <Button
                   size="lg"
                   variant="outline"
                   className="w-full cursor-pointer sm:w-auto border-2 border-pink-500 text-pink-600 hover:bg-pink-100 font-semibold px-8 py-6 rounded-full"
                 >
-                  🔥 Ver Promociones
+                  Ver Extras
                 </Button>
               </a>
             </div>
@@ -75,8 +75,7 @@ const Hero = () => {
                   width={600}
                   height={600}
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover"
-                  priority
+                  loading="eager"
                 />
               </div>
             </div>

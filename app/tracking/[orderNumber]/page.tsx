@@ -16,6 +16,8 @@ import {
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import Image from "next/image";
+import { ReceiptResubmit } from "@/components/common/ReceiptResubmit";
+import { formatSMoney } from "@/utils/formatMoney";
 
 export default function TrackingPage() {
   const params = useParams();
@@ -31,13 +33,6 @@ export default function TrackingPage() {
   });
 
   const order = data?.data;
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat("es-PE", {
-      style: "currency",
-      currency: "PEN",
-    }).format(price);
-  };
 
   const buildItemsSummary = () => {
     if (!order?.items?.length) {
@@ -60,6 +55,17 @@ export default function TrackingPage() {
     };
     return labels[method] || method;
   };
+
+  const latestReceipt = order?.latestReceipt ?? null;
+  const receiptStatus = latestReceipt?.status ?? order?.paymentStatus;
+  const receiptNotes = latestReceipt?.notes ?? order?.paymentVerificationNotes;
+  const receiptStatusLabel = receiptStatus
+    ? receiptStatus === "VERIFIED"
+      ? "Verificado"
+      : receiptStatus === "REJECTED"
+        ? "Rechazado"
+        : "Pendiente"
+    : null;
 
   if (isLoading) {
     return (
@@ -204,7 +210,7 @@ export default function TrackingPage() {
           </h3>
 
           <div className="space-y-3 mb-6">
-            {order.items?.map((item: any) => (
+            {order.items?.map((item) => (
               <div
                 key={item.id}
                 className="flex gap-4 p-4 bg-pink-50 dark:bg-pink-900/20 rounded-lg"
@@ -226,12 +232,12 @@ export default function TrackingPage() {
                     {item.product.category.name}
                   </p>
                   <p className="text-sm text-pink-600 dark:text-pink-400">
-                    {item.quantity} x {formatPrice(item.price)}
+                    {item.quantity} x {formatSMoney(item.price)}
                   </p>
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-pink-600 dark:text-pink-400">
-                    {formatPrice(item.subtotal)}
+                    {formatSMoney(item.subtotal)}
                   </p>
                 </div>
               </div>
@@ -245,7 +251,7 @@ export default function TrackingPage() {
                   Subtotal:
                 </span>
                 <span className="font-medium text-gray-900 dark:text-white">
-                  {formatPrice(order.subtotal)}
+                  {formatSMoney(order.subtotal)}
                 </span>
               </div>
 
@@ -253,26 +259,52 @@ export default function TrackingPage() {
                 <div className="flex justify-between text-sm text-green-600 dark:text-green-400">
                   <span>Descuento:</span>
                   <span className="font-medium">
-                    -{formatPrice(order.discount)}
+                    -{formatSMoney(order.discount)}
                   </span>
                 </div>
               )}
 
               <div className="flex justify-between text-lg font-bold text-pink-600 dark:text-pink-400 pt-2 border-t border-gray-200 dark:border-gray-700">
                 <span>Total:</span>
-                <span>{formatPrice(order.total)}</span>
+                <span>{formatSMoney(order.total)}</span>
               </div>
             </div>
 
             {order.paymentMethod && (
-              <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-900 rounded-lg p-3">
+              <div className="flex items-start gap-3 bg-gray-50 dark:bg-gray-900 rounded-lg p-3">
                 <CreditCard className="w-5 h-5 text-gray-600 dark:text-gray-400" />
-                <span className="text-sm text-gray-600 dark:text-gray-400">
-                  Método de pago:
-                </span>
-                <span className="font-semibold text-gray-900 dark:text-white">
-                  {getPaymentMethodLabel(order.paymentMethod)}
-                </span>
+                <div className="space-y-2">
+                  <div>
+                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                      Método de pago:
+                    </p>
+                    <p className="font-semibold text-gray-900 dark:text-white">
+                      {getPaymentMethodLabel(order.paymentMethod)}
+                    </p>
+                    {receiptStatusLabel && (
+                      <p className="text-xs text-gray-500">
+                        Estado del pago: {receiptStatusLabel}
+                      </p>
+                    )}
+                  </div>
+
+                  {receiptStatus === "REJECTED" ? (
+                    <p className="text-sm text-red-600">
+                      Pago rechazado.{" "}
+                      {receiptNotes || "Vuelve a subir tu comprobante."}
+                    </p>
+                  ) : receiptStatus === "PENDING" ? (
+                    <p className="text-sm text-gray-600">
+                      Pago pendiente de verificación.
+                    </p>
+                  ) : receiptStatus === "VERIFIED" ? (
+                    <p className="text-sm text-green-600">Pago verificado.</p>
+                  ) : null}
+
+                  {receiptStatus === "REJECTED" && (
+                    <ReceiptResubmit orderId={order.id} onUploaded={refetch} />
+                  )}
+                </div>
               </div>
             )}
           </div>
@@ -286,7 +318,7 @@ export default function TrackingPage() {
 
           <a
             href={`https://wa.me/${whatsappDigits}?text=${encodeURIComponent(
-              `Hola, tengo una consulta sobre mi pedido #${order.orderNumber}. Resumen: ${buildItemsSummary()}. Total: ${formatPrice(order.total)}. Dirección: ${order.customerAddress}. Su pedido fue recibido y está pendiente de confirmación. Le avisaremos cuando esté confirmado.`,
+              `Hola, tengo una consulta sobre mi pedido #${order.orderNumber}. Resumen: ${buildItemsSummary()}. Total: ${formatSMoney(order.total)}. Dirección: ${order.customerAddress}.`,
             )}`}
             target="_blank"
             rel="noopener noreferrer"

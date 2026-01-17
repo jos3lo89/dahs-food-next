@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cartStore";
 import { Producto } from "@/types/products";
 import { Minus, Plus, ShoppingCart, Star, AlertCircle } from "lucide-react";
+import Image from "next/image";
 
 type Props = {
   product: Producto;
@@ -25,10 +26,12 @@ const ProductCard = ({ product, featured = false }: Props) => {
   return (
     <div className="flex flex-col bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 h-full group">
       <div className="relative w-full aspect-square bg-gray-50 flex items-center justify-center p-2 overflow-hidden">
-        <img
+        <Image
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-contain mix-blend-multiply"
+          fill
+          sizes="(max-width: 768px) 100vw, 240px"
+          className="object-contain mix-blend-multiply"
         />
       </div>
 

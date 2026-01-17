@@ -47,8 +47,8 @@ function serializeOrder(order: any) {
 }
 
 export async function PATCH(
-  request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  _: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     const { id } = await params;
@@ -56,49 +56,52 @@ export async function PATCH(
     if (!session || session.user.role !== "ADMIN") {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
-    const order = await prisma.order.findUnique({
+    const receipt = await prisma.paymentReceipt.findUnique({
       where: { id },
-      include: {
-        receipts: { orderBy: { createdAt: "desc" } },
-      },
+      include: { order: true },
     });
 
-    if (!order) {
+    if (!receipt) {
       return NextResponse.json(
-        { success: false, error: "Pedido no encontrado" },
-        { status: 404 }
+        { success: false, error: "Comprobante no encontrado" },
+        { status: 404 },
       );
     }
 
-    const now = new Date();
-    const latestReceipt = order.receipts?.[0];
+    if (receipt.status !== "PENDING") {
+      return NextResponse.json(
+        { success: false, error: "El comprobante ya fue procesado" },
+        { status: 400 },
+      );
+    }
 
     const updatedOrder = await prisma.$transaction(async (tx) => {
-      if (latestReceipt && latestReceipt.status === "PENDING") {
-        await tx.paymentReceipt.update({
-          where: { id: latestReceipt.id },
-          data: {
-            status: "VERIFIED",
-            verifiedAt: now,
-            verifiedBy: session.user.email || "admin",
-            notes: null,
-          },
-        });
-      }
-
-      return tx.order.update({
+      await tx.paymentReceipt.update({
         where: { id },
         data: {
-          paymentStatus: "VERIFIED",
-          verifiedAt: now,
+          status: "VERIFIED",
+          verifiedAt: new Date(),
           verifiedBy: session.user.email || "admin",
+          notes: null,
+        },
+      });
+
+      return tx.order.update({
+        where: { id: receipt.orderId },
+        data: {
+          paymentStatus: "VERIFIED",
           paymentVerificationNotes: null,
-          status: order.status === "PENDING" ? "CONFIRMED" : order.status,
-          confirmedAt: order.status === "PENDING" ? now : order.confirmedAt,
+          verifiedAt: new Date(),
+          verifiedBy: session.user.email || "admin",
+          status: receipt.order.status === "PENDING" ? "CONFIRMED" : receipt.order.status,
+          confirmedAt:
+            receipt.order.status === "PENDING"
+              ? new Date()
+              : receipt.order.confirmedAt,
         },
         include: {
           receipts: { orderBy: { createdAt: "desc" } },
@@ -128,10 +131,10 @@ export async function PATCH(
       message: "Pago aprobado exitosamente",
     });
   } catch (error) {
-    console.error("Error al aprobar pago:", error);
+    console.error("Error al aprobar comprobante:", error);
     return NextResponse.json(
       { success: false, error: "Error al aprobar pago" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

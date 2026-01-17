@@ -6,6 +6,8 @@ import {
   OrderResponse,
   OrderStatus,
   PaymentMethod,
+  PaymentReceiptResponse,
+  TrackOrderResponse,
 } from "@/types/orders";
 
 export const ordersApi = {
@@ -39,7 +41,7 @@ export const ordersApi = {
     }
 
     const { data } = await axiosInstance.get<OrdersResponse>(
-      `/orders?${queryParams.toString()}`
+      `/orders?${queryParams.toString()}`,
     );
     return data;
   },
@@ -52,7 +54,7 @@ export const ordersApi = {
   updateOrder: async (id: string, order: UpdateOrderDto) => {
     const { data } = await axiosInstance.patch<OrderResponse>(
       `/orders/${id}`,
-      order
+      order,
     );
     return data;
   },
@@ -64,17 +66,25 @@ export const ordersApi = {
     return data;
   },
 
-  approvePayment: async (id: string) => {
+  approvePayment: async (receiptId: string) => {
     const { data } = await axiosInstance.patch<OrderResponse>(
-      `/orders/${id}/approve-payment`
+      `/receipts/${receiptId}/approve`,
     );
     return data;
   },
 
-  rejectPayment: async (id: string, notes: string) => {
+  rejectPayment: async (receiptId: string, notes: string) => {
     const { data } = await axiosInstance.patch<OrderResponse>(
-      `/orders/${id}/reject-payment`,
-      { notes }
+      `/receipts/${receiptId}/reject`,
+      { notes },
+    );
+    return data;
+  },
+
+  createReceipt: async (orderId: string, imageUrl: string) => {
+    const { data } = await axiosInstance.post<PaymentReceiptResponse>(
+      `/orders/${orderId}/receipts`,
+      { imageUrl },
     );
     return data;
   },
@@ -82,13 +92,15 @@ export const ordersApi = {
   createOrder: async (order: CreateOrderDto) => {
     const { data } = await axiosInstance.post<CreateOrderResponse>(
       "/orders/create",
-      order
+      order,
     );
     return data;
   },
 
   trackOrder: async (orderNumber: string) => {
-    const { data } = await axiosInstance.get(`/orders/track/${orderNumber}`);
+    const { data } = await axiosInstance.get<TrackOrderResponse>(
+      `/orders/track/${orderNumber}`,
+    );
     return data;
   },
 };

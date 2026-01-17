@@ -23,6 +23,14 @@ const updateOrderSchema = z.object({
 });
 
 function serializeOrder(order: any) {
+  const receipts = (order.receipts ?? []).map((receipt: any) => ({
+    ...receipt,
+    createdAt: receipt.createdAt?.toISOString?.() ?? receipt.createdAt,
+    updatedAt: receipt.updatedAt?.toISOString?.() ?? receipt.updatedAt,
+    verifiedAt: receipt.verifiedAt?.toISOString?.() ?? receipt.verifiedAt,
+  }));
+  const latestReceipt = receipts[0] ?? null;
+
   return {
     ...order,
     subtotal:
@@ -41,6 +49,8 @@ function serializeOrder(order: any) {
       order.total instanceof Decimal
         ? order.total.toNumber()
         : Number(order.total),
+    receipts,
+    latestReceipt,
     items: order.items?.map((item: any) => ({
       ...item,
       price:
@@ -72,6 +82,9 @@ export async function GET(
     const order = await prisma.order.findUnique({
       where: { id },
       include: {
+        receipts: {
+          orderBy: { createdAt: "desc" },
+        },
         items: {
           include: {
             product: {
@@ -173,6 +186,7 @@ export async function PATCH(
       where: { id },
       data: updateData,
       include: {
+        receipts: { orderBy: { createdAt: "desc" } },
         items: {
           include: {
             product: {

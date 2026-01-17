@@ -1,12 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { usuariosApi } from "@/services/user.service";
-import {
-  CreateUsuarioDto,
-  UpdateUsuarioDto,
-  ChangePasswordDto,
-  Usuario,
-} from "@/types/users";
+import { CreateUsuarioDto, UpdateUsuarioDto, Usuario } from "@/types/users";
 import { toast } from "sonner";
+import { AxiosError } from "axios";
 
 export const useUsuarios = (params?: {
   isActive?: boolean;
@@ -36,8 +32,12 @@ export const useCreateUsuario = () => {
       queryClient.invalidateQueries({ queryKey: ["usuarios"] });
       toast.success("Usuario creado exitosamente");
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.error || "Error al crear usuario");
+    onError: (error) => {
+      if (error instanceof AxiosError) {
+        toast.error(error.response?.data?.error || "Error al crear usuario");
+      } else {
+        toast.error("Error al crear usuario");
+      }
     },
   });
 };
@@ -58,7 +58,7 @@ export const useUpdateUsuario = () => {
         return {
           ...old,
           data: old.data.map((usuario: Usuario) =>
-            usuario.id === id ? { ...usuario, ...data } : usuario
+            usuario.id === id ? { ...usuario, ...data } : usuario,
           ),
         };
       });
@@ -71,7 +71,7 @@ export const useUpdateUsuario = () => {
       toast.success("Usuario actualizado exitosamente");
     },
 
-    onError: (error: any, variables, context) => {
+    onError: (error: any, _, context) => {
       if (context?.previousUsuarios) {
         queryClient.setQueryData(["usuarios"], context.previousUsuarios);
       }
@@ -109,7 +109,7 @@ export const useToggleUsuarioActive = () => {
         return {
           ...old,
           data: old.data.map((usuario: Usuario) =>
-            usuario.id === id ? { ...usuario, isActive } : usuario
+            usuario.id === id ? { ...usuario, isActive } : usuario,
           ),
         };
       });
@@ -122,7 +122,7 @@ export const useToggleUsuarioActive = () => {
       toast.success(
         variables.isActive
           ? "Usuario activado exitosamente"
-          : "Usuario desactivado exitosamente"
+          : "Usuario desactivado exitosamente",
       );
     },
 

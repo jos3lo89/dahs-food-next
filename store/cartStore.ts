@@ -30,14 +30,14 @@ export const useCartStore = create<ExtendedCartState>()(
       addItem: (product: Producto) => {
         const { items } = get();
         const existingItem = items.find(
-          (item) => item.productId === product.id
+          (item) => item.productId === product.id,
         );
         if (existingItem) {
           set({
             items: items.map((item) =>
               item.productId === product.id
                 ? { ...item, quantity: item.quantity + 1 }
-                : item
+                : item,
             ),
           });
         } else {
@@ -68,7 +68,7 @@ export const useCartStore = create<ExtendedCartState>()(
         }
         set((state) => ({
           items: state.items.map((item) =>
-            item.productId === productId ? { ...item, quantity } : item
+            item.productId === productId ? { ...item, quantity } : item,
           ),
         }));
       },
@@ -78,7 +78,7 @@ export const useCartStore = create<ExtendedCartState>()(
           items: state.items.map((item) =>
             item.productId === productId
               ? { ...item, quantity: item.quantity + 1 }
-              : item
+              : item,
           ),
         }));
       },
@@ -93,7 +93,7 @@ export const useCartStore = create<ExtendedCartState>()(
           items: state.items.map((item) =>
             item.productId === productId
               ? { ...item, quantity: Math.max(1, item.quantity - 1) }
-              : item
+              : item,
           ),
         }));
       },
@@ -133,6 +133,7 @@ export const useCartStore = create<ExtendedCartState>()(
         set({
           paymentMethod: null,
           receiptImage: null,
+          customerInfo: null,
         });
       },
 
@@ -203,6 +204,6 @@ export const useCartStore = create<ExtendedCartState>()(
         paymentMethod: state.paymentMethod,
         receiptImage: state.receiptImage,
       }),
-    }
-  )
+    },
+  ),
 );

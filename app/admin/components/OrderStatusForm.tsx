@@ -80,7 +80,7 @@ export function OrderStatusForm({ order }: OrderStatusFormProps) {
   ];
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+    <div className="bg-pink-50 dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
       <div className="flex items-center justify-between mb-4">
         <h3 className="font-semibold text-gray-900 dark:text-white">
           Actualizar Estado
@@ -102,7 +102,11 @@ export function OrderStatusForm({ order }: OrderStatusFormProps) {
             </SelectTrigger>
             <SelectContent>
               {statusOptions.map((status) => (
-                <SelectItem key={status} value={status}>
+                <SelectItem
+                  disabled={status === order.status}
+                  key={status}
+                  value={status}
+                >
                   {statusLabels[status]}
                 </SelectItem>
               ))}

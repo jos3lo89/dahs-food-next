@@ -156,6 +156,7 @@ model Order {
   createdAt                 DateTime                 @default(now())
   updatedAt                 DateTime                 @updatedAt
   promotionCode             String?
+  receipts                  PaymentReceipt[]
 
   @@index([orderNumber])
   @@index([status])
@@ -184,6 +185,22 @@ enum OrderStatus {
   OUT_FOR_DELIVERY
   DELIVERED
   CANCELLED
+}
+
+model PaymentReceipt {
+  id         String                     @id @default(cuid())
+  orderId    String
+  order      Order                      @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  imageUrl   String
+  status     PaymentVerificationStatus  @default(PENDING)
+  notes      String?
+  verifiedBy String?
+  verifiedAt DateTime?
+  createdAt  DateTime                   @default(now())
+  updatedAt  DateTime                   @updatedAt
+
+  @@index([orderId])
+  @@index([status])
 }
 
 model OrderItem {
