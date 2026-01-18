@@ -99,6 +99,7 @@ export const useProducts = (params: ProductsParams) => {
 - Use Spanish error messages for UI validation.
 - Export inferred types: `type LoginType = z.infer<typeof loginSchema>`.
 - Validate environment variables with Zod in `config/envVars.config.ts`.
+- Env var added: `PERUDEVS_API_KEY` for DNI lookup.
 
 ### Database (Prisma)
 - Prisma client import path: `@/app/generated/prisma/client`.
@@ -111,6 +112,7 @@ export const useProducts = (params: ProductsParams) => {
 - Return `{ success: boolean; message: string }` from actions.
 - Handle errors with try/catch and typed responses.
 - Keep actions in `actions/` and avoid mixing with UI components.
+- API route `/api/dni` uses in-memory rate limiting (best-effort on serverless).
 
 ### Error Handling
 - Use `toast.error()` from `sonner` for user-facing errors.
