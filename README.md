@@ -1,4 +1,4 @@
-# Dahs Food - Ecommerce de Comida 🍔
+# Dahs Food - Ecommerce de Comida
 
 Dahs Food es una plataforma de comercio electrónico moderna construida con **Next.js**, diseñada para ofrecer una experiencia fluida en la compra de alimentos, con gestión de productos, categorías, promociones y pedidos.
 
@@ -59,6 +59,9 @@ CLOUDINARY_API_SECRET="tu_api_secret"
 
 # WhatsApp (Links de contacto en UI)
 NEXT_PUBLIC_WHATSAPP_PHONE="+51999999999"
+
+# Perudevs (Consulta DNI)
+PERUDEVS_API_KEY="tu_api_key"
 ```
 
 ### 5. Configurar la Base de Datos con Prisma
@@ -110,6 +113,7 @@ La aplicación estará disponible en [http://localhost:3000](http://localhost:30
 ## 📂 Estructura del Proyecto
 
 - `app/`: Directorio principal de Next.js (App Router).
+- `app/api/`: Endpoints internos de la aplicación.
 - `components/`: Componentes de interfaz de usuario reutilizables.
 - `prisma/`: Esquema de base de datos y scripts de migración/seed.
 - `store/`: Tiendas de estado global (Zustand).
@@ -123,3 +127,44 @@ La aplicación estará disponible en [http://localhost:3000](http://localhost:30
 
 - **Generación de Prisma**: Debido a la configuración personalizada, asegúrate de correr siempre `npx prisma generate` después de instalar dependencias para que TypeScript reconozca los tipos generados en el directorio custom.
 - **Imágenes**: Se requiere una cuenta de **Cloudinary** para cargar y visualizar imágenes de productos correctamente.
+- **DNI en checkout**: El DNI es opcional y solo se usa para autocompletar el nombre (no se guarda en el pedido).
+- **Rate limit**: La consulta de DNI usa un rate limit en memoria (2 solicitudes por minuto por IP). En entornos serverless puede reiniciarse entre invocaciones.
+
+---
+
+## 🔎 API Interna: Consulta DNI
+
+### Endpoint
+
+```
+GET /api/dni?document=12345678
+```
+
+### Parámetros
+
+- `document` (string, requerido): DNI de 8 dígitos.
+
+### Ejemplo de respuesta exitosa
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "12345678",
+    "nombres": "MARIA ISABEL",
+    "apellido_paterno": "JIMENEZ",
+    "apellido_materno": "DIAZ",
+    "nombre_completo": "MARIA ISABEL JIMENEZ DIAZ",
+    "codigo_verificacion": "8"
+  }
+}
+```
+
+### Ejemplo de error
+
+```json
+{
+  "success": false,
+  "message": "No encontrado"
+}
+```
