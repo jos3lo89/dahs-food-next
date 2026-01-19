@@ -61,9 +61,11 @@ export function OrdersTable({ orders }: OrdersTableProps) {
             <TableHead>Cliente</TableHead>
             <TableHead>Productos</TableHead>
             <TableHead>Total</TableHead>
-            <TableHead>Estado</TableHead>
-            <TableHead>Fecha</TableHead>
-            <TableHead className="text-right">Acciones</TableHead>
+              <TableHead>Estado</TableHead>
+              <TableHead>Pago</TableHead>
+              <TableHead>Fecha</TableHead>
+              <TableHead className="text-right">Acciones</TableHead>
+
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -136,6 +138,18 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                     </Badge>
                   )}
                 </div>
+              </TableCell>
+
+              <TableCell>
+                {order.paymentMethod === "efectivo" ? (
+                  <Badge className="bg-orange-100 text-orange-800 border-orange-300">
+                    Pago en efectivo
+                  </Badge>
+                ) : (
+                  <span className="text-sm text-gray-600 dark:text-gray-400">
+                    {order.paymentMethod ? order.paymentMethod.toUpperCase() : "-"}
+                  </span>
+                )}
               </TableCell>
 
               <TableCell>

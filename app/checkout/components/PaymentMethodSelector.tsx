@@ -1,7 +1,7 @@
 "use client";
 
 import { PaymentMethod } from "@/types/checkout";
-import { Smartphone } from "lucide-react";
+import { Banknote, Smartphone } from "lucide-react";
 
 interface PaymentMethodSelectorProps {
   selected: PaymentMethod | null;
@@ -9,22 +9,6 @@ interface PaymentMethodSelectorProps {
 }
 
 const paymentMethods = [
-  // {
-  //   id: "yape" as PaymentMethod,
-  //   name: "Yape",
-  //   icon: Smartphone,
-  //   color: "bg-purple-100 border-purple-300 text-purple-700",
-  //   activeColor: "bg-purple-500 border-purple-600 text-white",
-  //   description: "Pago con QR",
-  // },
-  // {
-  //   id: "plin" as PaymentMethod,
-  //   name: "Plin",
-  //   icon: Wallet,
-  //   color: "bg-blue-100 border-blue-300 text-blue-700",
-  //   activeColor: "bg-blue-500 border-blue-600 text-white",
-  //   description: "Transferencia rápida",
-  // },
   {
     id: "yape" as PaymentMethod,
     name: "Yape",
@@ -34,14 +18,15 @@ const paymentMethods = [
     description: "Pago con QR",
     disabled: false,
   },
-  // {
-  //   id: "efectivo" as PaymentMethod,
-  //   name: "Efectivo",
-  //   icon: Banknote,
-  //   color: "bg-orange-100 border-orange-300 text-orange-700",
-  //   activeColor: "bg-orange-500 border-orange-600 text-white",
-  //   description: "Pago al recibir",
-  // },
+  {
+    id: "efectivo" as PaymentMethod,
+    name: "Efectivo",
+    icon: Banknote,
+    color: "border-orange-300",
+    activeColor: "border-orange-500 bg-orange-50 text-orange-800",
+    description: "Pago al recibir",
+    disabled: false,
+  },
 ];
 
 export function PaymentMethodSelector({
