@@ -458,7 +458,12 @@ export default function CheckoutPage() {
 
                   <PaymentMethodSelector
                     selected={paymentMethod}
-                    onSelect={setPaymentMethod}
+                    onSelect={(method) => {
+                      setPaymentMethod(method);
+                      if (method === "efectivo") {
+                        setReceiptImage("");
+                      }
+                    }}
                   />
 
                   {paymentMethod === "yape" && (

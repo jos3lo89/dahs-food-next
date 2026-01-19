@@ -59,6 +59,7 @@ export function OrderPaymentInfo({ order }: OrderPaymentInfoProps) {
     useApprovePayment();
   const { mutate: rejectPayment, isPending: isRejecting } = useRejectPayment();
 
+  const isCashPayment = order.paymentMethod === "efectivo";
   const receipts = order.receipts ?? [];
   const latestReceipt = receipts[0] ?? null;
   const legacyReceipt =
@@ -124,11 +125,11 @@ export function OrderPaymentInfo({ order }: OrderPaymentInfoProps) {
             <CreditCard className="w-5 h-5 text-pink-500" />
             Información de Pago
           </h3>
-          {order.paymentStatus && (
-            <Badge className={paymentStatusColors[order.paymentStatus]}>
-              {paymentStatusLabels[order.paymentStatus]}
-            </Badge>
-          )}
+          {order.paymentStatus && !isCashPayment && (
+          <Badge className={paymentStatusColors[order.paymentStatus]}>
+            {paymentStatusLabels[order.paymentStatus]}
+          </Badge>
+        )}
         </div>
 
         <div className="space-y-4 text-sm">
@@ -142,6 +143,12 @@ export function OrderPaymentInfo({ order }: OrderPaymentInfoProps) {
             </span>
           </div>
 
+          {isCashPayment && (
+            <div className="rounded-lg border border-orange-200 bg-orange-50 px-3 py-2 text-orange-800">
+              Pago en efectivo al recibir. No requiere comprobante.
+            </div>
+          )}
+
           {order.paymentId && (
             <div className="flex justify-between">
               <span className="text-gray-500 dark:text-gray-400">
@@ -151,7 +158,7 @@ export function OrderPaymentInfo({ order }: OrderPaymentInfoProps) {
             </div>
           )}
 
-          {displayReceipts.length > 0 && (
+          {displayReceipts.length > 0 && !isCashPayment && (
             <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
               <p className="text-gray-500 dark:text-gray-400 mb-3 flex items-center gap-2">
                 <ImageIcon className="w-4 h-4" />
