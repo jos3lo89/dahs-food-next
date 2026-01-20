@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cartStore";
 import { Producto } from "@/types/products";
+import { formatSMoney } from "@/utils/formatMoney";
 import { Minus, Plus, ShoppingCart, Star, AlertCircle } from "lucide-react";
 import Image from "next/image";
 
@@ -17,11 +18,6 @@ const ProductCard = ({ product, featured = false }: Props) => {
   const quantity = getItemQuantity(product.id);
 
   const handleAddToCart = () => addItem(product);
-
-  const formattedPrice = new Intl.NumberFormat("es-PE", {
-    style: "currency",
-    currency: "PEN",
-  }).format(Number(product.price));
 
   return (
     <div className="flex flex-col bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 h-full group">
@@ -52,6 +48,8 @@ const ProductCard = ({ product, featured = false }: Props) => {
           {product.name}
         </h3>
 
+        <p className="text-sm mb-2">{product.description}</p>
+
         {product.stock > 0 && product.stock < 10 && (
           <div className="flex items-center gap-1 mb-2 text-orange-600 text-xs font-medium">
             <AlertCircle className="w-3 h-3" />
@@ -61,7 +59,7 @@ const ProductCard = ({ product, featured = false }: Props) => {
 
         <div className="mt-auto mb-4">
           <span className="text-xl font-extrabold text-pink-600">
-            {formattedPrice}
+            {formatSMoney(product.price)}
           </span>
         </div>
 
