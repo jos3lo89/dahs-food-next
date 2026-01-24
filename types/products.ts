@@ -7,12 +7,16 @@ export interface ProductsI {
   image: string;
   images: string[];
   categoryId: string;
+  category: Category;
   active: boolean;
   featured: boolean;
   stock: number;
   createdAt: string;
   updatedAt: string;
-  category: Category;
+  promotionProducts: null;
+  hasDiscount: boolean;
+  discountCode: string | null;
+  promotionName: string | null;
 }
 
 export interface Category {
@@ -36,6 +40,10 @@ export interface Producto {
   stock: number;
   createdAt: string;
   updatedAt: string;
+  promotionProducts: null;
+  hasDiscount: boolean;
+  discountCode: string | null;
+  promotionName: string | null;
 }
 
 export interface CreateProductoDto {

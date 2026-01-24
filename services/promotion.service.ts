@@ -13,6 +13,7 @@ export const promocionesApi = {
     featured?: boolean;
     type?: PromotionType;
     search?: string;
+    current?: boolean;
   }) => {
     const queryParams = new URLSearchParams();
 
@@ -27,6 +28,9 @@ export const promocionesApi = {
     }
     if (params?.search) {
       queryParams.append("search", params.search);
+    }
+    if (params?.current !== undefined) {
+      queryParams.append("current", String(params.current));
     }
 
     const { data } = await axiosInstance.get<PromocionesResponse>(

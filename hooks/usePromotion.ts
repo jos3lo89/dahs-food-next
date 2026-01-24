@@ -13,6 +13,7 @@ export const usePromociones = (params?: {
   featured?: boolean;
   type?: PromotionType;
   search?: string;
+  current?: boolean;
 }) => {
   return useQuery({
     queryKey: ["promociones", params],

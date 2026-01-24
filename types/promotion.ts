@@ -1,4 +1,4 @@
-export type PromotionType = "DISCOUNT" | "PACK" | "DAY_SPECIAL" | "WEEK_DEAL";
+export type PromotionType = "DISCOUNT";
 
 export interface Promocion {
   id: string;
@@ -15,10 +15,8 @@ export interface Promocion {
   createdAt: string;
   updatedAt: string;
   products?: PromotionProduct[];
-  packs?: PromotionPack[];
   _count?: {
     products: number;
-    packs: number;
   };
 }
 
@@ -38,25 +36,6 @@ export interface PromotionProduct {
   };
 }
 
-export interface PromotionPack {
-  id: string;
-  promotionId: string;
-  name: string;
-  description: string | null;
-  items: PackItem[];
-  originalPrice: number;
-  packPrice: number;
-  image: string | null;
-  active: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface PackItem {
-  productId: string;
-  quantity: number;
-}
-
 export interface CreatePromocionDto {
   name: string;
   description?: string;
@@ -68,16 +47,6 @@ export interface CreatePromocionDto {
   image?: string;
   featured?: boolean;
   productIds?: string[];
-  packs?: CreatePackDto[];
-}
-
-export interface CreatePackDto {
-  name: string;
-  description?: string;
-  items: PackItem[];
-  originalPrice: number;
-  packPrice: number;
-  image?: string;
 }
 
 export interface UpdatePromocionDto {
@@ -92,7 +61,6 @@ export interface UpdatePromocionDto {
   active?: boolean;
   featured?: boolean;
   productIds?: string[];
-  packs?: CreatePackDto[];
 }
 
 export interface PromocionesResponse {

@@ -44,18 +44,10 @@ interface PromocionesTableProps {
 
 const typeLabels: Record<PromotionType, string> = {
   DISCOUNT: "Descuento",
-  PACK: "Pack/Combo",
-  DAY_SPECIAL: "Del Día",
-  WEEK_DEAL: "De la Semana",
 };
 
 const typeColors: Record<PromotionType, string> = {
   DISCOUNT: "bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-300",
-  PACK: "bg-purple-100 text-purple-700 dark:bg-purple-900/20 dark:text-purple-300",
-  DAY_SPECIAL:
-    "bg-orange-100 text-orange-700 dark:bg-orange-900/20 dark:text-orange-300",
-  WEEK_DEAL:
-    "bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-300",
 };
 
 export function PromocionesTable({ promociones }: PromocionesTableProps) {
@@ -171,11 +163,6 @@ export function PromocionesTable({ promociones }: PromocionesTableProps) {
                             {promocion._count.products > 0 && (
                               <span className="text-xs text-gray-500 dark:text-gray-400">
                                 {promocion._count.products} productos
-                              </span>
-                            )}
-                            {promocion._count.packs > 0 && (
-                              <span className="text-xs text-gray-500 dark:text-gray-400">
-                                {promocion._count.packs} packs
                               </span>
                             )}
                           </>

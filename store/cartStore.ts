@@ -15,6 +15,10 @@ interface ExtendedCartState extends CartState {
   setPaymentMethod: (method: PaymentMethod | null) => void;
   setReceiptImage: (url: string) => void;
   clearCheckoutData: () => void;
+  applyPromotionByCode: (code: string) => Promise<{
+    success: boolean;
+    error?: string;
+  }>;
 }
 
 export const useCartStore = create<ExtendedCartState>()(
@@ -50,6 +54,9 @@ export const useCartStore = create<ExtendedCartState>()(
             image: product.image,
             quantity: 1,
             category: product.category.name,
+            hasDiscount: product.hasDiscount,
+            discountCode: product.discountCode,
+            promotionName: product.promotionName,
           };
           set({ items: [...items, newItem] });
         }
@@ -117,6 +124,50 @@ export const useCartStore = create<ExtendedCartState>()(
         set({ promotion });
       },
 
+      applyPromotionByCode: async (code: string) => {
+        try {
+          const response = await fetch(
+            `/api/promociones/validate?code=${encodeURIComponent(code)}`,
+          );
+          const result = await response.json();
+
+          if (!response.ok || !result?.success) {
+            return {
+              success: false,
+              error: result?.error || "Código inválido",
+            };
+          }
+
+          if (result.data.type !== "DISCOUNT") {
+            return {
+              success: false,
+              error: "Esta promoción no aplica como código",
+            };
+          }
+
+          const { items } = get();
+          const hasApplicableItem = items.some((item) =>
+            result.data.productIds.includes(item.productId),
+          );
+
+          if (!hasApplicableItem) {
+            return {
+              success: false,
+              error: "La promoción no aplica a tus productos",
+            };
+          }
+
+          set({ promotion: result.data });
+          return { success: true };
+        } catch (error) {
+          console.log(error);
+          return {
+            success: false,
+            error: "No se pudo validar la promoción",
+          };
+        }
+      },
+
       removePromotion: () => {
         set({ promotion: null });
       },
@@ -159,8 +210,15 @@ export const useCartStore = create<ExtendedCartState>()(
       getDiscount: () => {
         const { promotion } = get();
         if (!promotion) return 0;
-        const subtotal = get().getSubtotal();
-        return (subtotal * promotion.discount) / 100;
+        // const subtotal = get().getSubtotal();
+        if (!promotion.productIds?.length) return 0;
+        const applicableSubtotal = get().items.reduce((total, item) => {
+          if (!promotion.productIds.includes(item.productId)) return total;
+          return total + item.price * item.quantity;
+        }, 0);
+
+        if (applicableSubtotal === 0) return 0;
+        return (applicableSubtotal * promotion.discount) / 100;
       },
 
       getTotal: () => {

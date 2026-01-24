@@ -1,14 +1,15 @@
 "use client";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cartStore";
-import { Producto } from "@/types/products";
+import { ProductsI } from "@/types/products";
 import { formatSMoney } from "@/utils/formatMoney";
 import { Minus, Plus, ShoppingCart, Star, AlertCircle } from "lucide-react";
 import Image from "next/image";
 
 type Props = {
-  product: Producto;
+  product: ProductsI;
   featured?: boolean;
 };
 
@@ -20,45 +21,60 @@ const ProductCard = ({ product, featured = false }: Props) => {
   const handleAddToCart = () => addItem(product);
 
   return (
-    <div className="flex flex-col bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 h-full group">
-      <div className="relative w-full aspect-square bg-gray-50 flex items-center justify-center p-2 overflow-hidden">
+    <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-amber-100/70 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_38px_-24px_rgba(124,45,18,0.65)]">
+      <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden bg-gradient-to-br from-amber-50 via-white to-rose-50 p-3">
         <Image
           src={product.image}
           alt={product.name}
           fill
           sizes="(max-width: 768px) 100vw, 240px"
-          className="object-contain mix-blend-multiply"
+          className="object-contain mix-blend-multiply transition-transform duration-300 group-hover:scale-105"
         />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-white/70 via-white/0 to-white/0" />
       </div>
 
-      <div className="flex flex-col flex-1 p-2">
-        <div className="flex justify-between items-start mb-2">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-pink-500 bg-pink-50 px-2 py-1 rounded-md">
+      <div className="flex flex-1 flex-col p-4">
+        <div className="mb-3 flex items-center justify-between">
+          <Badge className="bg-amber-100/80 text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-800">
             {product.category.name}
-          </span>
+          </Badge>
           {featured && (
-            <div className="flex items-center gap-1 text-yellow-600 bg-yellow-50 px-2 py-1 rounded-md">
-              <Star className="w-3 h-3 fill-yellow-500" />
-              <span className="text-[10px] font-bold">Destacado</span>
+            <div className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-1 text-[10px] font-semibold text-amber-700">
+              <Star className="h-3 w-3 fill-amber-400" />
+              Destacado
             </div>
           )}
         </div>
 
-        <h3 className="text-gray-800 font-bold text-base leading-tight line-clamp-2 mb-1 min-h-10">
+        <h3 className="line-clamp-2 min-h-12 text-base font-semibold leading-tight text-neutral-900">
           {product.name}
         </h3>
 
-        <p className="text-sm mb-2">{product.description}</p>
+        <p className="mb-3 text-sm leading-relaxed text-neutral-600 line-clamp-2">
+          {product.description}
+        </p>
 
-        {product.stock > 0 && product.stock < 10 && (
+        {/* {product.stock > 0 && product.stock < 10 && (
           <div className="flex items-center gap-1 mb-2 text-orange-600 text-xs font-medium">
             <AlertCircle className="w-3 h-3" />
             <span>¡Solo quedan {product.stock}!</span>
           </div>
+        )} */}
+
+        {product.hasDiscount && (
+          <div className="mb-3 flex items-center gap-2 text-xs font-medium text-amber-700">
+            <AlertCircle className="h-3 w-3" />
+            <span>Promo aplicable</span>
+            {product.discountCode && (
+              <Badge className="bg-amber-100/80 text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-800">
+                {product.discountCode}
+              </Badge>
+            )}
+          </div>
         )}
 
         <div className="mt-auto mb-4">
-          <span className="text-xl font-extrabold text-pink-600">
+          <span className="text-2xl font-semibold text-rose-600">
             {formatSMoney(product.price)}
           </span>
         </div>
@@ -68,27 +84,27 @@ const ProductCard = ({ product, featured = false }: Props) => {
             <Button
               disabled
               variant="outline"
-              className="w-full bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed hover:bg-gray-100"
+              className="w-full cursor-not-allowed border-amber-100 bg-amber-50 text-amber-400"
             >
               Agotado
             </Button>
           ) : quantity > 0 ? (
-            <div className="flex items-center justify-between bg-pink-50 rounded-lg p-1 border border-pink-100">
+            <div className="flex items-center justify-between rounded-xl border border-rose-100 bg-rose-50/70 p-1">
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-8 w-8 text-pink-600 hover:bg-pink-200 hover:text-pink-700 rounded-md"
+                className="h-8 w-8 rounded-lg text-rose-600 hover:bg-rose-200/70 hover:text-rose-700"
                 onClick={() => decreaseQuantity(product.id)}
               >
                 <Minus className="w-4 h-4" />
               </Button>
-              <span className="font-bold text-pink-900 text-sm">
+              <span className="text-sm font-semibold text-rose-900">
                 {quantity}
               </span>
               <Button
                 size="icon"
                 variant="ghost"
-                className="h-8 w-8 text-pink-600 hover:bg-pink-200 hover:text-pink-700 rounded-md"
+                className="h-8 w-8 rounded-lg text-rose-600 hover:bg-rose-200/70 hover:text-rose-700"
                 onClick={() => increaseQuantity(product.id)}
               >
                 <Plus className="w-4 h-4" />
@@ -96,10 +112,8 @@ const ProductCard = ({ product, featured = false }: Props) => {
             </div>
           ) : (
             <Button
-              className="w-full bg-pink-600 hover:bg-pink-700 text-white shadow-sm hover:shadow-md transition-all h-10 font-semibold rounded-lg"
-              onClick={handleAddToCart}
-            >
-              <ShoppingCart className="w-4 h-4 mr-2" />
+              className="h-11 w-full rounded-xl bg-rose-600 text-white shadow-sm transition-all hover:bg-rose-700 hover:shadow-md"
+              onClick={handleAddToCart} > <ShoppingCart className="w-4 h-4 mr-2" />
               Agregar
             </Button>
           )}

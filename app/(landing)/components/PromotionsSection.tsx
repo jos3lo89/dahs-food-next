@@ -16,6 +16,7 @@ const PromotionsSection = () => {
     queryFn: () =>
       promocionesApi.getPromociones({
         active: true,
+        current: true,
       }),
   });
 

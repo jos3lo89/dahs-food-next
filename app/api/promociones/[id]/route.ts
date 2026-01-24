@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { auth } from "@/auth";
 import { z } from "zod";
-import { uploadApi } from "@/services/upload.service";
 import { Decimal } from "@/app/generated/prisma/internal/prismaNamespace";
 
 const updatePromocionSchema = z.object({
@@ -12,28 +11,11 @@ const updatePromocionSchema = z.object({
   code: z.string().optional(),
   startDate: z.string().optional(),
   endDate: z.string().optional(),
-  type: z.enum(["DISCOUNT", "PACK", "DAY_SPECIAL", "WEEK_DEAL"]).optional(),
+  type: z.literal("DISCOUNT").optional(),
   image: z.url().optional(),
   active: z.boolean().optional(),
   featured: z.boolean().optional(),
   productIds: z.array(z.string()).optional(),
-  packs: z
-    .array(
-      z.object({
-        name: z.string(),
-        description: z.string().optional(),
-        items: z.array(
-          z.object({
-            productId: z.string(),
-            quantity: z.number().int().min(1),
-          })
-        ),
-        originalPrice: z.number().positive(),
-        packPrice: z.number().positive(),
-        image: z.url().optional(),
-      })
-    )
-    .optional(),
 });
 
 function serializePromocion(promocion: any) {
@@ -59,17 +41,7 @@ function serializePromocion(promocion: any) {
             : Number(pp.product.price),
       },
     })),
-    packs: promocion.packs?.map((pack: any) => ({
-      ...pack,
-      originalPrice:
-        pack.originalPrice instanceof Decimal
-          ? pack.originalPrice.toNumber()
-          : Number(pack.originalPrice),
-      packPrice:
-        pack.packPrice instanceof Decimal
-          ? pack.packPrice.toNumber()
-          : Number(pack.packPrice),
-    })),
+    packs: [],
   };
 }
 
@@ -95,9 +67,8 @@ export async function GET(
             },
           },
         },
-        packs: true,
         _count: {
-          select: { products: true, packs: true },
+          select: { products: true },
         },
       },
     });
@@ -142,7 +113,6 @@ export async function PATCH(
       where: { id },
       include: {
         products: true,
-        packs: true,
       },
     });
 
@@ -199,7 +169,7 @@ export async function PATCH(
       endDate: validatedData.endDate
         ? new Date(validatedData.endDate)
         : undefined,
-      type: validatedData.type,
+      type: "DISCOUNT",
       image: validatedData.image,
       active: validatedData.active,
       featured: validatedData.featured,
@@ -218,33 +188,9 @@ export async function PATCH(
       };
     }
 
-    if (validatedData.packs) {
-      const oldPacks = existingPromocion.packs;
-      for (const pack of oldPacks) {
-        if (pack.image && pack.image.includes("cloudinary")) {
-          try {
-            await uploadApi.deleteImage(pack.image);
-          } catch (error) {
-            console.error("Error al eliminar imagen de pack:", error);
-          }
-        }
-      }
-
-      await prisma.promotionPack.deleteMany({
-        where: { promotionId: id },
-      });
-
-      dataToUpdate.packs = {
-        create: validatedData.packs.map((pack) => ({
-          name: pack.name,
-          description: pack.description,
-          items: pack.items,
-          originalPrice: new Decimal(pack.originalPrice),
-          packPrice: new Decimal(pack.packPrice),
-          image: pack.image,
-        })),
-      };
-    }
+    await prisma.promotionPack.deleteMany({
+      where: { promotionId: id },
+    });
 
     const promocion = await prisma.promotion.update({
       where: { id },
@@ -263,9 +209,8 @@ export async function PATCH(
             },
           },
         },
-        packs: true,
         _count: {
-          select: { products: true, packs: true },
+          select: { products: true },
         },
       },
     });
@@ -310,7 +255,7 @@ export async function DELETE(
       data: { active: false },
       include: {
         _count: {
-          select: { products: true, packs: true },
+          select: { products: true },
         },
       },
     });

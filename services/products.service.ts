@@ -13,6 +13,12 @@ export const productsApi = {
     const { data } = await axiosInstance.get<ProductsI[]>(
       `products?category=${categorySlug}&active=${isActive}`,
     );
+
+    // const { data: values } = await axiosInstance.get(
+    //   `products?category=${categorySlug}&active=${isActive}`,
+    // );
+
+    // console.log(values);
     return data;
   },
 

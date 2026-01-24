@@ -8,17 +8,22 @@ Guidelines for agentic coding agents working in this repository.
 
 Dahs Food is a Spanish-language food delivery e-commerce platform built with Next.js 16 (React 19), TypeScript, PostgreSQL, and Prisma. The app uses App Router, Server Actions, React Query, and Zustand.
 
-## Build and Dev Commands
+## Build, Lint, Test Commands
 
 ### Primary commands
 - `npm run dev`: Start development server at `http://localhost:3000`
 - `npm run build`: Build production application
 - `npm run start`: Start production server
+- `npm run lint`: Run ESLint (Next.js config)
 
 ### Prisma / database
 - `npx prisma generate`: Generate Prisma client at `@/app/generated/prisma/client`
-- `npx prisma db push`: Push schema to database (dev)
+- `npx prisma db push`: Push schema to database (development)
 - `npx tsx prisma/seed.ts`: Seed database
+
+### Tests (current state)
+- No automated test runner is configured and no `*.test.*`/`*.spec.*` files exist.
+- There is no single-test command yet; when a test runner is added, document its single-test pattern here.
 
 ## Project Structure
 
@@ -47,18 +52,31 @@ Dahs Food is a Spanish-language food delivery e-commerce platform built with Nex
 ## Code Style Guidelines
 
 ### TypeScript
-- Strict mode enabled in `tsconfig.json`.
-- Always declare explicit types for exported function parameters and return types.
+- `strict` is enabled in `tsconfig.json`.
+- Declare explicit types for exported function parameters and return types.
 - Use `interface` for object shapes and `type` for unions/primitives.
 - Prefer `unknown` over `any` and narrow with type guards.
-- Avoid non-null assertions (`!`) unless the value is guaranteed.
-- Keep shared types in `types/`.
+- Avoid non-null assertions (`!`) unless guarantees are explicit.
+- Keep shared types in `types/` and inferred Zod types near schemas.
 
 ### Imports
 1. External libraries (React, Radix, etc.)
 2. Framework imports (Next.js, `@tanstack/react-query`)
 3. Absolute imports (`@/lib/*`, `@/services/*`, `@/types/*`)
 4. Relative imports (`../lib/utils`, `./Button`)
+
+### Formatting
+- Keep files formatted by ESLint/Next.js defaults; no custom formatter configured.
+- Avoid unused imports and variables.
+- Prefer early returns to reduce nesting.
+
+### Naming Conventions
+- **Files**: camelCase for utils/services/hooks (`useProducts.ts`)
+- **Files**: PascalCase for components (`Button.tsx`)
+- **Variables/Functions**: camelCase
+- **Types/Interfaces**: PascalCase
+- **Constants**: SCREAMING_SNAKE_CASE
+- **Database**: snake_case columns, singular model names
 
 ### Components
 - Use functional components with TypeScript.
@@ -99,7 +117,7 @@ export const useProducts = (params: ProductsParams) => {
 - Use Spanish error messages for UI validation.
 - Export inferred types: `type LoginType = z.infer<typeof loginSchema>`.
 - Validate environment variables with Zod in `config/envVars.config.ts`.
-- Env var added: `PERUDEVS_API_KEY` for DNI lookup.
+- New env vars must be added to `.env.template`.
 
 ### Database (Prisma)
 - Prisma client import path: `@/app/generated/prisma/client`.
@@ -112,7 +130,6 @@ export const useProducts = (params: ProductsParams) => {
 - Return `{ success: boolean; message: string }` from actions.
 - Handle errors with try/catch and typed responses.
 - Keep actions in `actions/` and avoid mixing with UI components.
-- API route `/api/dni` uses in-memory rate limiting (best-effort on serverless).
 
 ### Error Handling
 - Use `toast.error()` from `sonner` for user-facing errors.
@@ -125,25 +142,12 @@ export const useProducts = (params: ProductsParams) => {
 - Follow shadcn/ui patterns and Radix primitives.
 - Spanish text in UI, English in code identifiers.
 
-### Naming Conventions
-- **Files**: camelCase for utils/services/hooks (`useProducts.ts`).
-- **Files**: PascalCase for components (`Button.tsx`).
-- **Variables/Functions**: camelCase.
-- **Types/Interfaces**: PascalCase.
-- **Constants**: SCREAMING_SNAKE_CASE.
-- **Database**: snake_case columns, singular model names.
-
-### Formatting
-- Prefer explicit return types for exported functions.
-- Avoid unused imports and variables.
-
 ### Working Philosophy (Do/Don't)
 - Do keep changes small and targeted to the request.
 - Do reuse existing patterns and shared utilities.
 - Do keep UI text in Spanish and code identifiers in English.
 - Do not add new dependencies unless requested.
 - Do not change unrelated files or refactor without need.
-- Do not introduce new env vars without updating `.env.template`.
 - Do not store secrets or real credentials in the repo.
 - Do not run linters/tests unless the user asks.
 
