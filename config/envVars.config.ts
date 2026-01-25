@@ -12,6 +12,12 @@ const envVars = object({
   CLOUDINARY_API_SECRET: string(),
   NEXT_PUBLIC_WHATSAPP_PHONE: string(),
   PERUDEVS_API_KEY: string(),
+  EMAIL_HOST: string(),
+  EMAIL_PORT: string(),
+  EMAIL_USER: string(),
+  EMAIL_PASS: string(),
+  NEXT_PUBLIC_APP_URL: string(),
+  CURRENT_ADMIN_EMAIL: string(),
 });
 
 envVars.parse(process.env);

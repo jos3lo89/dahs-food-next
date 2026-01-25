@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Promocion } from "@/types/promotion";
-import { Tag, Calendar, Percent, Package } from "lucide-react";
+import { Tag, Calendar, Percent } from "lucide-react";
 import Image from "next/image";
 import { format, isPast, isFuture, differenceInDays } from "date-fns";
 import { es } from "date-fns/locale";
@@ -18,16 +18,11 @@ interface PromocionCardProps {
 
 const typeLabels = {
   DISCOUNT: "Descuento",
-  PACK: "Pack/Combo",
-  DAY_SPECIAL: "Del Día",
-  WEEK_DEAL: "De la Semana",
 };
 
 const typeIcons = {
   DISCOUNT: Percent,
-  PACK: Package,
-  DAY_SPECIAL: Tag,
-  WEEK_DEAL: Tag,
+  DISCOUNT_FALLBACK: Tag,
 };
 
 export function PromocionCard({
@@ -46,7 +41,7 @@ export function PromocionCard({
   const isActive = promocion.active && !isProgrammed && !isExpired;
   const isEndingSoon = isActive && daysLeft <= 3;
 
-  const Icon = typeIcons[promocion.type];
+  const Icon = typeIcons[promocion.type] || typeIcons.DISCOUNT_FALLBACK;
 
   if (variant === "featured") {
     return (
@@ -218,14 +213,9 @@ export function PromocionCard({
           </div>
         )}
 
-        {promocion._count && (
-          <div className="flex gap-4 text-sm text-gray-600 dark:text-gray-400">
-            {promocion._count.products > 0 && (
-              <span>{promocion._count.products} productos</span>
-            )}
-            {promocion._count.packs > 0 && (
-              <span>{promocion._count.packs} packs</span>
-            )}
+        {promocion._count && promocion._count.products > 0 && (
+          <div className="text-sm text-gray-600 dark:text-gray-400">
+            {promocion._count.products} productos
           </div>
         )}
 

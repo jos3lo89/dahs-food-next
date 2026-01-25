@@ -1,4 +1,4 @@
-import { Producto } from "./products";
+import { Category, Producto } from "./products";
 
 export interface CartItem {
   id: string;
@@ -9,6 +9,9 @@ export interface CartItem {
   image: string;
   quantity: number;
   category: string;
+  hasDiscount: boolean;
+  discountCode: string | null;
+  promotionName: string | null;
 }
 
 export interface CustomerInfo {
@@ -23,9 +26,12 @@ export interface CustomerInfo {
 }
 
 export interface AppliedPromotion {
+  id: string;
   code: string;
   name: string;
   discount: number;
+  type: "DISCOUNT";
+  productIds: string[];
 }
 export interface CartState {
   items: CartItem[];

@@ -56,7 +56,7 @@ export default function PromocionesPage() {
             Gestión de Promociones
           </h1>
           <p className="text-gray-600 dark:text-gray-400 mt-1">
-            Administra descuentos, ofertas y packs promocionales
+            Administra descuentos en productos
           </p>
         </div>
         <CreatePromocionDialog />
@@ -80,9 +80,6 @@ export default function PromocionesPage() {
           <SelectContent>
             <SelectItem value="all">Todos los tipos</SelectItem>
             <SelectItem value="DISCOUNT">Descuentos</SelectItem>
-            <SelectItem value="PACK">Packs/Combos</SelectItem>
-            <SelectItem value="DAY_SPECIAL">Del Día</SelectItem>
-            <SelectItem value="WEEK_DEAL">De la Semana</SelectItem>
           </SelectContent>
         </Select>
 

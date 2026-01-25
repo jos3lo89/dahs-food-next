@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { z } from "zod";
 import { Decimal } from "@/app/generated/prisma/internal/prismaNamespace";
 import { addMinutes } from "date-fns";
+import { sendNotifyOrderToAdmin } from "@/lib/email";
 
 const addressDetailsSchema = z.object({
   street: z.string().min(5, "Calle muy corta"),
@@ -95,6 +96,84 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    const productPriceMap = new Map(
+      products.map((product) => {
+        const price =
+          product.price instanceof Decimal
+            ? product.price.toNumber()
+            : Number(product.price);
+        return [product.id, price];
+      }),
+    );
+
+    const subtotal = validatedData.items.reduce((total, item) => {
+      const price = productPriceMap.get(item.productId) ?? 0;
+      return total + price * item.quantity;
+    }, 0);
+
+    let discount = 0;
+    let promotionCode = validatedData.promotionCode;
+
+    if (promotionCode) {
+      const promocion = await prisma.promotion.findUnique({
+        where: { code: promotionCode },
+        include: { products: true },
+      });
+
+      if (!promocion) {
+        return NextResponse.json(
+          { success: false, error: "Código de promoción inválido" },
+          { status: 400 },
+        );
+      }
+
+      const now = new Date();
+      if (
+        !promocion.active ||
+        promocion.startDate > now ||
+        promocion.endDate < now
+      ) {
+        return NextResponse.json(
+          { success: false, error: "La promoción no está vigente" },
+          { status: 400 },
+        );
+      }
+
+      if (promocion.type !== "DISCOUNT") {
+        return NextResponse.json(
+          { success: false, error: "La promoción no aplica como código" },
+          { status: 400 },
+        );
+      }
+
+      const promoProductIds = new Set(
+        promocion.products.map((item) => item.productId),
+      );
+
+      const applicableSubtotal = validatedData.items.reduce((total, item) => {
+        if (!promoProductIds.has(item.productId)) return total;
+        const price = productPriceMap.get(item.productId) ?? 0;
+        return total + price * item.quantity;
+      }, 0);
+
+      if (applicableSubtotal <= 0) {
+        return NextResponse.json(
+          { success: false, error: "La promoción no aplica a tus productos" },
+          { status: 400 },
+        );
+      }
+
+      const promoDiscount =
+        promocion.discount instanceof Decimal
+          ? promocion.discount.toNumber()
+          : Number(promocion.discount);
+
+      discount = (applicableSubtotal * promoDiscount) / 100;
+    }
+
+    const deliveryFee = validatedData.deliveryFee ?? 0;
+    const total = Math.max(0, subtotal - discount + deliveryFee);
+
     let orderNumber = generateOrderNumber();
     let exists = await prisma.order.findUnique({
       where: { orderNumber },
@@ -129,13 +208,13 @@ export async function POST(request: NextRequest) {
           customerEmail: validatedData.customerEmail,
           customerAddress: validatedData.customerAddress,
           addressDetails: validatedData.addressDetails || undefined,
-          subtotal: new Decimal(validatedData.subtotal),
-          discount: new Decimal(validatedData.discount),
-          deliveryFee: new Decimal(validatedData.deliveryFee),
-          total: new Decimal(validatedData.total),
+          subtotal: new Decimal(subtotal),
+          discount: new Decimal(discount),
+          deliveryFee: new Decimal(deliveryFee),
+          total: new Decimal(total),
           status: initialStatus,
           paymentMethod: validatedData.paymentMethod,
-          promotionCode: validatedData.promotionCode,
+          promotionCode,
           notes: validatedData.notes,
           receiptImage: validatedData.receiptImage,
           estimatedDeliveryTime,
@@ -195,6 +274,28 @@ export async function POST(request: NextRequest) {
         },
       },
     });
+
+    if (orderWithItems) {
+      await sendNotifyOrderToAdmin({
+        orderId: order.id,
+        orderNumber: orderWithItems.orderNumber,
+        customerName: orderWithItems.customerName,
+        customerPhone: orderWithItems.customerPhone,
+        customerAddress: orderWithItems.customerAddress,
+        total:
+          orderWithItems.total instanceof Decimal
+            ? orderWithItems.total.toNumber()
+            : Number(orderWithItems.total),
+        items: orderWithItems.items.map((item) => ({
+          quantity: item.quantity,
+          productName: item.product.name,
+          price:
+            item.price instanceof Decimal
+              ? item.price.toNumber()
+              : Number(item.price),
+        })),
+      });
+    }
 
     return NextResponse.json({
       success: true,

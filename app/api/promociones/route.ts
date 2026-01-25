@@ -11,27 +11,10 @@ const createPromocionSchema = z.object({
   code: z.string().optional(),
   startDate: z.string(),
   endDate: z.string(),
-  type: z.enum(["DISCOUNT", "PACK", "DAY_SPECIAL", "WEEK_DEAL"]),
+  type: z.literal("DISCOUNT"),
   image: z.url().optional(),
   featured: z.boolean().optional().default(false),
-  productIds: z.array(z.string()).optional(),
-  packs: z
-    .array(
-      z.object({
-        name: z.string(),
-        description: z.string().optional(),
-        items: z.array(
-          z.object({
-            productId: z.string(),
-            quantity: z.number().int().min(1),
-          })
-        ),
-        originalPrice: z.number().positive(),
-        packPrice: z.number().positive(),
-        image: z.url().optional(),
-      })
-    )
-    .optional(),
+  productIds: z.array(z.string()).min(1, "Debes seleccionar productos"),
 });
 
 function serializePromocion(promocion: any) {
@@ -57,17 +40,7 @@ function serializePromocion(promocion: any) {
             : Number(pp.product.price),
       },
     })),
-    packs: promocion.packs?.map((pack: any) => ({
-      ...pack,
-      originalPrice:
-        pack.originalPrice instanceof Decimal
-          ? pack.originalPrice.toNumber()
-          : Number(pack.originalPrice),
-      packPrice:
-        pack.packPrice instanceof Decimal
-          ? pack.packPrice.toNumber()
-          : Number(pack.packPrice),
-    })),
+    packs: [],
   };
 }
 
@@ -78,11 +51,18 @@ export async function GET(request: NextRequest) {
     const featured = searchParams.get("featured");
     const type = searchParams.get("type");
     const search = searchParams.get("search");
+    const current = searchParams.get("current");
 
     const where: any = {};
 
     if (active !== null) {
       where.active = active === "true";
+    }
+
+    if (current === "true") {
+      const now = new Date();
+      where.startDate = { lte: now };
+      where.endDate = { gte: now };
     }
 
     if (featured !== null) {
@@ -119,11 +99,9 @@ export async function GET(request: NextRequest) {
             },
           },
         },
-        packs: true,
         _count: {
           select: {
             products: true,
-            packs: true,
           },
         },
       },
@@ -179,6 +157,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    await prisma.promotion.updateMany({
+      where: { active: true },
+      data: { active: false },
+    });
+
     const promocion = await prisma.promotion.create({
       data: {
         name: validatedData.name,
@@ -187,31 +170,15 @@ export async function POST(request: NextRequest) {
         code: validatedData.code,
         startDate: new Date(validatedData.startDate),
         endDate: new Date(validatedData.endDate),
-        type: validatedData.type,
+        type: "DISCOUNT",
         image: validatedData.image,
         featured: validatedData.featured,
-        ...(validatedData.type === "DISCOUNT" &&
-          validatedData.productIds && {
-            products: {
-              create: validatedData.productIds.map((productId) => ({
-                productId,
-                discountPrice: null,
-              })),
-            },
-          }),
-        ...(validatedData.type === "PACK" &&
-          validatedData.packs && {
-            packs: {
-              create: validatedData.packs.map((pack) => ({
-                name: pack.name,
-                description: pack.description,
-                items: pack.items,
-                originalPrice: new Decimal(pack.originalPrice),
-                packPrice: new Decimal(pack.packPrice),
-                image: pack.image,
-              })),
-            },
-          }),
+        products: {
+          create: validatedData.productIds.map((productId) => ({
+            productId,
+            discountPrice: null,
+          })),
+        },
       },
       include: {
         products: {

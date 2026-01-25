@@ -16,19 +16,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Plus, Loader2, Calendar } from "lucide-react";
 import { useCreatePromocion } from "@/hooks/usePromotion";
-import { PromotionType, CreatePackDto } from "@/types/promotion";
+import { PromotionType } from "@/types/promotion";
 import { ProductSelector } from "./ProductSelector";
-import { PackBuilder } from "./PackBuilder";
 import { ImageUpload } from "@/app/admin/productos/components/ImageUpload";
 import { uploadApi } from "@/services/upload.service";
 
@@ -39,9 +31,10 @@ const createPromocionSchema = z.object({
   code: z.string().optional(),
   startDate: z.string(),
   endDate: z.string(),
-  type: z.enum(["DISCOUNT", "PACK", "DAY_SPECIAL", "WEEK_DEAL"]),
+  type: z.literal("DISCOUNT"),
   image: z.string().optional(),
   featured: z.boolean(),
+  productIds: z.array(z.string()).min(1, "Selecciona al menos un producto"),
 });
 
 type CreatePromocionForm = z.infer<typeof createPromocionSchema>;
@@ -50,7 +43,6 @@ export function CreatePromocionDialog() {
   const [open, setOpen] = useState(false);
   const [promoImage, setPromoImage] = useState("");
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
-  const [packs, setPacks] = useState<CreatePackDto[]>([]);
   const { mutate: createPromocion, isPending } = useCreatePromocion();
 
   const {
@@ -66,44 +58,33 @@ export function CreatePromocionDialog() {
       featured: false,
       type: "DISCOUNT",
       discount: 0,
+      productIds: [],
     },
   });
 
-  const promotionType = watch("type");
   const featured = watch("featured");
 
   const cleanupImages = async () => {
-    const allImages = [
-      promoImage,
-      ...packs.map((p) => p.image).filter(Boolean),
-    ];
-    for (const url of allImages) {
-      if (url && url.includes("cloudinary")) {
-        try {
-          await uploadApi.deleteImage(url);
-        } catch (error) {
-          console.error("Error al limpiar imagen:", url);
-        }
+    if (promoImage && promoImage.includes("cloudinary")) {
+      try {
+        await uploadApi.deleteImage(promoImage);
+      } catch (error) {
+        console.error("Error al limpiar imagen:", promoImage);
       }
     }
   };
 
   const onSubmit = (data: CreatePromocionForm) => {
-    if (data.type === "DISCOUNT" && selectedProductIds.length === 0) {
+    if (selectedProductIds.length === 0) {
       alert("Debes seleccionar al menos un producto");
-      return;
-    }
-
-    if (data.type === "PACK" && packs.length === 0) {
-      alert("Debes crear al menos un pack");
       return;
     }
 
     const payload = {
       ...data,
+      type: "DISCOUNT" as PromotionType,
       image: promoImage || undefined,
-      productIds: data.type === "DISCOUNT" ? selectedProductIds : undefined,
-      packs: data.type === "PACK" ? packs : undefined,
+      productIds: selectedProductIds,
     };
 
     createPromocion(payload, {
@@ -111,7 +92,6 @@ export function CreatePromocionDialog() {
         reset();
         setPromoImage("");
         setSelectedProductIds([]);
-        setPacks([]);
         setOpen(false);
       },
       onError: async () => {
@@ -125,7 +105,6 @@ export function CreatePromocionDialog() {
     reset();
     setPromoImage("");
     setSelectedProductIds([]);
-    setPacks([]);
     setOpen(false);
   };
 
@@ -145,25 +124,11 @@ export function CreatePromocionDialog() {
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div>
-            <Label htmlFor="type">Tipo de Promoción *</Label>
-            <Select
-              value={promotionType}
-              onValueChange={(value) =>
-                setValue("type", value as PromotionType)
-              }
-              disabled={isPending}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="DISCOUNT">Descuento en Productos</SelectItem>
-                <SelectItem value="PACK">Packs/Combos</SelectItem>
-                <SelectItem value="DAY_SPECIAL">Especial del Día</SelectItem>
-                <SelectItem value="WEEK_DEAL">Oferta de la Semana</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+            <p className="text-sm font-medium text-gray-800">
+              Tipo de promoción
+            </p>
+            <p className="text-sm text-gray-500">Descuento en productos</p>
           </div>
 
           <div>
@@ -272,21 +237,14 @@ export function CreatePromocionDialog() {
             disabled={isPending}
           />
 
-          {promotionType === "DISCOUNT" && (
-            <ProductSelector
-              selectedProductIds={selectedProductIds}
-              onChange={setSelectedProductIds}
-              disabled={isPending}
-            />
-          )}
-
-          {promotionType === "PACK" && (
-            <PackBuilder
-              packs={packs}
-              onChange={setPacks}
-              disabled={isPending}
-            />
-          )}
+          <ProductSelector
+            selectedProductIds={selectedProductIds}
+            onChange={(ids) => {
+              setSelectedProductIds(ids);
+              setValue("productIds", ids);
+            }}
+            disabled={isPending}
+          />
 
           <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
             <div>

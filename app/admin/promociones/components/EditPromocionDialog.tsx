@@ -15,19 +15,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Loader2, Calendar } from "lucide-react";
 import { useUpdatePromocion } from "@/hooks/usePromotion";
-import { Promocion, PromotionType, CreatePackDto } from "@/types/promotion";
+import { Promocion } from "@/types/promotion";
 import { ProductSelector } from "./ProductSelector";
-import { PackBuilder } from "./PackBuilder";
 import { ImageUpload } from "@/app/admin/productos/components/ImageUpload";
 import { uploadApi } from "@/services/upload.service";
 import { format } from "date-fns";
@@ -39,9 +31,10 @@ const editPromocionSchema = z.object({
   code: z.string().optional(),
   startDate: z.string(),
   endDate: z.string(),
-  type: z.enum(["DISCOUNT", "PACK", "DAY_SPECIAL", "WEEK_DEAL"]),
+  type: z.literal("DISCOUNT"),
   image: z.string().optional(),
   featured: z.boolean(),
+  productIds: z.array(z.string()).min(1, "Selecciona al menos un producto"),
 });
 
 type EditPromocionForm = z.infer<typeof editPromocionSchema>;
@@ -59,10 +52,8 @@ export function EditPromocionDialog({
 }: EditPromocionDialogProps) {
   const [promoImage, setPromoImage] = useState("");
   const [selectedProductIds, setSelectedProductIds] = useState<string[]>([]);
-  const [packs, setPacks] = useState<CreatePackDto[]>([]);
 
   const originalPromoImageRef = useRef<string>("");
-  const originalPacksRef = useRef<CreatePackDto[]>([]);
 
   const { mutate: updatePromocion, isPending } = useUpdatePromocion();
 
@@ -75,9 +66,12 @@ export function EditPromocionDialog({
     formState: { errors },
   } = useForm<EditPromocionForm>({
     resolver: zodResolver(editPromocionSchema),
+    defaultValues: {
+      type: "DISCOUNT",
+      productIds: [],
+    },
   });
 
-  const promotionType = watch("type");
   const featured = watch("featured");
 
   useEffect(() => {
@@ -95,28 +89,19 @@ export function EditPromocionDialog({
         code: promocion.code || "",
         startDate,
         endDate,
-        type: promocion.type,
+        type: "DISCOUNT",
         image: promocion.image || "",
         featured: promocion.featured,
+        productIds: promocion.products?.map((p) => p.productId) || [],
       });
 
       setPromoImage(promocion.image || "");
       originalPromoImageRef.current = promocion.image || "";
 
       if (promocion.products) {
-        setSelectedProductIds(promocion.products.map((p) => p.productId));
-      }
-      if (promocion.packs) {
-        const packsData = promocion.packs.map((pack) => ({
-          name: pack.name,
-          description: pack.description || "",
-          items: pack.items,
-          originalPrice: pack.originalPrice,
-          packPrice: pack.packPrice,
-          image: pack.image || "",
-        }));
-        setPacks(packsData);
-        originalPacksRef.current = packsData;
+        const productIds = promocion.products.map((p) => p.productId);
+        setSelectedProductIds(productIds);
+        setValue("productIds", productIds);
       }
     }
   }, [promocion, reset]);
@@ -127,15 +112,6 @@ export function EditPromocionDialog({
     if (promoImage && promoImage !== originalPromoImageRef.current) {
       newImages.push(promoImage);
     }
-
-    packs.forEach((pack) => {
-      const originalPack = originalPacksRef.current.find(
-        (p) => p.name === pack.name
-      );
-      if (pack.image && pack.image !== originalPack?.image) {
-        newImages.push(pack.image);
-      }
-    });
 
     return newImages;
   };
@@ -157,21 +133,16 @@ export function EditPromocionDialog({
   const onSubmit = (data: EditPromocionForm) => {
     if (!promocion) return;
 
-    if (data.type === "DISCOUNT" && selectedProductIds.length === 0) {
+    if (selectedProductIds.length === 0) {
       alert("Debes seleccionar al menos un producto");
-      return;
-    }
-
-    if (data.type === "PACK" && packs.length === 0) {
-      alert("Debes crear al menos un pack");
       return;
     }
 
     const payload = {
       ...data,
+      type: "DISCOUNT" as const,
       image: promoImage || undefined,
-      productIds: data.type === "DISCOUNT" ? selectedProductIds : undefined,
-      packs: data.type === "PACK" ? packs : undefined,
+      productIds: selectedProductIds,
     };
 
     updatePromocion(
@@ -179,7 +150,6 @@ export function EditPromocionDialog({
       {
         onSuccess: () => {
           originalPromoImageRef.current = promoImage;
-          originalPacksRef.current = [...packs];
           onOpenChange(false);
         },
         onError: async () => {
@@ -193,7 +163,6 @@ export function EditPromocionDialog({
     await cleanupNewImages();
 
     setPromoImage(originalPromoImageRef.current);
-    setPacks(originalPacksRef.current);
 
     onOpenChange(false);
   };
@@ -214,25 +183,11 @@ export function EditPromocionDialog({
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div>
-            <Label htmlFor="edit-type">Tipo de Promoción *</Label>
-            <Select
-              value={promotionType}
-              onValueChange={(value) =>
-                setValue("type", value as PromotionType)
-              }
-              disabled={isPending}
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="DISCOUNT">Descuento en Productos</SelectItem>
-                <SelectItem value="PACK">Packs/Combos</SelectItem>
-                <SelectItem value="DAY_SPECIAL">Especial del Día</SelectItem>
-                <SelectItem value="WEEK_DEAL">Oferta de la Semana</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3">
+            <p className="text-sm font-medium text-gray-800">
+              Tipo de promoción
+            </p>
+            <p className="text-sm text-gray-500">Descuento en productos</p>
           </div>
 
           <div>
@@ -323,21 +278,14 @@ export function EditPromocionDialog({
             disabled={isPending}
           />
 
-          {promotionType === "DISCOUNT" && (
-            <ProductSelector
-              selectedProductIds={selectedProductIds}
-              onChange={setSelectedProductIds}
-              disabled={isPending}
-            />
-          )}
-
-          {promotionType === "PACK" && (
-            <PackBuilder
-              packs={packs}
-              onChange={setPacks}
-              disabled={isPending}
-            />
-          )}
+          <ProductSelector
+            selectedProductIds={selectedProductIds}
+            onChange={(ids) => {
+              setSelectedProductIds(ids);
+              setValue("productIds", ids);
+            }}
+            disabled={isPending}
+          />
 
           <div className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
             <div>

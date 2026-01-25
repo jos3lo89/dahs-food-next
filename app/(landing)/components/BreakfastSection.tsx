@@ -43,8 +43,6 @@ const BreakfastSection = () => {
     return null;
   }
 
-  console.log(breakFasts);
-
   return (
     <section id="desayunos" className="py-20 bg-pink-50">
       <div className="container mx-auto px-4">
@@ -58,9 +56,10 @@ const BreakfastSection = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {breakFasts?.map((p) => (
-            <ProductCart product={p} key={p.id} />
-          ))}
+          {breakFasts?.map((p) => {
+            console.log("desayuno 1: waafa: ", p);
+            return <ProductCart product={p} key={p.id} />;
+          })}
         </div>
       </div>
     </section>

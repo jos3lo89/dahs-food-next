@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -25,6 +26,7 @@ import {
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { toast } from "sonner";
 
 const SidebarCart = () => {
   const router = useRouter();
@@ -38,6 +40,8 @@ const SidebarCart = () => {
     decreaseQuantity,
     removeItem,
     clearCart,
+    applyPromotionByCode,
+    removePromotion,
     isOpen,
     openCart,
     closeCart,
@@ -50,6 +54,8 @@ const SidebarCart = () => {
   const total = getTotal();
 
   const [mounted, setMounted] = useState(false);
+  const [promoCode, setPromoCode] = useState("");
+  const [isApplying, setIsApplying] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -70,6 +76,24 @@ const SidebarCart = () => {
   const handleGoToCheckout = () => {
     closeCart();
     router.push("/checkout");
+  };
+
+  const handleApplyCode = async () => {
+    if (!promoCode.trim()) {
+      toast.error("Ingresa un código de promoción");
+      return;
+    }
+    setIsApplying(true);
+    const result = await applyPromotionByCode(promoCode.trim());
+    setIsApplying(false);
+
+    if (!result.success) {
+      toast.error(result.error || "No se pudo aplicar la promoción");
+      return;
+    }
+
+    toast.success("Promoción aplicada correctamente");
+    setPromoCode("");
   };
 
   return (
@@ -158,28 +182,41 @@ const SidebarCart = () => {
                           {formatPrice(item.price)}
                         </p>
 
-                        <div className="flex items-center gap-2 mt-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => decreaseQuantity(item.productId)}
-                            className="h-7 w-7 p-0 border-pink-200 hover:bg-pink-100"
-                          >
-                            <Minus className="w-3 h-3" />
-                          </Button>
+                        <div className="mt-2 flex flex-col gap-2">
+                          {item.hasDiscount ? (
+                            <div className="inline-flex w-fit items-center gap-2 rounded-full bg-amber-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-amber-700">
+                              <span>Promo aplicable</span>
+                              {item.discountCode && <span>{item.discountCode}</span>}
+                            </div>
+                          ) : (
+                            <span className="text-[10px] font-medium uppercase tracking-[0.2em] text-neutral-400">
+                              Sin promo
+                            </span>
+                          )}
 
-                          <span className="font-semibold text-sm min-w-7.5 text-center">
-                            {item.quantity}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => decreaseQuantity(item.productId)}
+                              className="h-7 w-7 p-0 border-pink-200 hover:bg-pink-100"
+                            >
+                              <Minus className="w-3 h-3" />
+                            </Button>
 
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => increaseQuantity(item.productId)}
-                            className="h-7 w-7 p-0 border-pink-200 hover:bg-pink-100"
-                          >
-                            <Plus className="w-3 h-3" />
-                          </Button>
+                            <span className="font-semibold text-sm min-w-7.5 text-center">
+                              {item.quantity}
+                            </span>
+
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => increaseQuantity(item.productId)}
+                              className="h-7 w-7 p-0 border-pink-200 hover:bg-pink-100"
+                            >
+                              <Plus className="w-3 h-3" />
+                            </Button>
+                          </div>
                         </div>
                       </div>
 
@@ -203,6 +240,39 @@ const SidebarCart = () => {
               </ScrollArea>
 
               <div className="border-t border-pink-100 px-6 py-4 space-y-4">
+                <div className="space-y-2">
+                  <p className="text-sm font-medium text-gray-700">
+                    Código de promoción
+                  </p>
+                  <div className="flex gap-2">
+                    <Input
+                      value={promoCode}
+                      onChange={(event) => setPromoCode(event.target.value)}
+                      placeholder="Ingresa tu código"
+                      className="text-sm"
+                    />
+                    <Button
+                      onClick={handleApplyCode}
+                      disabled={isApplying}
+                      className="bg-pink-500 hover:bg-pink-600"
+                    >
+                      {isApplying ? "Aplicando..." : "Aplicar"}
+                    </Button>
+                  </div>
+                  {promotion && (
+                    <div className="flex items-center justify-between text-xs text-gray-500">
+                      <span>Promo aplicada: {promotion.code}</span>
+                      <button
+                        type="button"
+                        className="text-red-500 hover:text-red-600"
+                        onClick={removePromotion}
+                      >
+                        Quitar
+                      </button>
+                    </div>
+                  )}
+                </div>
+
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Subtotal:</span>
