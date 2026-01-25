@@ -140,9 +140,6 @@ const PromotionsSection = () => {
                         {promo._count.products > 0 && (
                           <span>{promo._count.products} productos</span>
                         )}
-                        {promo._count.packs > 0 && (
-                          <span>{promo._count.packs} packs</span>
-                        )}
                       </>
                     )}
                   </div>

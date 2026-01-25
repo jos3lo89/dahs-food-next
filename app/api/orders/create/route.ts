@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { z } from "zod";
 import { Decimal } from "@/app/generated/prisma/internal/prismaNamespace";
 import { addMinutes } from "date-fns";
+import { sendNotifyOrderToAdmin } from "@/lib/email";
 
 const addressDetailsSchema = z.object({
   street: z.string().min(5, "Calle muy corta"),
@@ -127,7 +128,11 @@ export async function POST(request: NextRequest) {
       }
 
       const now = new Date();
-      if (!promocion.active || promocion.startDate > now || promocion.endDate < now) {
+      if (
+        !promocion.active ||
+        promocion.startDate > now ||
+        promocion.endDate < now
+      ) {
         return NextResponse.json(
           { success: false, error: "La promoción no está vigente" },
           { status: 400 },
@@ -269,6 +274,28 @@ export async function POST(request: NextRequest) {
         },
       },
     });
+
+    if (orderWithItems) {
+      await sendNotifyOrderToAdmin({
+        orderId: order.id,
+        orderNumber: orderWithItems.orderNumber,
+        customerName: orderWithItems.customerName,
+        customerPhone: orderWithItems.customerPhone,
+        customerAddress: orderWithItems.customerAddress,
+        total:
+          orderWithItems.total instanceof Decimal
+            ? orderWithItems.total.toNumber()
+            : Number(orderWithItems.total),
+        items: orderWithItems.items.map((item) => ({
+          quantity: item.quantity,
+          productName: item.product.name,
+          price:
+            item.price instanceof Decimal
+              ? item.price.toNumber()
+              : Number(item.price),
+        })),
+      });
+    }
 
     return NextResponse.json({
       success: true,
