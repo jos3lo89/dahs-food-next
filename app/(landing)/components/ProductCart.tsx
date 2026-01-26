@@ -1,12 +1,21 @@
 "use client";
 
+import { useState } from "react";
+import {
+  Minus,
+  Plus,
+  ShoppingCart,
+  Star,
+  AlertCircle,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
+import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useCartStore } from "@/store/cartStore";
 import { ProductsI } from "@/types/products";
 import { formatSMoney } from "@/utils/formatMoney";
-import { Minus, Plus, ShoppingCart, Star, AlertCircle } from "lucide-react";
-import Image from "next/image";
 
 type Props = {
   product: ProductsI;
@@ -17,11 +26,14 @@ const ProductCard = ({ product, featured = false }: Props) => {
   const { increaseQuantity, decreaseQuantity, getItemQuantity, addItem } =
     useCartStore();
   const quantity = getItemQuantity(product.id);
+  const [ingredientsOpen, setIngredientsOpen] = useState(false);
+  const ingredients = product.ingredients ?? [];
+  const hasIngredients = ingredients.length > 0;
 
   const handleAddToCart = () => addItem(product);
 
   return (
-    <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-amber-100/70 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_38px_-24px_rgba(124,45,18,0.65)]">
+    <div className="group flex flex-col self-start overflow-hidden rounded-2xl border border-amber-100/70 bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_38px_-24px_rgba(124,45,18,0.65)]">
       <div className="relative flex aspect-square w-full items-center justify-center overflow-hidden bg-gradient-to-br from-amber-50 via-white to-rose-50 p-3">
         <Image
           src={product.image}
@@ -53,6 +65,38 @@ const ProductCard = ({ product, featured = false }: Props) => {
         <p className="mb-3 text-sm leading-relaxed text-neutral-600 line-clamp-2">
           {product.description}
         </p>
+
+        {hasIngredients && (
+          <div className="mb-3">
+            <button
+              type="button"
+              onClick={() => setIngredientsOpen((prev) => !prev)}
+              className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.15em] text-amber-700 transition hover:text-amber-900"
+              aria-expanded={ingredientsOpen}
+            >
+              {ingredientsOpen ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+              Ver ingredientes
+            </button>
+            <div
+              className={`overflow-hidden transition-all duration-300 ${
+                ingredientsOpen ? "max-h-40 opacity-100" : "max-h-0 opacity-0"
+              }`}
+            >
+              <ul className="mt-2 space-y-1 text-xs text-neutral-600">
+                {ingredients.map((ingredient) => (
+                  <li key={ingredient.id} className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+                    {ingredient.name}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
 
         {/* {product.stock > 0 && product.stock < 10 && (
           <div className="flex items-center gap-1 mb-2 text-orange-600 text-xs font-medium">

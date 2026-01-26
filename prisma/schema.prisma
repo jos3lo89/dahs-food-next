@@ -55,6 +55,7 @@ model Product {
   featured          Boolean            @default(false)
   stock             Int                @default(999)
   orderItems        OrderItem[]
+  ingredients       Ingredient[]
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
   promotionProducts PromotionProduct[]
@@ -62,6 +63,17 @@ model Product {
   @@index([categoryId])
   @@index([active])
   @@index([featured])
+}
+
+model Ingredient {
+  id        String   @id @default(cuid())
+  name      String
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([productId])
 }
 
 model Promotion {

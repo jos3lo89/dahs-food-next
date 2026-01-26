@@ -47,6 +47,12 @@ export async function GET(
             slug: true,
           },
         },
+        ingredients: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
 
@@ -132,6 +138,12 @@ export async function PATCH(
             slug: true,
           },
         },
+        ingredients: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     });
 
@@ -179,6 +191,12 @@ export async function DELETE(
             id: true,
             name: true,
             slug: true,
+          },
+        },
+        ingredients: {
+          select: {
+            id: true,
+            name: true,
           },
         },
       },

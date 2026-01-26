@@ -2,6 +2,28 @@
 
 import { useState } from "react";
 import {
+  Edit,
+  Eye,
+  EyeOff,
+  ListPlus,
+  MoreVertical,
+  Star,
+  StarOff,
+} from "lucide-react";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import Image from "next/image";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Switch } from "@/components/ui/switch";
+import {
   Table,
   TableBody,
   TableCell,
@@ -9,26 +31,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
-import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator,
-} from "@/components/ui/dropdown-menu";
-import { MoreVertical, Edit, Eye, EyeOff, Star, StarOff } from "lucide-react";
 import {
   useToggleProductoActive,
   useToggleProductoFeatured,
 } from "@/hooks/useProducts";
 import { Producto } from "@/types/products";
 import { EditProductDialog } from "./EditProductDialog";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
-import Image from "next/image";
+import { IngredientsDialog } from "./IngredientsDialog";
 
 interface ProductosTableProps {
   productos: Producto[];
@@ -36,6 +45,8 @@ interface ProductosTableProps {
 
 export function ProductosTable({ productos }: ProductosTableProps) {
   const [editingProducto, setEditingProducto] = useState<Producto | null>(null);
+  const [ingredientsProducto, setIngredientsProducto] =
+    useState<Producto | null>(null);
   const { mutate: toggleActive } = useToggleProductoActive();
   const { mutate: toggleFeatured } = useToggleProductoFeatured();
 
@@ -202,6 +213,12 @@ export function ProductosTable({ productos }: ProductosTableProps) {
                         Editar
                       </DropdownMenuItem>
                       <DropdownMenuItem
+                        onClick={() => setIngredientsProducto(producto)}
+                      >
+                        <ListPlus className="w-4 h-4 mr-2" />
+                        Ingredientes
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
                         onClick={() => handleToggleFeatured(producto)}
                       >
                         {producto.featured ? (
@@ -248,6 +265,11 @@ export function ProductosTable({ productos }: ProductosTableProps) {
         producto={editingProducto}
         open={!!editingProducto}
         onOpenChange={(open) => !open && setEditingProducto(null)}
+      />
+      <IngredientsDialog
+        producto={ingredientsProducto}
+        open={!!ingredientsProducto}
+        onOpenChange={(open) => !open && setIngredientsProducto(null)}
       />
     </>
   );
