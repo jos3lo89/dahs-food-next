@@ -1,3 +1,5 @@
+import type { IngredientSummary } from "@/types/ingredients";
+
 export interface ProductsI {
   id: string;
   name: string;
@@ -17,6 +19,7 @@ export interface ProductsI {
   hasDiscount: boolean;
   discountCode: string | null;
   promotionName: string | null;
+  ingredients?: IngredientSummary[];
 }
 
 export interface Category {
@@ -44,6 +47,7 @@ export interface Producto {
   hasDiscount: boolean;
   discountCode: string | null;
   promotionName: string | null;
+  ingredients?: IngredientSummary[];
 }
 
 export interface CreateProductoDto {

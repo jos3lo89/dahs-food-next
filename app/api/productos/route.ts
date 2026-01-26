@@ -70,6 +70,12 @@ export async function GET(request: NextRequest) {
             slug: true,
           },
         },
+        ingredients: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
       orderBy: { createdAt: "desc" },
     });
@@ -84,7 +90,7 @@ export async function GET(request: NextRequest) {
     console.error("Error al obtener productos:", error);
     return NextResponse.json(
       { success: false, error: "Error al obtener productos" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
@@ -95,7 +101,7 @@ export async function POST(request: NextRequest) {
     if (!session || session.user.role !== "ADMIN") {
       return NextResponse.json(
         { success: false, error: "No autorizado" },
-        { status: 401 }
+        { status: 401 },
       );
     }
 
@@ -109,7 +115,7 @@ export async function POST(request: NextRequest) {
     if (existingProduct) {
       return NextResponse.json(
         { success: false, error: "El slug ya está en uso" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -120,7 +126,7 @@ export async function POST(request: NextRequest) {
     if (!category) {
       return NextResponse.json(
         { success: false, error: "Categoría no encontrada" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -147,7 +153,7 @@ export async function POST(request: NextRequest) {
         data: serializeProduct(producto),
         message: "Producto creado exitosamente",
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     if (error instanceof z.ZodError) {
@@ -157,14 +163,14 @@ export async function POST(request: NextRequest) {
           error: "Datos inválidos",
           details: error.message,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     console.error("Error al crear producto:", error);
     return NextResponse.json(
       { success: false, error: "Error al crear producto" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

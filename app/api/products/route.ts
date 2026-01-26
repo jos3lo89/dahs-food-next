@@ -1,6 +1,6 @@
+import { NextRequest, NextResponse } from "next/server";
 import { Decimal } from "@/app/generated/prisma/internal/prismaNamespace";
 import prisma from "@/lib/prisma";
-import { NextRequest, NextResponse } from "next/server";
 function serializeProduct(product: any) {
   return {
     ...product,
@@ -44,6 +44,12 @@ export const GET = async (req: NextRequest) => {
           take: 1,
           orderBy: {
             createdAt: "desc",
+          },
+        },
+        ingredients: {
+          select: {
+            id: true,
+            name: true,
           },
         },
         category: {
