@@ -8,7 +8,7 @@ import PromotionsSection from "./components/PromotionsSection";
 export const metadata: Metadata = {
   title: "Inicio",
   description:
-    "Desayunos artesanales, packs y postres con delivery rápido en Andahuaylas. Pide en línea y sorprende hoy.",
+    "Desayunos artesanales, packs y postres con delivery rápido en Uripa, Chincheros. Pide en línea y sorprende hoy.",
 };
 
 const LandingPage = () => {
