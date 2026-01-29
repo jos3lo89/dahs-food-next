@@ -16,15 +16,15 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.dahsjhoss.store"),
   title: {
-    default: "Dahs Jhoss | Desayunos y Delivery en Andahuaylas",
+    default: "Dahs Jhoss | Desayunos y Delivery en Uripa, Chincheros",
     template: "%s | Dahs Jhoss",
   },
   description:
-    "Desayunos, postres y delivery en Andahuaylas. Pide online y recibe rápido con atención personalizada.",
+    "Desayunos, postres y delivery en Uripa, Chincheros. Pide online y recibe rápido con atención personalizada.",
   openGraph: {
-    title: "Dahs Jhoss | Desayunos y Delivery en Andahuaylas",
+    title: "Dahs Jhoss | Desayunos y Delivery en Uripa, Chincheros",
     description:
-      "Desayunos, postres y delivery en Andahuaylas. Pide online y recibe rápido con atención personalizada.",
+      "Desayunos, postres y delivery en Uripa, Chincheros. Pide online y recibe rápido con atención personalizada.",
     url: "https://www.dahsjhoss.store",
     siteName: "Dahs Jhoss",
     locale: "es_PE",
@@ -40,9 +40,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Dahs Jhoss | Desayunos y Delivery en Andahuaylas",
+    title: "Dahs Jhoss | Desayunos y Delivery en Uripa, Chincheros",
     description:
-      "Desayunos, postres y delivery en Andahuaylas. Pide online y recibe rápido con atención personalizada.",
+      "Desayunos, postres y delivery en Uripa, Chincheros. Pide online y recibe rápido con atención personalizada.",
     images: ["/images/seo/twitter_image_1200x630.webp"],
   },
   icons: {
